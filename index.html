@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Chat v2.5 - Ultimate Edition</title>
+    <title>Pulse Chat v2.6 - Ultimate Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -29,6 +29,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
         button, input, textarea { -webkit-appearance: none; }
+        .msg-group:hover .msg-delete-btn { opacity: 1; }
     </style>
 </head>
 <body class="bg-darkBg text-slate-100 h-full overflow-hidden flex flex-col select-none">
@@ -45,7 +46,7 @@
                 <div class="w-14 h-14 bg-cyan-600/20 border border-cyan-500/30 rounded-2xl mx-auto flex items-center justify-center text-cyan-400 text-2xl font-bold shadow-inner">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
-                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.5</h1>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.6</h1>
                 <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Онлайн Мессенджер в Реальном Времени</p>
             </div>
 
@@ -105,9 +106,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-1">
-                    <button type="button" onclick="toggleLanguage()" title="Switch Language" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold text-[10px] flex items-center justify-center transition cursor-pointer">
-                        <span id="langHeaderBtn">EN</span>
-                    </button>
+                    <button type="button" onclick="toggleUserSettingsModal()" title="Настройки профиля" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-gear"></i></button>
                     <button type="button" onclick="toggleAdminModal()" id="adminPanelBtn" title="Панель Управления" class="hidden w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-shield-halved"></i></button>
                     <button type="button" onclick="logout()" title="Выйти" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-right-from-bracket"></i></button>
                     <button type="button" onclick="toggleSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
@@ -167,7 +166,7 @@
             <!-- Attachment Preview Bar -->
             <div id="attachmentPreview" class="hidden px-4 py-2 bg-darkCard border-t border-darkBorder flex items-center justify-between shrink-0">
                 <div class="flex items-center space-x-2 text-xs text-cyan-400">
-                    <i class="fa-solid fa-paperclip"></i>
+                    <i class="fa-solid fa-image"></i>
                     <span id="attachmentName" class="truncate max-w-xs">Файл</span>
                 </div>
                 <button type="button" onclick="clearAttachment()" class="text-slate-400 hover:text-rose-400 text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
@@ -178,12 +177,51 @@
                 <div class="flex items-center space-x-2">
                     <label class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0">
                         <i class="fa-solid fa-paperclip text-xs"></i>
-                        <input type="file" id="fileInput" onchange="handleFileSelect(event)" class="hidden">
+                        <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)" class="hidden">
                     </label>
                     <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition resize-none max-h-24"></textarea>
                     <button type="button" id="sendMessageBtn" onclick="sendMessage()" class="w-10 h-10 rounded-xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center justify-center transition shrink-0 shadow-lg shadow-cyan-600/20 cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: USER SETTINGS (НАСТРОЙКИ ПОЛЬЗОВАТЕЛЯ) -->
+    <div id="userSettingsModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
+                <h3 class="font-semibold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-gear text-cyan-400"></i> Настройки профиля</h3>
+                <button type="button" onclick="toggleUserSettingsModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
+            </div>
+            <form onsubmit="saveUserSettings(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-300">Отображаемое имя (Никнейм)</label>
+                    <input type="text" id="settingsDisplayName" required class="w-full px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-300">Аватар (Эмодзи / Символ)</label>
+                    <input type="text" id="settingsAvatar" maxlength="2" required class="w-full px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-300">Сменить пароль</label>
+                    <input type="password" id="settingsNewPassword" placeholder="Новый пароль (опционально)" class="w-full px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="clearLocalChatHistory()" class="flex-1 py-2.5 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold transition">Очистить кэш чатов</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-semibold transition">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: LIGHTBOX IMAGE VIEW (ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО) -->
+    <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
+        <div class="relative max-w-4xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-cyan-400 transition cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl border border-slate-700 object-contain">
+            <a id="lightboxDownload" href="" download class="mt-3 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+                <i class="fa-solid fa-download"></i> Скачать изображение
+            </a>
         </div>
     </div>
 
@@ -225,7 +263,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ADVANCED ADMIN & CREATOR CONSOLE (20+ FUNCTIONS) -->
+    <!-- MODAL: ADVANCED ADMIN & CREATOR CONSOLE -->
     <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="w-full max-w-4xl bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3">
@@ -236,14 +274,12 @@
                 <button type="button" onclick="toggleAdminModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <!-- Admin Navigation Tabs -->
             <div class="flex space-x-2 bg-slate-900 p-1 rounded-xl border border-darkBorder">
                 <button type="button" id="adminTabUsersBtn" onclick="switchAdminSubTab('users')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition">Реальный Онлайн и Пользователи</button>
                 <button type="button" id="adminTabToolsBtn" onclick="switchAdminSubTab('tools')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">20+ Доп. Функций Системы</button>
                 <button type="button" id="adminTabBroadcastBtn" onclick="switchAdminSubTab('broadcast')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Глобальная рассылка</button>
             </div>
 
-            <!-- Tab 1: Realtime Online Users -->
             <div id="adminTabUsers" class="flex-1 overflow-y-auto space-y-3 pr-1">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-400">Активных в реальном времени: <strong id="adminTotalUsersCount" class="text-emerald-400 font-mono">0</strong></span>
@@ -261,121 +297,41 @@
                                     <th class="p-3 text-right">Управление (Бан / Мут)</th>
                                 </tr>
                             </thead>
-                            <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder text-slate-200">
-                                <!-- Populated dynamically -->
-                            </tbody>
+                            <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder text-slate-200"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 2: 20+ Additional Admin & Creator Functions -->
             <div id="adminTabTools" class="hidden flex-1 overflow-y-auto space-y-4 pr-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <!-- Function 1 -->
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
                         <div><h4 class="font-semibold text-white text-xs">1. Очистка локального кэша</h4><p class="text-[10px] text-slate-400">Сброс временных локальных файлов</p></div>
                         <button onclick="adminToolClearCache()" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Выполнить</button>
                     </div>
-                    <!-- Function 2 -->
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
                         <div><h4 class="font-semibold text-white text-xs">2. Сброс всех чатов</h4><p class="text-[10px] text-slate-400">Удаление истории локальных диалогов</p></div>
                         <button onclick="adminToolResetChats()" class="py-1.5 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 rounded-lg text-xs font-medium transition">Очистить</button>
                     </div>
-                    <!-- Function 3 -->
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
                         <div><h4 class="font-semibold text-white text-xs">3. Режим техобслуживания</h4><p class="text-[10px] text-slate-400">Включить заглушку maintenance</p></div>
                         <button onclick="adminToolToggleMaintenance()" class="py-1.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 rounded-lg text-xs font-medium transition">Переключить</button>
                     </div>
-                    <!-- Function 4 -->
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
                         <div><h4 class="font-semibold text-white text-xs">4. Экспорт базы данных</h4><p class="text-[10px] text-slate-400">Скачать бэкап в формате JSON</p></div>
                         <button onclick="adminToolExportDB()" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Экспорт</button>
                     </div>
-                    <!-- Function 5 -->
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
                         <div><h4 class="font-semibold text-white text-xs">5. Пинг сервера Firebase</h4><p class="text-[10px] text-slate-400">Проверка задержки облака</p></div>
                         <button onclick="adminToolPingServer()" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-lg text-xs font-medium transition">Проверить</button>
                     </div>
-                    <!-- Function 6 -->
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
                         <div><h4 class="font-semibold text-white text-xs">6. Сброс UI интерфейса</h4><p class="text-[10px] text-slate-400">Принудительный перезапуск стилей</p></div>
                         <button onclick="location.reload()" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Перезагрузка</button>
                     </div>
-                    <!-- Function 7 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">7. Массовый Мут всех</h4><p class="text-[10px] text-slate-400">Заглушить обычных пользователей</p></div>
-                        <button onclick="adminToolMuteAll()" class="py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded-lg text-xs font-medium transition">Применить</button>
-                    </div>
-                    <!-- Function 8 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">8. Снять все муты</h4><p class="text-[10px] text-slate-400">Амнистия замученных аккаунтов</p></div>
-                        <button onclick="adminToolUnmuteAll()" class="py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-lg text-xs font-medium transition">Снять</button>
-                    </div>
-                    <!-- Function 9 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">9. Экстренный логаут</h4><p class="text-[10px] text-slate-400">Выход из текущей сессии</p></div>
-                        <button onclick="logout()" class="py-1.5 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 rounded-lg text-xs font-medium transition">Выйти</button>
-                    </div>
-                    <!-- Function 10 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">10. Режим невидимости</h4><p class="text-[10px] text-slate-400">Скрыть статус присутствия</p></div>
-                        <button onclick="adminToolStealthMode()" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-purple-400 rounded-lg text-xs font-medium transition">Включить</button>
-                    </div>
-                    <!-- Function 11 (Creator Only) -->
-                    <div class="bg-purple-950/20 border border-purple-500/30 p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-purple-300 text-xs">11. [Creator] Сброс всех банов</h4><p class="text-[10px] text-slate-400">Разблокировать все забаненные ID</p></div>
-                        <button onclick="creatorToolUnbanAll()" class="py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-medium transition">Выполнить</button>
-                    </div>
-                    <!-- Function 12 (Creator Only) -->
-                    <div class="bg-purple-950/20 border border-purple-500/30 p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-purple-300 text-xs">12. [Creator] Выдать Супер-Админа</h4><p class="text-[10px] text-slate-400">Повысить текущий аккаунт до высшего ранга</p></div>
-                        <button onclick="creatorToolSuperAdmin()" class="py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-medium transition">Повысить</button>
-                    </div>
-                    <!-- Function 13 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">13. Очистить системный буфер</h4><p class="text-[10px] text-slate-400">Освободить оперативную память DOM</p></div>
-                        <button onclick="window.showToast('Буфер памяти очищен', 'success')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Очистить</button>
-                    </div>
-                    <!-- Function 14 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">14. Режим отладки консоли</h4><p class="text-[10px] text-slate-400">Вывод логов Firebase в реальном времени</p></div>
-                        <button onclick="window.showToast('Debug mode активен', 'success')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Включить</button>
-                    </div>
-                    <!-- Function 15 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">15. Тест звукового сигнала</h4><p class="text-[10px] text-slate-400">Проверить аудио уведомления</p></div>
-                        <button onclick="window.showToast('🔔 Бип!', 'info')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Тест</button>
-                    </div>
-                    <!-- Function 16 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">16. Проверка целостности БД</h4><p class="text-[10px] text-slate-400">Анализ таблиц на ошибки</p></div>
-                        <button onclick="window.showToast('База данных в идеальном состоянии', 'success')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-lg text-xs font-medium transition">Анализ</button>
-                    </div>
-                    <!-- Function 17 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">17. Генерация тестового чата</h4><p class="text-[10px] text-slate-400">Создать демо-диалог с ботом</p></div>
-                        <button onclick="window.showToast('Тестовый чат создан', 'success')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Создать</button>
-                    </div>
-                    <!-- Function 18 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">18. Смена темы интерфейса</h4><p class="text-[10px] text-slate-400">Форсировать глубокий темный OLED</p></div>
-                        <button onclick="window.showToast('OLED режим включен', 'success')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">OLED</button>
-                    </div>
-                    <!-- Function 19 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">19. Сброс настроек языка</h4><p class="text-[10px] text-slate-400">Установить русский по умолчанию</p></div>
-                        <button onclick="setLanguage('ru')" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition">Сбросить</button>
-                    </div>
-                    <!-- Function 20 -->
-                    <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-white text-xs">20. Полная перезагрузка ядра</h4><p class="text-[10px] text-slate-400">Переподключение к Firebase Cloud</p></div>
-                        <button onclick="location.reload()" class="py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-medium transition">Рестарт</button>
-                    </div>
                 </div>
             </div>
 
-            <!-- Tab 3: Global Broadcast -->
             <div id="adminTabBroadcast" class="hidden space-y-4">
                 <p class="text-xs text-slate-400">Отправка анонса во все чаты активных пользователей от имени Администрации.</p>
                 <textarea id="broadcastTextInput" rows="4" placeholder="Текст объявления..." class="w-full p-3 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-amber-500 resize-none"></textarea>
@@ -490,7 +446,7 @@
                 type: 'friend',
                 avatar: '📌',
                 code: '#saved_notes',
-                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.5!', time: getFormattedTime() }]
+                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.6!', time: getFormattedTime() }]
             },
             {
                 id: 'bot_pulse',
@@ -538,7 +494,7 @@
 
                     if (window.currentUser.isBanned) {
                         window.logout();
-                        alert('Ваш аккаунт был заблокирован!');
+                        alert('Ваш аккаунт заблокирован!');
                         return;
                     }
 
@@ -691,7 +647,163 @@
             } catch (err) {}
         };
 
-        // REALTIME ONLINE & USERS LOADER FOR ADMIN PANEL
+        // DELETE INDIVIDUAL MESSAGE (УДАЛЕНИЕ ОТДЕЛЬНОГО СООБЩЕНИЯ)
+        window.deleteSingleMessage = function(msgId) {
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || !chat.messages) return;
+
+            chat.messages = chat.messages.filter(m => m.id !== msgId);
+            window.saveChats();
+            window.renderMessages();
+            window.renderChats();
+            window.showToast('Сообщение удалено', 'success');
+        };
+
+        // LIGHTBOX FUNCTIONS
+        window.openLightbox = function(imgSrc) {
+            const modal = document.getElementById('lightboxModal');
+            const img = document.getElementById('lightboxImage');
+            const dl = document.getElementById('lightboxDownload');
+            if (!modal || !img) return;
+            img.src = imgSrc;
+            dl.href = imgSrc;
+            modal.classList.remove('hidden');
+        };
+
+        window.closeLightbox = function() {
+            const modal = document.getElementById('lightboxModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        // USER SETTINGS MODAL LOGIC
+        window.toggleUserSettingsModal = function() {
+            const modal = document.getElementById('userSettingsModal');
+            if (!modal) return;
+            modal.classList.toggle('hidden');
+
+            if (!modal.classList.contains('hidden') && window.currentUser) {
+                document.getElementById('settingsDisplayName').value = window.currentUser.name || '';
+                document.getElementById('settingsAvatar').value = window.currentUser.avatar || '👤';
+            }
+        };
+
+        window.saveUserSettings = async function(e) {
+            e.preventDefault();
+            if (!window.currentUser) return;
+
+            const newName = document.getElementById('settingsDisplayName').value.trim();
+            const newAvatar = document.getElementById('settingsAvatar').value.trim() || '👤';
+            const newPass = document.getElementById('settingsNewPassword').value;
+
+            if (newName) window.currentUser.name = newName;
+            window.currentUser.avatar = newAvatar;
+            if (newPass) window.currentUser.password = newPass;
+
+            localStorage.setItem('pulse_chat_session', JSON.stringify(window.currentUser));
+
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase());
+                await setDoc(userDocRef, {
+                    name: window.currentUser.name,
+                    avatar: window.currentUser.avatar,
+                    password: window.currentUser.password
+                }, { merge: true });
+            } catch(e) {}
+
+            window.initUserSession(window.currentUser);
+            window.toggleUserSettingsModal();
+            window.showToast('Настройки успешно сохранены!', 'success');
+        };
+
+        window.clearLocalChatHistory = function() {
+            if (confirm('Очистить локальный кэш всех сообщений?')) {
+                localStorage.removeItem('pulse_chat_chats');
+                window.chats = defaultChats;
+                window.renderChats();
+                window.selectChat('saved_notes');
+                window.toggleUserSettingsModal();
+                window.showToast('Локальные чаты очищены', 'success');
+            }
+        };
+
+        // FILE & IMAGE PREVIEW & SELECT
+        window.handleFileSelect = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                window.selectedAttachment = {
+                    name: file.name,
+                    type: file.type,
+                    data: evt.target.result
+                };
+                document.getElementById('attachmentName').innerText = file.name;
+                document.getElementById('attachmentPreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearAttachment = function() {
+            window.selectedAttachment = null;
+            document.getElementById('attachmentPreview').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+        };
+
+        // RENDER MESSAGES (WITH DELETION AND NORMALIZED IMAGES)
+        window.renderMessages = function() {
+            const container = document.getElementById('messagesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || !chat.messages || chat.messages.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-500 space-y-2"><p class="text-xs text-center">${window.t('noMessages')}</p></div>`;
+                return;
+            }
+
+            chat.messages.forEach(msg => {
+                const isMe = msg.sender === window.currentUser?.name;
+                const wrapper = document.createElement('div');
+                wrapper.className = `msg-group group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1 relative`;
+
+                let contentHtml = '';
+                if (msg.text) {
+                    contentHtml += `<p class="leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>`;
+                }
+                if (msg.file) {
+                    if (msg.file.type && msg.file.type.startsWith('image/')) {
+                        contentHtml += `
+                            <div class="mt-1.5 overflow-hidden rounded-xl border border-slate-700/60 max-w-xs cursor-pointer bg-slate-950" onclick="openLightbox('${msg.file.data}')">
+                                <img src="${msg.file.data}" alt="${msg.file.name}" class="w-full max-h-60 object-cover hover:scale-105 transition duration-300">
+                            </div>
+                        `;
+                    } else {
+                        contentHtml += `
+                            <a href="${msg.file.data}" download="${msg.file.name}" class="flex items-center space-x-2 mt-1.5 p-2 bg-slate-900 rounded-xl text-cyan-400 text-xs border border-slate-700/60 hover:bg-slate-800 transition">
+                                <i class="fa-solid fa-file-arrow-down text-sm"></i>
+                                <span class="underline truncate max-w-[180px]">${msg.file.name}</span>
+                            </a>
+                        `;
+                    }
+                }
+
+                wrapper.innerHTML = `
+                    <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
+                        <div class="max-w-[85%] md:max-w-[70%] px-3.5 py-2 rounded-2xl text-xs md:text-sm ${isMe ? 'bg-cyan-600 text-white rounded-br-none shadow-md' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/50'}">
+                            ${contentHtml}
+                            <div class="text-[9px] ${isMe ? 'text-cyan-200' : 'text-slate-400'} text-right mt-1">${msg.time}</div>
+                        </div>
+                        <button onclick="deleteSingleMessage(${msg.id})" title="Удалить сообщение" class="msg-delete-btn opacity-0 group-hover:opacity-100 p-1.5 text-slate-500 hover:text-rose-400 text-xs transition cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(wrapper);
+            });
+            container.scrollTop = container.scrollHeight;
+        };
+
         window.loadRealtimeOnlineUsers = async function() {
             const tbody = document.getElementById('adminUsersTableBody');
             const countEl = document.getElementById('adminTotalUsersCount');
@@ -705,7 +817,6 @@
                 
                 tbody.innerHTML = '';
                 let onlineCount = 0;
-                const now = Date.now();
 
                 snapshot.forEach(docSnap => {
                     const u = docSnap.data();
@@ -839,7 +950,6 @@
             } catch(e) {}
         };
 
-        // 20+ ADDITIONAL TOOLS IMPLEMENTATION
         window.adminToolClearCache = function() {
             localStorage.removeItem('pulse_chat_chats');
             window.showToast('Локальный кэш очищен', 'success');
@@ -864,23 +974,6 @@
         };
         window.adminToolPingServer = function() {
             window.showToast('⚡ Пинг Firebase: 14мс (Отлично)', 'success');
-        };
-        window.adminToolMuteAll = function() {
-            window.showToast('🔇 Все пользователи заглушены', 'success');
-        };
-        window.adminToolUnmuteAll = function() {
-            window.showToast('🔊 Муты со всех пользователей сняты', 'success');
-        };
-        window.adminToolStealthMode = function() {
-            window.showToast('🕶️ Режим невидимости активирован', 'success');
-        };
-        window.creatorToolUnbanAll = function() {
-            if (!window.currentUser.isCreator) return;
-            window.showToast('🔓 Все баны аннулированы создателем', 'success');
-        };
-        window.creatorToolSuperAdmin = function() {
-            if (!window.currentUser.isCreator) return;
-            window.showToast('👑 Вы обладатель высшего уровня Создателя (67)', 'success');
         };
 
         window.sendGlobalBroadcast = function() {
@@ -1118,36 +1211,6 @@
             window.showToast(window.t('toastAuthSuccess'), 'success');
         };
 
-        window.renderMessages = function() {
-            const container = document.getElementById('messagesContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.messages || chat.messages.length === 0) {
-                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-500 space-y-2"><p class="text-xs text-center">${window.t('noMessages')}</p></div>`;
-                return;
-            }
-
-            chat.messages.forEach(msg => {
-                const isMe = msg.sender === window.currentUser?.name;
-                const wrapper = document.createElement('div');
-                wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
-                let contentHtml = '';
-                if (msg.text) contentHtml += `<p class="leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>`;
-                if (msg.file) {
-                    if (msg.file.type && msg.file.type.startsWith('image/')) {
-                        contentHtml += `<img src="${msg.file.data}" class="max-w-xs rounded-lg mt-1 border border-slate-700">`;
-                    } else {
-                        contentHtml += `<a href="${msg.file.data}" download="${msg.file.name}" class="flex items-center space-x-2 mt-1 p-2 bg-slate-800 rounded-lg text-cyan-400 text-xs"><span class="underline truncate">${msg.file.name}</span></a>`;
-                    }
-                }
-                wrapper.innerHTML = `<div class="max-w-[85%] md:max-w-[70%] px-3.5 py-2 rounded-2xl text-xs md:text-sm ${isMe ? 'bg-cyan-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none'}">${contentHtml}<div class="text-[9px] ${isMe ? 'text-cyan-200' : 'text-slate-400'} text-right mt-1">${msg.time}</div></div>`;
-                container.appendChild(wrapper);
-            });
-            container.scrollTop = container.scrollHeight;
-        };
-
         window.renderChats = function() {
             const chatListEl = document.getElementById('chatList');
             if (!chatListEl) return;
@@ -1344,24 +1407,6 @@
             }
         };
 
-        window.handleFileSelect = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                window.selectedAttachment = { name: file.name, type: file.type, data: evt.target.result };
-                document.getElementById('attachmentName').innerText = file.name;
-                document.getElementById('attachmentPreview').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.clearAttachment = function() {
-            window.selectedAttachment = null;
-            document.getElementById('attachmentPreview').classList.add('hidden');
-            document.getElementById('fileInput').value = '';
-        };
-
         window.saveChats = function() { localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats)); };
         window.logout = function() {
             localStorage.removeItem('pulse_chat_session');
@@ -1418,4 +1463,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
