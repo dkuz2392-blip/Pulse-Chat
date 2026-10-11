@@ -236,7 +236,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (Обновлено вашими ключами)
+        // Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
             ? JSON.parse(__firebase_config) 
@@ -387,7 +387,6 @@
                 if (headerBtn) headerBtn.innerText = "RU";
             }
 
-            // Update UI elements
             document.getElementById('t_subtitle').innerText = window.t('subtitle');
             document.getElementById('tabLoginBtn').innerText = window.t('tabLogin');
             document.getElementById('tabRegisterBtn').innerText = window.t('tabRegister');
@@ -488,7 +487,7 @@
 
         initAuth();
 
-        // FIRESTORE REALTIME SYNC
+        // FIRESTORE REALTIME SYNC (ИСКЛЮЧИТЕЛЬНО ПО ID ЧАТА)
         function subscribeToPublicMessages() {
             if (!authenticatedUser) return;
             if (unsubscribeMessages) unsubscribeMessages();
@@ -511,11 +510,12 @@
 
         function handleCloudIncomingMessage(data) {
             if (!window.currentUser) return;
-            if (data.senderCode === window.currentUser.code) return; // Skip own messages
+            if (data.senderCode === window.currentUser.code) return; // Пропуск собственных сообщений
 
+            // Ищем чат, чей код совпадает с chatCode из базы (или это чат с этим пользователем)
             let chat = window.chats.find(c => c.code === data.chatCode || (c.code && c.code.toLowerCase() === data.chatCode.toLowerCase()));
 
-            if (!chat && data.receiverCode === window.currentUser.code) {
+            if (!chat && (data.receiverCode === window.currentUser.code || data.chatCode === window.currentUser.code)) {
                 chat = {
                     id: 'friend_' + Date.now(),
                     name: data.senderName || 'Chat (' + data.senderCode + ')',
@@ -543,6 +543,7 @@
             }
         }
 
+        // ОТПРАВКА СООБЩЕНИЙ С УКАЗАНИЕМ ТОЧНОГО chatCode текущего чата
         window.sendCloudMessage = async function(chatCode, receiverCode, messageData) {
             if (!authenticatedUser) return;
 
@@ -730,8 +731,8 @@
             window.renderMessages();
             window.renderChats();
 
-            // Send Realtime Cloud Message
-            if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
+            // Исправленная отправка в облако с передачей уникального кода текущего чата
+            if (chat.type === 'friend' && chat.code) {
                 window.sendCloudMessage(chat.code, chat.code, newMessage);
             }
 
