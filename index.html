@@ -78,8 +78,8 @@
                     <input type="password" id="regPassword" required autocomplete="new-password" class="w-full px-3.5 py-3 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition" placeholder="••••••••">
                 </div>
                 <div class="space-y-1">
-                    <label id="t_lbl_reg_admin" class="text-xs font-medium text-slate-300">Ключ Администратора (опционально)</label>
-                    <input type="password" id="regAdminKey" class="w-full px-3.5 py-3 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition" placeholder="Мастер-ключ администратора">
+                    <label id="t_lbl_reg_admin" class="text-xs font-medium text-slate-300">Секретный ключ (опционально)</label>
+                    <input type="password" id="regAdminKey" class="w-full px-3.5 py-3 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition" placeholder="Ключ Админа (1488) или Создателя (67)">
                 </div>
                 <button type="submit" id="t_btn_register" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-cyan-600/20 transition-all cursor-pointer">Создать аккаунт</button>
             </form>
@@ -96,6 +96,7 @@
                     <div class="overflow-hidden">
                         <div class="flex items-center space-x-1.5">
                             <h3 id="currentUserName" class="font-semibold text-xs text-white truncate">Пользователь</h3>
+                            <span id="creatorBadge" class="hidden px-1.5 py-0.5 bg-purple-500/20 border border-purple-500/30 text-purple-400 text-[9px] rounded font-bold uppercase">Creator</span>
                             <span id="adminBadge" class="hidden px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[9px] rounded font-semibold uppercase">Admin</span>
                         </div>
                         <button type="button" onclick="copyMyCode()" id="currentUserCode" class="text-[10px] text-slate-400 hover:text-cyan-400 transition flex items-center space-x-1 mt-0.5 truncate cursor-pointer">
@@ -107,13 +108,13 @@
                     <button type="button" onclick="toggleLanguage()" title="Switch Language" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold text-[10px] flex items-center justify-center transition cursor-pointer">
                         <span id="langHeaderBtn">EN</span>
                     </button>
-                    <button type="button" onclick="toggleAdminModal()" id="adminPanelBtn" title="Панель Администратора" class="hidden w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-shield-halved"></i></button>
+                    <button type="button" onclick="toggleAdminModal()" id="adminPanelBtn" title="Панель Управления" class="hidden w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-shield-halved"></i></button>
                     <button type="button" onclick="logout()" title="Выйти" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-right-from-bracket"></i></button>
                     <button type="button" onclick="toggleSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
 
-            <!-- Search & Group Creation Actions -->
+            <!-- Search & Actions -->
             <div class="p-3 border-b border-darkBorder space-y-2 shrink-0">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
@@ -146,7 +147,7 @@
                         <h3 id="chatTitle" class="font-semibold text-xs sm:text-sm text-white truncate">Выберите чат</h3>
                         <div class="flex items-center space-x-1">
                             <span id="chatOnlineDot" class="w-2 h-2 rounded-full bg-emerald-500 hidden"></span>
-                            <p id="chatStatus" class="text-[10px] sm:text-xs text-slate-400 truncate">● Загрузка соединения...</p>
+                            <p id="chatStatus" class="text-[10px] sm:text-xs text-slate-400 truncate">● Реальное соединение</p>
                         </div>
                     </div>
                 </div>
@@ -158,10 +159,9 @@
             <!-- Messages Container -->
             <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
 
-            <!-- Typing Bar Status -->
-            <div id="typingBar" class="hidden px-4 py-1 text-[11px] text-cyan-400 italic bg-darkCard/30 flex items-center space-x-2">
-                <i class="fa-solid fa-pen animate-bounce"></i>
-                <span id="typingText">Собеседник печатает...</span>
+            <!-- Mute Notice -->
+            <div id="muteNotice" class="hidden p-2 bg-rose-500/10 border-t border-rose-500/20 text-rose-400 text-xs text-center font-medium">
+                <i class="fa-solid fa-volume-xmark mr-1"></i> Вы получили МУТ и не можете отправлять сообщения!
             </div>
 
             <!-- Attachment Preview Bar -->
@@ -180,31 +180,31 @@
                         <i class="fa-solid fa-paperclip text-xs"></i>
                         <input type="file" id="fileInput" onchange="handleFileSelect(event)" class="hidden">
                     </label>
-                    <textarea id="messageInput" oninput="handleTypingEvent()" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition resize-none max-h-24"></textarea>
-                    <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center justify-center transition shrink-0 shadow-lg shadow-cyan-600/20 cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                    <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition resize-none max-h-24"></textarea>
+                    <button type="button" id="sendMessageBtn" onclick="sendMessage()" class="w-10 h-10 rounded-xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center justify-center transition shrink-0 shadow-lg shadow-cyan-600/20 cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ADD FRIEND MODAL -->
+    <!-- MODAL: ADD FRIEND -->
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center">
-                <h3 id="t_modal_add_title" class="font-semibold text-sm text-white">Начать личный чат</h3>
+                <h3 class="font-semibold text-sm text-white">Начать личный чат</h3>
                 <button type="button" onclick="closeAddFriendModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             <form onsubmit="handleAddFriend(event)" class="space-y-4">
                 <div class="space-y-1">
-                    <label id="t_lbl_friend_code" class="text-xs font-medium text-slate-300">Уникальный Код Друга</label>
+                    <label class="text-xs font-medium text-slate-300">Уникальный Код Друга</label>
                     <input type="text" id="friendCodeInput" required class="w-full px-3.5 py-3 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition" placeholder="#username_1234">
                 </div>
-                <button type="submit" id="t_btn_connect" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow transition cursor-pointer">Подключиться</button>
+                <button type="submit" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow transition cursor-pointer">Подключиться</button>
             </form>
         </div>
     </div>
 
-    <!-- CREATE GROUP MODAL -->
+    <!-- MODAL: CREATE GROUP -->
     <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center">
@@ -225,51 +225,54 @@
         </div>
     </div>
 
-    <!-- EXPANDED ADMIN PANEL MODAL (WITH USER MANAGEMENT & BROADCAST) -->
+    <!-- MODAL: ADVANCED ADMIN & CREATOR CONSOLE -->
     <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="w-full max-w-2xl bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4 flex flex-col max-h-[90vh]">
+        <div class="w-full max-w-3xl bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
-                    <h3 class="font-semibold text-base text-white">Панель Администратора v2.0</h3>
+                    <i class="fa-solid fa-crown text-amber-400 text-lg" id="adminHeaderIcon"></i>
+                    <h3 class="font-semibold text-base text-white" id="adminConsoleTitle">Панель Управления</h3>
                 </div>
                 <button type="button" onclick="toggleAdminModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <!-- Admin Navigation Tabs -->
             <div class="flex space-x-2 bg-slate-900 p-1 rounded-xl border border-darkBorder">
-                <button type="button" id="adminTabUsersBtn" onclick="switchAdminSubTab('users')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition">Все пользователи</button>
+                <button type="button" id="adminTabUsersBtn" onclick="switchAdminSubTab('users')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition">Все зарегистрированные пользователи</button>
                 <button type="button" id="adminTabBroadcastBtn" onclick="switchAdminSubTab('broadcast')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Глобальная рассылка</button>
             </div>
 
-            <!-- Tab 1: Users Table & Management -->
+            <!-- Tab 1: All Registered Users -->
             <div id="adminTabUsers" class="flex-1 overflow-y-auto space-y-3 pr-1">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Зарегистрировано пользователей: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
-                    <button type="button" onclick="loadAllRegisteredUsers()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs transition"><i class="fa-solid fa-rotate-right mr-1"></i> Обновить</button>
+                    <span class="text-xs text-slate-400">Зарегистрировано аккаунтов в БД: <strong id="adminTotalUsersCount" class="text-cyan-400 font-mono">0</strong></span>
+                    <button type="button" onclick="loadAllRegisteredUsersFirebase()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-rotate-right mr-1"></i> Обновить БД</button>
                 </div>
                 <div class="border border-darkBorder rounded-xl overflow-hidden bg-slate-900/50">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="border-b border-darkBorder bg-slate-900 text-slate-400">
-                                <th class="p-2.5">Пользователь</th>
-                                <th class="p-2.5">ID Код</th>
-                                <th class="p-2.5">Роль / Статус</th>
-                                <th class="p-2.5 text-right">Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder text-slate-200">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-darkBorder bg-slate-900 text-slate-400">
+                                    <th class="p-3">Пользователь</th>
+                                    <th class="p-3">ID Код</th>
+                                    <th class="p-3">Роль</th>
+                                    <th class="p-3">Статусы</th>
+                                    <th class="p-3 text-right">Управление</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder text-slate-200">
+                                <!-- Users rendered live from Firebase -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <!-- Tab 2: Global Broadcast -->
             <div id="adminTabBroadcast" class="hidden space-y-4">
-                <p class="text-xs text-slate-400">Отправка системного сообщения во все активные чаты пользователей от лица Pulse Admin.</p>
-                <textarea id="broadcastTextInput" rows="4" placeholder="Текст системного объявления..." class="w-full p-3 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-amber-500 resize-none"></textarea>
-                <button type="button" onclick="sendGlobalBroadcast()" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition">Опубликовать рассылку всем</button>
+                <p class="text-xs text-slate-400">Отправка анонса во все чаты активных пользователей от имени Администрации.</p>
+                <textarea id="broadcastTextInput" rows="4" placeholder="Текст объявления..." class="w-full p-3 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-amber-500 resize-none"></textarea>
+                <button type="button" onclick="sendGlobalBroadcast()" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition cursor-pointer">Опубликовать рассылку</button>
             </div>
         </div>
     </div>
@@ -277,11 +280,11 @@
     <!-- TOAST NOTIFICATIONS CONTAINER -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-    <!-- FIREBASE SCRIPT -->
+    <!-- FIREBASE REALTIME BACKEND SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
@@ -301,10 +304,11 @@
 
         let authenticatedUser = null;
         let unsubscribeMessages = null;
-        let unsubscribePresence = null;
-        let typingTimeout = null;
 
-        window.MASTER_ADMIN_KEY = "1488";
+        // Keys & Hierarchy Definitions
+        window.CREATOR_KEY = "67";      // Создатель с безграничными правами
+        window.MASTER_ADMIN_KEY = "1488"; // Обычный админ
+
         window.currentLang = localStorage.getItem('pulse_chat_lang') || 'ru';
         window.currentUser = null;
         window.activeChatId = 'saved_notes';
@@ -323,21 +327,17 @@
                 lblRegUser: 'Никнейм',
                 phRegUser: 'Придумайте никнейм',
                 lblRegPass: 'Пароль',
-                lblRegAdmin: 'Ключ Администратора (опционально)',
-                phRegAdmin: 'Мастер-ключ администратора',
+                lblRegAdmin: 'Секретный ключ (опционально)',
+                phRegAdmin: 'Ключ Админа (1488) или Создателя (67)',
                 btnRegister: 'Создать аккаунт',
                 phSearchChats: 'Поиск чатов...',
                 phMessageInput: 'Введите сообщение...',
-                savedNotesName: 'Избранное (Заметки)',
-                botName: 'Pulse Помощник',
-                welcomeMsg: 'Добро пожаловать в Pulse Chat v2.0!',
-                botWelcomeMsg: 'Привет! Я обновленный Pulse Помощник.',
                 noMessages: 'Нет сообщений. Напишите сообщение ниже!',
                 errInvalidLogin: 'Неверный никнейм или пароль!',
-                errUserExists: 'Пользователь уже существует!',
-                errBanned: 'Ваш аккаунт заблокирован администратором!',
+                errUserExists: 'Пользователь с таким именем уже существует!',
+                errBanned: 'Ваш аккаунт заблокирован администрацией!',
                 toastAuthSuccess: 'Успешный вход в систему',
-                toastNoAdmin: 'У вас нет прав Администратора!',
+                toastNoAdmin: 'У вас нет прав Администратора или Создателя!',
                 toastAddSelf: 'Вы не можете добавить самого себя!',
                 toastChatAdded: 'Чат успешно добавлен!',
                 toastIdCopied: 'Ваш ID скопирован: ',
@@ -354,21 +354,17 @@
                 lblRegUser: 'Username',
                 phRegUser: 'Choose a username',
                 lblRegPass: 'Password',
-                lblRegAdmin: 'Admin Key (optional)',
-                phRegAdmin: 'Master admin key',
+                lblRegAdmin: 'Secret Key (optional)',
+                phRegAdmin: 'Admin key (1488) or Creator key (67)',
                 btnRegister: 'Create Account',
                 phSearchChats: 'Search chats...',
                 phMessageInput: 'Type a message...',
-                savedNotesName: 'Saved Messages',
-                botName: 'Pulse Assistant',
-                welcomeMsg: 'Welcome to Pulse Chat v2.0!',
-                botWelcomeMsg: 'Hello! I am Pulse Assistant v2.0.',
                 noMessages: 'No messages yet. Type a message below!',
                 errInvalidLogin: 'Invalid username or password!',
-                errUserExists: 'User already exists!',
-                errBanned: 'Your account has been banned by admin!',
+                errUserExists: 'Username already exists!',
+                errBanned: 'Your account has been banned by admins!',
                 toastAuthSuccess: 'Successfully logged in',
-                toastNoAdmin: 'You do not have Administrator permissions!',
+                toastNoAdmin: 'You do not have Admin or Creator privileges!',
                 toastAddSelf: 'You cannot add yourself!',
                 toastChatAdded: 'Chat added successfully!',
                 toastIdCopied: 'Your ID copied: ',
@@ -392,7 +388,7 @@
                 type: 'friend',
                 avatar: '📌',
                 code: '#saved_notes',
-                messages: [{ id: 1, sender: 'Система', text: translations.ru.welcomeMsg, time: getFormattedTime() }]
+                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.0!', time: getFormattedTime() }]
             },
             {
                 id: 'bot_pulse',
@@ -400,7 +396,7 @@
                 type: 'bot',
                 avatar: '🤖',
                 code: '#pulse_bot',
-                messages: [{ id: 2, sender: 'Pulse Помощник', text: translations.ru.botWelcomeMsg, time: getFormattedTime() }]
+                messages: [{ id: 2, sender: 'Pulse Помощник', text: 'Привет! Я виртуальный ассистент.', time: getFormattedTime() }]
             }
         ];
 
@@ -414,7 +410,7 @@
                     await signInAnonymously(auth);
                 }
             } catch (err) {
-                console.warn('Anonymous auth active');
+                console.warn('Anonymous auth initialized');
             }
         }
 
@@ -423,10 +419,39 @@
                 authenticatedUser = user;
                 subscribeToPublicMessages();
                 subscribeToPresence();
+                subscribeToUserStatus();
             }
         });
 
         initAuth();
+
+        // Sync currentUser state in real time for Ban/Mute
+        function subscribeToUserStatus() {
+            if (!authenticatedUser || !window.currentUser) return;
+            const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase());
+            onSnapshot(userDocRef, (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    window.currentUser.isBanned = data.isBanned || false;
+                    window.currentUser.isMuted = data.isMuted || false;
+                    window.currentUser.isCreator = data.isCreator || false;
+                    window.currentUser.isAdmin = data.isAdmin || false;
+
+                    if (window.currentUser.isBanned) {
+                        window.logout();
+                        alert('Ваш аккаунт был заблокирован!');
+                        return;
+                    }
+
+                    const muteBar = document.getElementById('muteNotice');
+                    if (window.currentUser.isMuted) {
+                        muteBar.classList.remove('hidden');
+                    } else {
+                        muteBar.classList.add('hidden');
+                    }
+                }
+            });
+        }
 
         // ONLINE PRESENCE TRACKING
         function updateMyPresence() {
@@ -436,8 +461,7 @@
                 setDoc(userDoc, {
                     name: window.currentUser.name,
                     code: window.currentUser.code,
-                    lastSeen: Date.now(),
-                    isOnline: true
+                    lastSeen: Date.now()
                 }, { merge: true });
             } catch(e) {}
         }
@@ -467,19 +491,19 @@
             if (!chat || !statusEl) return;
 
             if (chat.type === 'bot') {
-                statusEl.innerText = '● Онлайн Бот';
+                statusEl.innerText = '● Бот В сети';
                 dotEl.classList.remove('hidden');
                 return;
             }
 
             if (chat.id === 'saved_notes') {
-                statusEl.innerText = 'Личное облачное хранилище';
+                statusEl.innerText = 'Личные заметки';
                 dotEl.classList.add('hidden');
                 return;
             }
 
             if (chat.type === 'group') {
-                statusEl.innerText = `Групповой чат (${(chat.members || []).length} участников)`;
+                statusEl.innerText = `Группа (${(chat.members || []).length} участников)`;
                 dotEl.classList.add('hidden');
                 return;
             }
@@ -570,75 +594,160 @@
             } catch (err) {}
         };
 
-        // ADMIN USER MANAGEMENT & BROADCAST
-        window.loadAllRegisteredUsers = function() {
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+        // ADMIN & CREATOR CONTROL PANEL (PULL ALL USERS DIRECTLY FROM FIREBASE)
+        window.loadAllRegisteredUsersFirebase = async function() {
             const tbody = document.getElementById('adminUsersTableBody');
             const countEl = document.getElementById('adminTotalUsersCount');
             if (!tbody) return;
 
-            tbody.innerHTML = '';
-            const usersList = Object.values(registeredUsers);
-            if (countEl) countEl.innerText = usersList.length;
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500"><i class="fa-solid fa-spinner animate-spin mr-2"></i> Загрузка пользователей из облачной базы...</td></tr>';
 
-            if (usersList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">Нет зарегистрированных пользователей</td></tr>';
-                return;
+            try {
+                const usersCol = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                const snapshot = await getDocs(usersCol);
+                
+                tbody.innerHTML = '';
+                let totalCount = 0;
+
+                snapshot.forEach(docSnap => {
+                    totalCount++;
+                    const u = docSnap.data();
+                    const isOnline = window.onlineUsersMap[u.code?.toLowerCase()] || false;
+                    const isUserCreator = u.isCreator === true;
+                    const isUserAdmin = u.isAdmin === true;
+                    const isMe = window.currentUser && window.currentUser.name.toLowerCase() === u.name.toLowerCase();
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/40 transition border-b border-darkBorder/50';
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-white flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-slate-600'}"></span>
+                            ${escapeHtml(u.name)} ${isMe ? '<span class="text-[10px] text-cyan-400 font-normal">(Вы)</span>' : ''}
+                        </td>
+                        <td class="p-3 font-mono text-cyan-400 text-[11px]">${u.code || '#N/A'}</td>
+                        <td class="p-3">
+                            ${isUserCreator 
+                                ? '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400 border border-purple-500/30 font-bold">👑 CREATOR</span>' 
+                                : isUserAdmin 
+                                    ? '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold">🛡️ ADMIN</span>' 
+                                    : '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">👤 USER</span>'}
+                        </td>
+                        <td class="p-3">
+                            <div class="flex gap-1 flex-wrap">
+                                ${u.isBanned ? '<span class="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[10px] rounded font-medium">BANNED</span>' : ''}
+                                ${u.isMuted ? '<span class="px-1.5 py-0.5 bg-orange-500/20 text-orange-400 text-[10px] rounded font-medium">MUTED</span>' : ''}
+                                ${!u.isBanned && !u.isMuted ? '<span class="text-slate-500 text-[11px]">Норма</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="p-3 text-right space-x-1">
+                            ${window.canManageUser(u) ? `
+                                <button onclick="toggleUserMuteCloud('${u.name}')" class="px-2 py-1 ${u.isMuted ? 'bg-orange-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-orange-400'} text-[11px] rounded transition">
+                                    ${u.isMuted ? 'Анмут' : 'Мут'}
+                                </button>
+                                <button onclick="toggleUserBanCloud('${u.name}')" class="px-2 py-1 ${u.isBanned ? 'bg-rose-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-rose-400'} text-[11px] rounded transition">
+                                    ${u.isBanned ? 'Разбан' : 'Бан'}
+                                </button>
+                                ${window.currentUser.isCreator ? `
+                                    <button onclick="toggleAdminRoleCloud('${u.name}')" class="px-2 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-[11px] rounded transition">
+                                        ${isUserAdmin ? '-Админ' : '+Админ'}
+                                    </button>
+                                    <button onclick="deleteUserCloud('${u.name}')" class="px-2 py-1 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 text-[11px] rounded transition"><i class="fa-solid fa-trash-can"></i></button>
+                                ` : ''}
+                            ` : '<span class="text-slate-600 text-[10px]">Нет прав</span>'}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                if (countEl) countEl.innerText = totalCount;
+                if (totalCount === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">В базе данных нет зарегистрированных пользователей</td></tr>';
+                }
+            } catch (err) {
+                console.error("Firebase fetch error:", err);
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-rose-400">Ошибка загрузки списка пользователей</td></tr>';
             }
-
-            usersList.forEach(u => {
-                const isOnline = window.onlineUsersMap[u.code?.toLowerCase()] || false;
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-800/40 transition';
-                tr.innerHTML = `
-                    <td class="p-2.5 font-semibold text-white flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-slate-600'}"></span>
-                        ${escapeHtml(u.name)}
-                    </td>
-                    <td class="p-2.5 font-mono text-cyan-400 text-[11px]">${u.code}</td>
-                    <td class="p-2.5">
-                        <span class="px-1.5 py-0.5 rounded text-[10px] ${u.isAdmin ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400'}">${u.isAdmin ? 'ADMIN' : 'USER'}</span>
-                        ${u.isBanned ? '<span class="ml-1 px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[10px] rounded">BANNED</span>' : ''}
-                    </td>
-                    <td class="p-2.5 text-right space-x-1">
-                        <button onclick="toggleUserBan('${u.name}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-xs rounded transition">${u.isBanned ? 'Unban' : 'Ban'}</button>
-                        <button onclick="toggleUserRole('${u.name}')" class="px-2 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-xs rounded transition">Role</button>
-                        <button onclick="deleteUserAccount('${u.name}')" class="px-2 py-1 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 text-xs rounded transition"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
         };
 
-        window.toggleUserBan = function(username) {
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            const userKey = username.toLowerCase();
-            if (registeredUsers[userKey]) {
-                registeredUsers[userKey].isBanned = !registeredUsers[userKey].isBanned;
+        // Hierarchy Logic Checker
+        window.canManageUser = function(targetUser) {
+            if (!window.currentUser) return false;
+            if (targetUser.name.toLowerCase() === window.currentUser.name.toLowerCase()) return false; // Нельзя забанить себя
+            if (targetUser.isCreator) return false; // Создателя никто не трогает
+
+            if (window.currentUser.isCreator) return true; // Создатель управляет всеми
+            if (window.currentUser.isAdmin && !targetUser.isAdmin) return true; // Админ управляет только юзерами
+
+            return false;
+        };
+
+        window.toggleUserMuteCloud = async function(username) {
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
+                const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+                const u = registeredUsers[username.toLowerCase()] || {};
+                const newMuteState = !u.isMuted;
+
+                u.isMuted = newMuteState;
+                registeredUsers[username.toLowerCase()] = u;
                 localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
-                window.loadAllRegisteredUsers();
-                window.showToast('Статус блокировки обновлен', 'success');
-            }
+
+                await setDoc(userDocRef, { isMuted: newMuteState }, { merge: true });
+                window.loadAllRegisteredUsersFirebase();
+                window.showToast(`Статус мута пользователя ${username} изменен`, 'success');
+            } catch(e) {}
         };
 
-        window.toggleUserRole = function(username) {
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            const userKey = username.toLowerCase();
-            if (registeredUsers[userKey]) {
-                registeredUsers[userKey].isAdmin = !registeredUsers[userKey].isAdmin;
+        window.toggleUserBanCloud = async function(username) {
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
+                const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+                const u = registeredUsers[username.toLowerCase()] || {};
+                const newBanState = !u.isBanned;
+
+                u.isBanned = newBanState;
+                registeredUsers[username.toLowerCase()] = u;
                 localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
-                window.loadAllRegisteredUsers();
-                window.showToast('Роль пользователя изменена', 'success');
-            }
+
+                await setDoc(userDocRef, { isBanned: newBanState }, { merge: true });
+                window.loadAllRegisteredUsersFirebase();
+                window.showToast(`Статус бана пользователя ${username} изменен`, 'success');
+            } catch(e) {}
         };
 
-        window.deleteUserAccount = function(username) {
-            if (!confirm(`Удалить пользователя ${username}?`)) return;
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            delete registeredUsers[username.toLowerCase()];
-            localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
-            window.loadAllRegisteredUsers();
-            window.showToast('Аккаунт удален', 'success');
+        window.toggleAdminRoleCloud = async function(username) {
+            if (!window.currentUser.isCreator) return;
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
+                const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+                const u = registeredUsers[username.toLowerCase()] || {};
+                const newAdminState = !u.isAdmin;
+
+                u.isAdmin = newAdminState;
+                registeredUsers[username.toLowerCase()] = u;
+                localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+
+                await setDoc(userDocRef, { isAdmin: newAdminState }, { merge: true });
+                window.loadAllRegisteredUsersFirebase();
+                window.showToast(`Роль Админа для ${username} изменена`, 'success');
+            } catch(e) {}
+        };
+
+        window.deleteUserCloud = async function(username) {
+            if (!window.currentUser.isCreator) return;
+            if (!confirm(`Удалить пользователя ${username} навсегда?`)) return;
+
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
+                await deleteDoc(userDocRef);
+
+                const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+                delete registeredUsers[username.toLowerCase()];
+                localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+
+                window.loadAllRegisteredUsersFirebase();
+                window.showToast('Пользователь удален из системы', 'success');
+            } catch(e) {}
         };
 
         window.sendGlobalBroadcast = function() {
@@ -647,7 +756,7 @@
 
             const announcementDoc = {
                 id: Date.now(),
-                sender: '⚡ Системное Объявление',
+                sender: '⚡ Администрация',
                 text: text,
                 time: getFormattedTime()
             };
@@ -661,7 +770,7 @@
             window.renderMessages();
             window.renderChats();
             document.getElementById('broadcastTextInput').value = '';
-            window.showToast('Глобальная рассылка отправлена всем', 'success');
+            window.showToast('Объявление отправлено всем!', 'success');
         };
 
         window.switchAdminSubTab = function(tab) {
@@ -675,7 +784,7 @@
                 broadcastTab.classList.add('hidden');
                 usersBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition";
                 broadcastBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition";
-                window.loadAllRegisteredUsers();
+                window.loadAllRegisteredUsersFirebase();
             } else {
                 usersTab.classList.add('hidden');
                 broadcastTab.classList.remove('hidden');
@@ -684,13 +793,9 @@
             }
         };
 
-        // GROUP CHAT CREATION
-        window.openCreateGroupModal = function() {
-            document.getElementById('createGroupModal').classList.remove('hidden');
-        };
-        window.closeCreateGroupModal = function() {
-            document.getElementById('createGroupModal').classList.add('hidden');
-        };
+        // GROUP CREATION & DIALOGS
+        window.openCreateGroupModal = function() { document.getElementById('createGroupModal').classList.remove('hidden'); };
+        window.closeCreateGroupModal = function() { document.getElementById('createGroupModal').classList.add('hidden'); };
 
         window.handleCreateGroup = function(e) {
             e.preventDefault();
@@ -719,8 +824,13 @@
             window.showToast('Групповой чат создан', 'success');
         };
 
-        // MESSAGE & UI HANDLERS
+        // MESSAGE SENDING LOGIC (WITH MUTE CHECK)
         window.sendMessage = function() {
+            if (window.currentUser && window.currentUser.isMuted) {
+                window.showToast('Вы замучены и не можете писать сообщения!', 'error');
+                return;
+            }
+
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
 
@@ -758,7 +868,7 @@
                     chat.messages.push({
                         id: Date.now() + 1,
                         sender: chat.name,
-                        text: `⚡ Pulse Assistant: Получено сообщение ("${text || 'Файл'}").`,
+                        text: `⚡ Pulse Bot: Ответ на "${text || 'Файл'}".`,
                         time: getFormattedTime()
                     });
                     window.saveChats();
@@ -771,62 +881,78 @@
             window.clearAttachment();
         };
 
-        window.handleTypingEvent = function() {
-            if (!window.currentUser) return;
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || chat.type !== 'friend') return;
-
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {}, 2000);
-        };
-
-        window.handleLogin = function(e) {
+        // USER REGISTRATION & LOGIN WITH FIREBASE SYNC
+        window.handleLogin = async function(e) {
             e.preventDefault();
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            const account = registeredUsers[username.toLowerCase()];
 
-            if (account && account.password === password) {
-                if (account.isBanned) {
-                    window.showAuthAlert(window.t('errBanned'));
-                    return;
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
+                const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+                
+                let foundUser = null;
+                snapshot.forEach(d => {
+                    if (d.data().name.toLowerCase() === username.toLowerCase()) {
+                        foundUser = d.data();
+                    }
+                });
+
+                if (!foundUser) {
+                    const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+                    foundUser = registeredUsers[username.toLowerCase()];
                 }
-                localStorage.setItem('pulse_chat_session', JSON.stringify(account));
-                window.initUserSession(account);
-            } else {
+
+                if (foundUser && foundUser.password === password) {
+                    if (foundUser.isBanned) {
+                        window.showAuthAlert(window.t('errBanned'));
+                        return;
+                    }
+                    localStorage.setItem('pulse_chat_session', JSON.stringify(foundUser));
+                    window.initUserSession(foundUser);
+                } else {
+                    window.showAuthAlert(window.t('errInvalidLogin'));
+                }
+            } catch(err) {
                 window.showAuthAlert(window.t('errInvalidLogin'));
             }
         };
 
-        window.handleRegister = function(e) {
+        window.handleRegister = async function(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value;
             const adminKey = document.getElementById('regAdminKey').value.trim();
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            const userKey = username.toLowerCase();
 
-            if (registeredUsers[userKey]) {
-                window.showAuthAlert(window.t('errUserExists'));
-                return;
-            }
+            const isCreator = (adminKey === window.CREATOR_KEY);
+            const isAdmin = (adminKey === window.MASTER_ADMIN_KEY) || isCreator;
 
-            const isAdmin = (adminKey === window.MASTER_ADMIN_KEY);
             const newUser = {
                 id: 'usr_' + Date.now(),
                 name: username,
                 code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
                 password: password,
+                isCreator: isCreator,
                 isAdmin: isAdmin,
                 isBanned: false,
+                isMuted: false,
                 avatar: username.charAt(0).toUpperCase()
             };
 
-            registeredUsers[userKey] = newUser;
-            localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
-            localStorage.setItem('pulse_chat_session', JSON.stringify(newUser));
-            window.initUserSession(newUser);
+            try {
+                // Всегда записываем каждого зарегистрированного юзера в Firebase
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
+                await setDoc(userDocRef, newUser, { merge: true });
+
+                const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+                registeredUsers[username.toLowerCase()] = newUser;
+                localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+
+                localStorage.setItem('pulse_chat_session', JSON.stringify(newUser));
+                window.initUserSession(newUser);
+            } catch(err) {
+                console.error("Reg error:", err);
+            }
         };
 
         window.initUserSession = function(user) {
@@ -836,10 +962,25 @@
             document.getElementById('currentUserName').innerText = user.name;
             document.getElementById('currentUserAvatar').innerText = user.avatar;
             document.getElementById('currentUserCode').innerHTML = `<span>${user.code}</span> <i class="fa-regular fa-copy text-[10px]"></i>`;
-            if (user.isAdmin) {
-                document.getElementById('adminBadge').classList.remove('hidden');
-                document.getElementById('adminPanelBtn').classList.remove('hidden');
+
+            const adminBtn = document.getElementById('adminPanelBtn');
+            const adminBadge = document.getElementById('adminBadge');
+            const creatorBadge = document.getElementById('creatorBadge');
+
+            if (user.isCreator) {
+                creatorBadge.classList.remove('hidden');
+                adminBadge.classList.add('hidden');
+                adminBtn.classList.remove('hidden');
+            } else if (user.isAdmin) {
+                adminBadge.classList.remove('hidden');
+                creatorBadge.classList.add('hidden');
+                adminBtn.classList.remove('hidden');
+            } else {
+                adminBadge.classList.add('hidden');
+                creatorBadge.classList.add('hidden');
+                adminBtn.classList.add('hidden');
             }
+
             window.renderChats();
             window.selectChat(window.activeChatId);
             window.showToast(window.t('toastAuthSuccess'), 'success');
@@ -941,14 +1082,21 @@
         };
 
         window.toggleAdminModal = function() {
-            if (!window.currentUser || (!window.currentUser.isAdmin && window.currentUser.role !== 'ADMIN')) {
+            if (!window.currentUser || (!window.currentUser.isAdmin && !window.currentUser.isCreator)) {
                 window.showToast(window.t('toastNoAdmin'), 'error');
                 return;
             }
             const modal = document.getElementById('adminModal');
             modal.classList.toggle('hidden');
+
             if (!modal.classList.contains('hidden')) {
-                window.loadAllRegisteredUsers();
+                const titleEl = document.getElementById('adminConsoleTitle');
+                if (window.currentUser.isCreator) {
+                    titleEl.innerText = "Панель Создателя (Безграничный доступ)";
+                } else {
+                    titleEl.innerText = "Панель Администратора";
+                }
+                window.loadAllRegisteredUsersFirebase();
             }
         };
 
@@ -974,7 +1122,7 @@
                     avatar: '👤',
                     code: codeInput,
                     pairCode: getPairChatCode(window.currentUser.code, codeInput),
-                    messages: [{ id: Date.now(), sender: 'System', text: 'Чат создан. Подключение установлено.', time: getFormattedTime() }]
+                    messages: [{ id: Date.now(), sender: 'System', text: 'Чат создан.', time: getFormattedTime() }]
                 };
                 window.chats.push(chat);
                 window.saveChats();
