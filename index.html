@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Chat - Online Realtime Messenger</title>
+    <title>Pulse Chat v2.0 - Realtime Cloud Messenger</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -36,8 +36,6 @@
     <!-- AUTH SCREEN -->
     <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 sm:p-8 flex flex-col space-y-6 relative">
-            
-            <!-- Language Switcher Top Right -->
             <div class="absolute top-4 right-4 flex items-center space-x-1 bg-slate-900 border border-darkBorder rounded-lg p-1 text-[11px]">
                 <button type="button" onclick="setLanguage('ru')" id="langRuBtn" class="px-2 py-0.5 rounded font-semibold text-white bg-cyan-600 transition">RU</button>
                 <button type="button" onclick="setLanguage('en')" id="langEnBtn" class="px-2 py-0.5 rounded font-semibold text-slate-400 hover:text-white transition">EN</button>
@@ -47,20 +45,17 @@
                 <div class="w-14 h-14 bg-cyan-600/20 border border-cyan-500/30 rounded-2xl mx-auto flex items-center justify-center text-cyan-400 text-2xl font-bold shadow-inner">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
-                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat</h1>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.0</h1>
                 <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Онлайн Мессенджер в Реальном Времени</p>
             </div>
 
-            <!-- Tabs -->
             <div class="flex bg-slate-900 p-1 rounded-xl border border-darkBorder">
                 <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer">Вход</button>
                 <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer">Регистрация</button>
             </div>
 
-            <!-- Alert Box -->
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center"></div>
 
-            <!-- Login Form -->
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div class="space-y-1">
                     <label id="t_lbl_login_user" class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -73,7 +68,6 @@
                 <button type="submit" id="t_btn_login" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-cyan-600/20 transition-all cursor-pointer">Войти в систему</button>
             </form>
 
-            <!-- Register Form -->
             <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div class="space-y-1">
                     <label id="t_lbl_reg_user" class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -96,7 +90,6 @@
     <div class="flex-1 flex overflow-hidden relative">
         <!-- SIDEBAR -->
         <div id="sidebar" class="w-72 sm:w-80 bg-darkCard border-r border-darkBorder flex flex-col h-full absolute md:relative z-30 inset-y-0 left-0 transition-transform duration-300 transform -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
-            <!-- User Profile Header -->
             <div class="p-4 border-b border-darkBorder flex items-center justify-between shrink-0">
                 <div class="flex items-center space-x-3 overflow-hidden">
                     <div id="currentUserAvatar" class="w-10 h-10 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center font-bold text-cyan-400 text-sm shrink-0">U</div>
@@ -120,16 +113,22 @@
                 </div>
             </div>
 
-            <!-- Search & Actions -->
+            <!-- Search & Group Creation Actions -->
             <div class="p-3 border-b border-darkBorder space-y-2 shrink-0">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
                     <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-8 pr-3 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 transition">
                 </div>
-                <button type="button" onclick="openAddFriendModal()" class="w-full py-2.5 bg-cyan-600/10 hover:bg-cyan-600/20 active:bg-cyan-600/30 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 transition cursor-pointer">
-                    <i class="fa-solid fa-user-plus text-[11px]"></i>
-                    <span id="t_btn_add_friend">Добавить чат по ID</span>
-                </button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-cyan-600/10 hover:bg-cyan-600/20 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-user-plus text-[10px]"></i>
+                        <span>ЛС по ID</span>
+                    </button>
+                    <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-users text-[10px]"></i>
+                        <span>Группа</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Chat List -->
@@ -145,7 +144,10 @@
                     <div id="chatAvatar" class="w-10 h-10 rounded-xl bg-slate-800 border border-darkBorder flex items-center justify-center font-bold text-white text-xs shrink-0">💬</div>
                     <div class="overflow-hidden">
                         <h3 id="chatTitle" class="font-semibold text-xs sm:text-sm text-white truncate">Выберите чат</h3>
-                        <p id="chatStatus" class="text-[10px] sm:text-xs text-emerald-400 truncate">● Реальное облачное соединение</p>
+                        <div class="flex items-center space-x-1">
+                            <span id="chatOnlineDot" class="w-2 h-2 rounded-full bg-emerald-500 hidden"></span>
+                            <p id="chatStatus" class="text-[10px] sm:text-xs text-slate-400 truncate">● Загрузка соединения...</p>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -155,6 +157,12 @@
 
             <!-- Messages Container -->
             <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+            <!-- Typing Bar Status -->
+            <div id="typingBar" class="hidden px-4 py-1 text-[11px] text-cyan-400 italic bg-darkCard/30 flex items-center space-x-2">
+                <i class="fa-solid fa-pen animate-bounce"></i>
+                <span id="typingText">Собеседник печатает...</span>
+            </div>
 
             <!-- Attachment Preview Bar -->
             <div id="attachmentPreview" class="hidden px-4 py-2 bg-darkCard border-t border-darkBorder flex items-center justify-between shrink-0">
@@ -172,7 +180,7 @@
                         <i class="fa-solid fa-paperclip text-xs"></i>
                         <input type="file" id="fileInput" onchange="handleFileSelect(event)" class="hidden">
                     </label>
-                    <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition resize-none max-h-24"></textarea>
+                    <textarea id="messageInput" oninput="handleTypingEvent()" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500 transition resize-none max-h-24"></textarea>
                     <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-xl bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center justify-center transition shrink-0 shadow-lg shadow-cyan-600/20 cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                 </div>
             </div>
@@ -183,7 +191,7 @@
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center">
-                <h3 id="t_modal_add_title" class="font-semibold text-sm text-white">Добавить чат по ID</h3>
+                <h3 id="t_modal_add_title" class="font-semibold text-sm text-white">Начать личный чат</h3>
                 <button type="button" onclick="closeAddFriendModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
             <form onsubmit="handleAddFriend(event)" class="space-y-4">
@@ -196,27 +204,72 @@
         </div>
     </div>
 
-    <!-- ADMIN PANEL MODAL -->
-    <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="w-full max-w-lg bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4">
+    <!-- CREATE GROUP MODAL -->
+    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
-                    <h3 id="t_admin_title" class="font-semibold text-sm text-white">Панель Администратора (Spy Console)</h3>
-                </div>
-                <button type="button" onclick="toggleAdminModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
+                <h3 class="font-semibold text-sm text-white">Создать групповой чат</h3>
+                <button type="button" onclick="closeCreateGroupModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
             </div>
-            <div class="space-y-3">
+            <form onsubmit="handleCreateGroup(event)" class="space-y-4">
                 <div class="space-y-1">
-                    <label id="t_lbl_admin_search" class="text-xs font-medium text-slate-300">Поиск чата / пользователя для мониторинга</label>
-                    <div class="flex space-x-2">
-                        <input type="text" id="spyUserInput" placeholder="Введите код или имя чата..." class="flex-1 px-3.5 py-2.5 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
-                        <button type="button" onclick="loadUserMessagesSpy()" id="t_btn_admin_find" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold transition cursor-pointer">Найти</button>
-                    </div>
+                    <label class="text-xs font-medium text-slate-300">Название группы</label>
+                    <input type="text" id="groupNameInput" required class="w-full px-3.5 py-3 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Команда / Друзья">
                 </div>
-                <div id="spyMessagesContainer" class="h-60 overflow-y-auto bg-slate-900 border border-darkBorder rounded-xl p-3 space-y-2 text-xs text-slate-300">
-                    <p id="t_admin_placeholder" class="text-slate-500 text-center py-10">Введите запрос для просмотра сообщений...</p>
+                <div class="space-y-1">
+                    <label class="text-xs font-medium text-slate-300">Участники (ID через запятую)</label>
+                    <input type="text" id="groupMembersInput" class="w-full px-3.5 py-3 bg-slate-900 border border-darkBorder rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="#id1, #id2">
                 </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow transition cursor-pointer">Создать группу</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXPANDED ADMIN PANEL MODAL (WITH USER MANAGEMENT & BROADCAST) -->
+    <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
+                    <h3 class="font-semibold text-base text-white">Панель Администратора v2.0</h3>
+                </div>
+                <button type="button" onclick="toggleAdminModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="flex space-x-2 bg-slate-900 p-1 rounded-xl border border-darkBorder">
+                <button type="button" id="adminTabUsersBtn" onclick="switchAdminSubTab('users')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition">Все пользователи</button>
+                <button type="button" id="adminTabBroadcastBtn" onclick="switchAdminSubTab('broadcast')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Глобальная рассылка</button>
+            </div>
+
+            <!-- Tab 1: Users Table & Management -->
+            <div id="adminTabUsers" class="flex-1 overflow-y-auto space-y-3 pr-1">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400">Зарегистрировано пользователей: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
+                    <button type="button" onclick="loadAllRegisteredUsers()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg text-xs transition"><i class="fa-solid fa-rotate-right mr-1"></i> Обновить</button>
+                </div>
+                <div class="border border-darkBorder rounded-xl overflow-hidden bg-slate-900/50">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-darkBorder bg-slate-900 text-slate-400">
+                                <th class="p-2.5">Пользователь</th>
+                                <th class="p-2.5">ID Код</th>
+                                <th class="p-2.5">Роль / Статус</th>
+                                <th class="p-2.5 text-right">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder text-slate-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Global Broadcast -->
+            <div id="adminTabBroadcast" class="hidden space-y-4">
+                <p class="text-xs text-slate-400">Отправка системного сообщения во все активные чаты пользователей от лица Pulse Admin.</p>
+                <textarea id="broadcastTextInput" rows="4" placeholder="Текст системного объявления..." class="w-full p-3 bg-slate-900 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-amber-500 resize-none"></textarea>
+                <button type="button" onclick="sendGlobalBroadcast()" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition">Опубликовать рассылку всем</button>
             </div>
         </div>
     </div>
@@ -228,7 +281,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
@@ -248,12 +301,15 @@
 
         let authenticatedUser = null;
         let unsubscribeMessages = null;
+        let unsubscribePresence = null;
+        let typingTimeout = null;
 
         window.MASTER_ADMIN_KEY = "1488";
         window.currentLang = localStorage.getItem('pulse_chat_lang') || 'ru';
         window.currentUser = null;
         window.activeChatId = 'saved_notes';
         window.selectedAttachment = null;
+        window.onlineUsersMap = {};
 
         const translations = {
             ru: {
@@ -270,39 +326,22 @@
                 lblRegAdmin: 'Ключ Администратора (опционально)',
                 phRegAdmin: 'Мастер-ключ администратора',
                 btnRegister: 'Создать аккаунт',
-                btnAddFriend: 'Добавить чат по ID',
                 phSearchChats: 'Поиск чатов...',
                 phMessageInput: 'Введите сообщение...',
-                selectChatTitle: 'Выберите чат',
-                statusRealtime: '● Реальное облачное соединение',
-                modalAddTitle: 'Добавить чат по ID',
-                lblFriendCode: 'Уникальный Код Друга',
-                phFriendCode: '#username_1234',
-                btnConnect: 'Подключиться',
-                adminTitle: 'Панель Администратора (Spy Console)',
-                lblAdminSearch: 'Поиск чата / пользователя для мониторинга',
-                phAdminSearch: 'Введите код или имя чата...',
-                btnAdminFind: 'Найти',
-                adminPlaceholder: 'Введите запрос для просмотра сообщений...',
                 savedNotesName: 'Избранное (Заметки)',
-                savedNotesStatus: 'Личный облачный чат',
                 botName: 'Pulse Помощник',
-                botStatus: 'Онлайн Бот',
-                welcomeMsg: 'Добро пожаловать в Pulse Chat!',
-                botWelcomeMsg: 'Привет! Я встроенный бот Pulse.',
-                botResponsePrefix: '⚡ Pulse Bot: Сообщение получено',
-                botResponseSuffix: 'Все системы работают штатно!',
+                welcomeMsg: 'Добро пожаловать в Pulse Chat v2.0!',
+                botWelcomeMsg: 'Привет! Я обновленный Pulse Помощник.',
                 noMessages: 'Нет сообщений. Напишите сообщение ниже!',
                 errInvalidLogin: 'Неверный никнейм или пароль!',
                 errUserExists: 'Пользователь уже существует!',
+                errBanned: 'Ваш аккаунт заблокирован администратором!',
                 toastAuthSuccess: 'Успешный вход в систему',
                 toastNoAdmin: 'У вас нет прав Администратора!',
                 toastAddSelf: 'Вы не можете добавить самого себя!',
                 toastChatAdded: 'Чат успешно добавлен!',
                 toastIdCopied: 'Ваш ID скопирован: ',
-                toastIdCopyError: 'Не удалось скопировать ID',
-                newMsgFrom: 'Новое сообщение от ',
-                dialogNotFound: 'Диалог не найден'
+                newMsgFrom: 'Новое сообщение от '
             },
             en: {
                 subtitle: 'Online Realtime Messenger',
@@ -318,39 +357,22 @@
                 lblRegAdmin: 'Admin Key (optional)',
                 phRegAdmin: 'Master admin key',
                 btnRegister: 'Create Account',
-                btnAddFriend: 'Add Chat by ID',
                 phSearchChats: 'Search chats...',
                 phMessageInput: 'Type a message...',
-                selectChatTitle: 'Select a Chat',
-                statusRealtime: '● Live Cloud Connection',
-                modalAddTitle: 'Add Chat by ID',
-                lblFriendCode: 'Unique Friend ID',
-                phFriendCode: '#username_1234',
-                btnConnect: 'Connect',
-                adminTitle: 'Admin Console (Spy Console)',
-                lblAdminSearch: 'Search chat / user for monitoring',
-                phAdminSearch: 'Enter chat code or name...',
-                btnAdminFind: 'Search',
-                adminPlaceholder: 'Enter a query to inspect messages...',
                 savedNotesName: 'Saved Messages',
-                savedNotesStatus: 'Personal Cloud Chat',
                 botName: 'Pulse Assistant',
-                botStatus: 'Online Bot',
-                welcomeMsg: 'Welcome to Pulse Chat!',
-                botWelcomeMsg: 'Hello! I am the built-in Pulse bot.',
-                botResponsePrefix: '⚡ Pulse Bot: Received message',
-                botResponseSuffix: 'All systems operational!',
+                welcomeMsg: 'Welcome to Pulse Chat v2.0!',
+                botWelcomeMsg: 'Hello! I am Pulse Assistant v2.0.',
                 noMessages: 'No messages yet. Type a message below!',
                 errInvalidLogin: 'Invalid username or password!',
-                errUserExists: 'A user with this username already exists!',
+                errUserExists: 'User already exists!',
+                errBanned: 'Your account has been banned by admin!',
                 toastAuthSuccess: 'Successfully logged in',
                 toastNoAdmin: 'You do not have Administrator permissions!',
                 toastAddSelf: 'You cannot add yourself!',
                 toastChatAdded: 'Chat added successfully!',
-                toastIdCopied: 'Your ID was copied: ',
-                toastIdCopyError: 'Failed to copy ID',
-                newMsgFrom: 'New message from ',
-                dialogNotFound: 'Chat not found'
+                toastIdCopied: 'Your ID copied: ',
+                newMsgFrom: 'New message from '
             }
         };
 
@@ -359,7 +381,6 @@
             return (translations[lang] && translations[lang][key]) ? translations[lang][key] : (translations['ru'][key] || key);
         };
 
-        // Генератор универсального ID диалога между двумя пользователями
         function getPairChatCode(codeA, codeB) {
             return [codeA.toLowerCase(), codeB.toLowerCase()].sort().join('_');
         }
@@ -371,7 +392,6 @@
                 type: 'friend',
                 avatar: '📌',
                 code: '#saved_notes',
-                status: 'Личный облачный чат',
                 messages: [{ id: 1, sender: 'Система', text: translations.ru.welcomeMsg, time: getFormattedTime() }]
             },
             {
@@ -380,7 +400,6 @@
                 type: 'bot',
                 avatar: '🤖',
                 code: '#pulse_bot',
-                status: 'Онлайн Бот',
                 messages: [{ id: 2, sender: 'Pulse Помощник', text: translations.ru.botWelcomeMsg, time: getFormattedTime() }]
             }
         ];
@@ -395,7 +414,7 @@
                     await signInAnonymously(auth);
                 }
             } catch (err) {
-                console.warn('Fallback anonymous auth initialized');
+                console.warn('Anonymous auth active');
             }
         }
 
@@ -403,11 +422,81 @@
             if (user) {
                 authenticatedUser = user;
                 subscribeToPublicMessages();
+                subscribeToPresence();
             }
         });
 
         initAuth();
 
+        // ONLINE PRESENCE TRACKING
+        function updateMyPresence() {
+            if (!authenticatedUser || !window.currentUser) return;
+            try {
+                const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'presence', window.currentUser.code.replace('#', 'usr_'));
+                setDoc(userDoc, {
+                    name: window.currentUser.name,
+                    code: window.currentUser.code,
+                    lastSeen: Date.now(),
+                    isOnline: true
+                }, { merge: true });
+            } catch(e) {}
+        }
+
+        function subscribeToPresence() {
+            if (!authenticatedUser) return;
+            const presenceCol = collection(db, 'artifacts', appId, 'public', 'data', 'presence');
+            onSnapshot(presenceCol, (snapshot) => {
+                const now = Date.now();
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data && data.code) {
+                        const isOnline = (now - (data.lastSeen || 0)) < 45000;
+                        window.onlineUsersMap[data.code.toLowerCase()] = isOnline;
+                    }
+                });
+                updateChatHeaderOnlineStatus();
+            });
+        }
+
+        setInterval(updateMyPresence, 20000);
+
+        function updateChatHeaderOnlineStatus() {
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            const statusEl = document.getElementById('chatStatus');
+            const dotEl = document.getElementById('chatOnlineDot');
+            if (!chat || !statusEl) return;
+
+            if (chat.type === 'bot') {
+                statusEl.innerText = '● Онлайн Бот';
+                dotEl.classList.remove('hidden');
+                return;
+            }
+
+            if (chat.id === 'saved_notes') {
+                statusEl.innerText = 'Личное облачное хранилище';
+                dotEl.classList.add('hidden');
+                return;
+            }
+
+            if (chat.type === 'group') {
+                statusEl.innerText = `Групповой чат (${(chat.members || []).length} участников)`;
+                dotEl.classList.add('hidden');
+                return;
+            }
+
+            const isOnline = window.onlineUsersMap[chat.code?.toLowerCase()] || false;
+            if (isOnline) {
+                statusEl.innerText = 'Онлайн';
+                statusEl.className = 'text-[10px] sm:text-xs text-emerald-400 font-medium truncate';
+                dotEl.classList.remove('hidden');
+            } else {
+                statusEl.innerText = 'Офлайн';
+                statusEl.className = 'text-[10px] sm:text-xs text-slate-400 truncate';
+                dotEl.classList.add('hidden');
+            }
+        }
+
+        // REALTIME CLOUD MESSAGES
         function subscribeToPublicMessages() {
             if (!authenticatedUser) return;
             if (unsubscribeMessages) unsubscribeMessages();
@@ -428,16 +517,15 @@
 
         function handleCloudIncomingMessage(data) {
             if (!window.currentUser) return;
-            if (data.senderCode === window.currentUser.code) return; // Игнорировать дубли собственного сообщения
+            if (data.senderCode === window.currentUser.code) return;
 
-            // Ищем чат, с которым связано входящее сообщение
             let chat = window.chats.find(c => 
                 (c.code && c.code.toLowerCase() === data.senderCode.toLowerCase()) ||
-                (c.pairCode && c.pairCode === data.pairCode)
+                (c.pairCode && c.pairCode === data.pairCode) ||
+                (c.id === data.groupId)
             );
 
             if (!chat && data.receiverCode === window.currentUser.code) {
-                // Если чат не был создан, создаем ровно один чат
                 chat = {
                     id: 'friend_' + Date.now(),
                     name: data.senderName || 'Чат (' + data.senderCode + ')',
@@ -445,7 +533,6 @@
                     avatar: (data.senderName || 'U').charAt(0).toUpperCase(),
                     code: data.senderCode,
                     pairCode: getPairChatCode(window.currentUser.code, data.senderCode),
-                    status: '● Live Realtime',
                     messages: []
                 };
                 window.chats.push(chat);
@@ -460,13 +547,13 @@
                     if (window.activeChatId === chat.id) {
                         window.renderMessages();
                     } else {
-                        window.showToast(window.t('newMsgFrom') + (data.senderName || 'partner'));
+                        window.showToast(window.t('newMsgFrom') + (data.senderName || 'друг'));
                     }
                 }
             }
         }
 
-        window.sendCloudMessage = async function(pairCode, receiverCode, messageData) {
+        window.sendCloudMessage = async function(pairCode, receiverCode, messageData, groupId = null) {
             if (!authenticatedUser) return;
 
             try {
@@ -474,31 +561,165 @@
                 await addDoc(messagesCollection, {
                     pairCode: pairCode,
                     receiverCode: receiverCode,
+                    groupId: groupId,
                     senderCode: window.currentUser.code,
                     senderName: window.currentUser.name,
                     message: messageData,
                     timestamp: Date.now()
                 });
-            } catch (err) {
-                console.error("Cloud send error:", err);
-            }
+            } catch (err) {}
         };
 
-        window.deleteCurrentChat = function() {
-            if (window.activeChatId === 'saved_notes' || window.activeChatId === 'bot_pulse') {
-                window.showToast('Системные чаты нельзя удалить', 'error');
+        // ADMIN USER MANAGEMENT & BROADCAST
+        window.loadAllRegisteredUsers = function() {
+            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+            const tbody = document.getElementById('adminUsersTableBody');
+            const countEl = document.getElementById('adminTotalUsersCount');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            const usersList = Object.values(registeredUsers);
+            if (countEl) countEl.innerText = usersList.length;
+
+            if (usersList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">Нет зарегистрированных пользователей</td></tr>';
                 return;
             }
 
-            if (confirm('Удалить выбранный чат?')) {
-                window.chats = window.chats.filter(c => c.id !== window.activeChatId);
-                window.saveChats();
-                window.selectChat('saved_notes');
-                window.renderChats();
-                window.showToast('Чат удален', 'success');
+            usersList.forEach(u => {
+                const isOnline = window.onlineUsersMap[u.code?.toLowerCase()] || false;
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition';
+                tr.innerHTML = `
+                    <td class="p-2.5 font-semibold text-white flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-slate-600'}"></span>
+                        ${escapeHtml(u.name)}
+                    </td>
+                    <td class="p-2.5 font-mono text-cyan-400 text-[11px]">${u.code}</td>
+                    <td class="p-2.5">
+                        <span class="px-1.5 py-0.5 rounded text-[10px] ${u.isAdmin ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400'}">${u.isAdmin ? 'ADMIN' : 'USER'}</span>
+                        ${u.isBanned ? '<span class="ml-1 px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[10px] rounded">BANNED</span>' : ''}
+                    </td>
+                    <td class="p-2.5 text-right space-x-1">
+                        <button onclick="toggleUserBan('${u.name}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-xs rounded transition">${u.isBanned ? 'Unban' : 'Ban'}</button>
+                        <button onclick="toggleUserRole('${u.name}')" class="px-2 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 text-xs rounded transition">Role</button>
+                        <button onclick="deleteUserAccount('${u.name}')" class="px-2 py-1 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 text-xs rounded transition"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.toggleUserBan = function(username) {
+            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+            const userKey = username.toLowerCase();
+            if (registeredUsers[userKey]) {
+                registeredUsers[userKey].isBanned = !registeredUsers[userKey].isBanned;
+                localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+                window.loadAllRegisteredUsers();
+                window.showToast('Статус блокировки обновлен', 'success');
             }
         };
 
+        window.toggleUserRole = function(username) {
+            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+            const userKey = username.toLowerCase();
+            if (registeredUsers[userKey]) {
+                registeredUsers[userKey].isAdmin = !registeredUsers[userKey].isAdmin;
+                localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+                window.loadAllRegisteredUsers();
+                window.showToast('Роль пользователя изменена', 'success');
+            }
+        };
+
+        window.deleteUserAccount = function(username) {
+            if (!confirm(`Удалить пользователя ${username}?`)) return;
+            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+            delete registeredUsers[username.toLowerCase()];
+            localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+            window.loadAllRegisteredUsers();
+            window.showToast('Аккаунт удален', 'success');
+        };
+
+        window.sendGlobalBroadcast = function() {
+            const text = document.getElementById('broadcastTextInput').value.trim();
+            if (!text) return;
+
+            const announcementDoc = {
+                id: Date.now(),
+                sender: '⚡ Системное Объявление',
+                text: text,
+                time: getFormattedTime()
+            };
+
+            window.chats.forEach(chat => {
+                if (!chat.messages) chat.messages = [];
+                chat.messages.push(announcementDoc);
+            });
+
+            window.saveChats();
+            window.renderMessages();
+            window.renderChats();
+            document.getElementById('broadcastTextInput').value = '';
+            window.showToast('Глобальная рассылка отправлена всем', 'success');
+        };
+
+        window.switchAdminSubTab = function(tab) {
+            const usersTab = document.getElementById('adminTabUsers');
+            const broadcastTab = document.getElementById('adminTabBroadcast');
+            const usersBtn = document.getElementById('adminTabUsersBtn');
+            const broadcastBtn = document.getElementById('adminTabBroadcastBtn');
+
+            if (tab === 'users') {
+                usersTab.classList.remove('hidden');
+                broadcastTab.classList.add('hidden');
+                usersBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition";
+                broadcastBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition";
+                window.loadAllRegisteredUsers();
+            } else {
+                usersTab.classList.add('hidden');
+                broadcastTab.classList.remove('hidden');
+                broadcastBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-amber-600 text-white transition";
+                usersBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition";
+            }
+        };
+
+        // GROUP CHAT CREATION
+        window.openCreateGroupModal = function() {
+            document.getElementById('createGroupModal').classList.remove('hidden');
+        };
+        window.closeCreateGroupModal = function() {
+            document.getElementById('createGroupModal').classList.add('hidden');
+        };
+
+        window.handleCreateGroup = function(e) {
+            e.preventDefault();
+            const groupName = document.getElementById('groupNameInput').value.trim();
+            const rawMembers = document.getElementById('groupMembersInput').value;
+
+            if (!groupName) return;
+
+            const members = rawMembers.split(',').map(m => window.normalizeCode(m)).filter(Boolean);
+            members.push(window.currentUser.code);
+
+            const newGroup = {
+                id: 'grp_' + Date.now(),
+                name: groupName,
+                type: 'group',
+                avatar: '👥',
+                members: [...new Set(members)],
+                messages: [{ id: Date.now(), sender: 'Система', text: `Группа "${groupName}" создана.`, time: getFormattedTime() }]
+            };
+
+            window.chats.push(newGroup);
+            window.saveChats();
+            window.renderChats();
+            window.selectChat(newGroup.id);
+            window.closeCreateGroupModal();
+            window.showToast('Групповой чат создан', 'success');
+        };
+
+        // MESSAGE & UI HANDLERS
         window.sendMessage = function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
@@ -525,10 +746,11 @@
             window.renderMessages();
             window.renderChats();
 
-            // Если чат с пользователем — отправляем в облако через сквозной pairCode
             if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
                 const pairCode = getPairChatCode(window.currentUser.code, chat.code);
                 window.sendCloudMessage(pairCode, chat.code, newMessage);
+            } else if (chat.type === 'group') {
+                window.sendCloudMessage(null, null, newMessage, chat.id);
             }
 
             if (chat.type === 'bot') {
@@ -536,7 +758,7 @@
                     chat.messages.push({
                         id: Date.now() + 1,
                         sender: chat.name,
-                        text: `${window.t('botResponsePrefix')} ("${text || 'file'}"). ${window.t('botResponseSuffix')}`,
+                        text: `⚡ Pulse Assistant: Получено сообщение ("${text || 'Файл'}").`,
                         time: getFormattedTime()
                     });
                     window.saveChats();
@@ -549,117 +771,13 @@
             window.clearAttachment();
         };
 
-        window.handleAddFriend = function(e) {
-            e.preventDefault();
-            const codeInput = window.normalizeCode(document.getElementById('friendCodeInput').value);
-            if (!codeInput) return;
+        window.handleTypingEvent = function() {
+            if (!window.currentUser) return;
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || chat.type !== 'friend') return;
 
-            if (codeInput === window.currentUser.code) {
-                window.showToast(window.t('toastAddSelf'), 'error');
-                return;
-            }
-
-            let chat = window.chats.find(c => c.code && c.code.toLowerCase() === codeInput.toLowerCase());
-            if (!chat) {
-                chat = {
-                    id: 'friend_' + Date.now(),
-                    name: 'Чат (' + codeInput + ')',
-                    type: 'friend',
-                    avatar: '👤',
-                    code: codeInput,
-                    pairCode: getPairChatCode(window.currentUser.code, codeInput),
-                    status: window.t('statusRealtime'),
-                    messages: [{ id: Date.now(), sender: 'System', text: 'Чат создан. Подключение установлено.', time: getFormattedTime() }]
-                };
-                window.chats.push(chat);
-                window.saveChats();
-            }
-
-            window.renderChats();
-            window.selectChat(chat.id);
-            window.closeAddFriendModal();
-            window.showToast(window.t('toastChatAdded'), 'success');
-        };
-
-        // Вспомогательные функции UI
-        window.addEventListener('DOMContentLoaded', () => {
-            window.setLanguage(window.currentLang);
-            const savedUser = localStorage.getItem('pulse_chat_session');
-            if (savedUser) {
-                try {
-                    window.currentUser = JSON.parse(savedUser);
-                    window.initUserSession(window.currentUser);
-                } catch(e) {
-                    localStorage.removeItem('pulse_chat_session');
-                }
-            }
-        });
-
-        window.setLanguage = function(lang) {
-            window.currentLang = lang;
-            localStorage.setItem('pulse_chat_lang', lang);
-            document.getElementById('t_subtitle').innerText = window.t('subtitle');
-            document.getElementById('tabLoginBtn').innerText = window.t('tabLogin');
-            document.getElementById('tabRegisterBtn').innerText = window.t('tabRegister');
-            document.getElementById('t_lbl_login_user').innerText = window.t('lblLoginUser');
-            document.getElementById('loginUsername').placeholder = window.t('phLoginUser');
-            document.getElementById('t_lbl_login_pass').innerText = window.t('lblLoginPass');
-            document.getElementById('t_btn_login').innerText = window.t('btnLogin');
-            document.getElementById('t_lbl_reg_user').innerText = window.t('lblRegUser');
-            document.getElementById('regUsername').placeholder = window.t('phRegUser');
-            document.getElementById('t_lbl_reg_pass').innerText = window.t('lblRegPass');
-            document.getElementById('t_lbl_reg_admin').innerText = window.t('lblRegAdmin');
-            document.getElementById('regAdminKey').placeholder = window.t('phRegAdmin');
-            document.getElementById('t_btn_register').innerText = window.t('btnRegister');
-            document.getElementById('chatSearchInput').placeholder = window.t('phSearchChats');
-            document.getElementById('t_btn_add_friend').innerText = window.t('btnAddFriend');
-            document.getElementById('messageInput').placeholder = window.t('phMessageInput');
-            document.getElementById('t_modal_add_title').innerText = window.t('modalAddTitle');
-            document.getElementById('t_lbl_friend_code').innerText = window.t('lblFriendCode');
-            document.getElementById('t_btn_connect').innerText = window.t('btnConnect');
-            document.getElementById('t_admin_title').innerText = window.t('adminTitle');
-            document.getElementById('t_lbl_admin_search').innerText = window.t('lblAdminSearch');
-            document.getElementById('spyUserInput').placeholder = window.t('phAdminSearch');
-            document.getElementById('t_btn_admin_find').innerText = window.t('btnAdminFind');
-            window.renderChats();
-            window.selectChat(window.activeChatId);
-        };
-
-        window.toggleLanguage = function() {
-            window.setLanguage(window.currentLang === 'ru' ? 'en' : 'ru');
-        };
-
-        window.showToast = function(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-            const toast = document.createElement('div');
-            const bgColor = type === 'error' ? 'bg-rose-600 text-white' : type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-100 border border-slate-700';
-            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'} text-sm"></i> <span>${escapeHtml(message)}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
-            setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        };
-
-        window.switchAuthTab = function(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const tabLoginBtn = document.getElementById('tabLoginBtn');
-            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
-                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
-                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
-            }
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {}, 2000);
         };
 
         window.handleLogin = function(e) {
@@ -668,7 +786,12 @@
             const password = document.getElementById('loginPassword').value;
             const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
             const account = registeredUsers[username.toLowerCase()];
+
             if (account && account.password === password) {
+                if (account.isBanned) {
+                    window.showAuthAlert(window.t('errBanned'));
+                    return;
+                }
                 localStorage.setItem('pulse_chat_session', JSON.stringify(account));
                 window.initUserSession(account);
             } else {
@@ -696,7 +819,7 @@
                 code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
                 password: password,
                 isAdmin: isAdmin,
-                role: isAdmin ? 'ADMIN' : 'USER',
+                isBanned: false,
                 avatar: username.charAt(0).toUpperCase()
             };
 
@@ -706,25 +829,10 @@
             window.initUserSession(newUser);
         };
 
-        window.showAuthAlert = function(msg) {
-            const alertBox = document.getElementById('authAlert');
-            if (alertBox) {
-                alertBox.textContent = msg;
-                alertBox.classList.remove('hidden');
-            }
-        };
-
-        window.normalizeCode = function(code) {
-            if (!code) return '';
-            code = code.trim();
-            if (!code.startsWith('#')) code = '#' + code;
-            return code;
-        };
-
         window.initUserSession = function(user) {
             window.currentUser = user;
-            const authScreen = document.getElementById('authScreen');
-            if (authScreen) authScreen.classList.add('hidden');
+            updateMyPresence();
+            document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('currentUserName').innerText = user.name;
             document.getElementById('currentUserAvatar').innerText = user.avatar;
             document.getElementById('currentUserCode').innerHTML = `<span>${user.code}</span> <i class="fa-regular fa-copy text-[10px]"></i>`;
@@ -777,10 +885,24 @@
                 const lastMsgText = lastMsg ? (lastMsg.text || 'Файл') : 'Нет сообщений';
                 const lastMsgTime = lastMsg ? lastMsg.time : '';
                 const isActive = chat.id === window.activeChatId;
+                const isOnline = window.onlineUsersMap[chat.code?.toLowerCase()] || false;
+
                 const item = document.createElement('div');
                 item.className = `p-2.5 rounded-xl cursor-pointer transition flex items-center space-x-3 ${isActive ? 'bg-cyan-600/20 border border-cyan-500/30' : 'hover:bg-slate-800/50'}`;
                 item.onclick = () => window.selectChat(chat.id);
-                item.innerHTML = `<div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-white text-xs shrink-0 uppercase">${chat.avatar}</div><div class="flex-1 overflow-hidden"><div class="flex justify-between items-center mb-0.5"><h4 class="font-semibold text-slate-200 text-xs truncate">${chat.name}</h4><span class="text-[10px] text-slate-500">${lastMsgTime}</span></div><p class="text-[11px] text-slate-400 truncate">${escapeHtml(lastMsgText)}</p></div>`;
+                item.innerHTML = `
+                    <div class="relative">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-white text-xs shrink-0 uppercase">${chat.avatar}</div>
+                        ${chat.type === 'friend' && isOnline ? '<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-darkCard rounded-full"></span>' : ''}
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <div class="flex justify-between items-center mb-0.5">
+                            <h4 class="font-semibold text-slate-200 text-xs truncate">${chat.name}</h4>
+                            <span class="text-[10px] text-slate-500">${lastMsgTime}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 truncate">${escapeHtml(lastMsgText)}</p>
+                    </div>
+                `;
                 chatListEl.appendChild(item);
             });
         };
@@ -791,8 +913,8 @@
             if (!chat) return;
 
             document.getElementById('chatTitle').innerText = chat.name;
-            document.getElementById('chatStatus').innerText = chat.status || window.t('statusRealtime');
             document.getElementById('chatAvatar').innerText = chat.avatar;
+            updateChatHeaderOnlineStatus();
 
             window.renderMessages();
             window.renderChats();
@@ -803,37 +925,140 @@
             }
         };
 
+        window.deleteCurrentChat = function() {
+            if (window.activeChatId === 'saved_notes' || window.activeChatId === 'bot_pulse') {
+                window.showToast('Системные чаты нельзя удалить', 'error');
+                return;
+            }
+
+            if (confirm('Удалить выбранный чат?')) {
+                window.chats = window.chats.filter(c => c.id !== window.activeChatId);
+                window.saveChats();
+                window.selectChat('saved_notes');
+                window.renderChats();
+                window.showToast('Чат удален', 'success');
+            }
+        };
+
         window.toggleAdminModal = function() {
             if (!window.currentUser || (!window.currentUser.isAdmin && window.currentUser.role !== 'ADMIN')) {
                 window.showToast(window.t('toastNoAdmin'), 'error');
                 return;
             }
-            document.getElementById('adminModal').classList.toggle('hidden');
-        };
-
-        window.loadUserMessagesSpy = function() {
-            const query = document.getElementById('spyUserInput').value.trim().toLowerCase();
-            const spyContainer = document.getElementById('spyMessagesContainer');
-            if (!spyContainer) return;
-            spyContainer.innerHTML = '';
-            if (!query) return;
-
-            const chat = window.chats.find(c => c.code && c.code.toLowerCase().includes(query) || c.name.toLowerCase().includes(query) || c.id === query);
-            if (!chat || !chat.messages || chat.messages.length === 0) {
-                spyContainer.innerHTML = `<p class="text-rose-400 text-center text-[11px]">${window.t('dialogNotFound')}</p>`;
-                return;
+            const modal = document.getElementById('adminModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                window.loadAllRegisteredUsers();
             }
-
-            chat.messages.forEach(m => {
-                const row = document.createElement('div');
-                row.className = 'p-1.5 rounded bg-slate-950 border border-slate-800 text-[11px]';
-                row.innerHTML = `<strong class="text-amber-400">${m.sender}:</strong> <span class="text-slate-200">${escapeHtml(m.text || '[Файл]')}</span> <span class="text-slate-500 text-[9px] float-right">${m.time}</span>`;
-                spyContainer.appendChild(row);
-            });
         };
 
         window.openAddFriendModal = function() { document.getElementById('addFriendModal').classList.remove('hidden'); };
         window.closeAddFriendModal = function() { document.getElementById('addFriendModal').classList.add('hidden'); };
+
+        window.handleAddFriend = function(e) {
+            e.preventDefault();
+            const codeInput = window.normalizeCode(document.getElementById('friendCodeInput').value);
+            if (!codeInput) return;
+
+            if (codeInput === window.currentUser.code) {
+                window.showToast(window.t('toastAddSelf'), 'error');
+                return;
+            }
+
+            let chat = window.chats.find(c => c.code && c.code.toLowerCase() === codeInput.toLowerCase());
+            if (!chat) {
+                chat = {
+                    id: 'friend_' + Date.now(),
+                    name: 'Чат (' + codeInput + ')',
+                    type: 'friend',
+                    avatar: '👤',
+                    code: codeInput,
+                    pairCode: getPairChatCode(window.currentUser.code, codeInput),
+                    messages: [{ id: Date.now(), sender: 'System', text: 'Чат создан. Подключение установлено.', time: getFormattedTime() }]
+                };
+                window.chats.push(chat);
+                window.saveChats();
+            }
+
+            window.renderChats();
+            window.selectChat(chat.id);
+            window.closeAddFriendModal();
+            window.showToast(window.t('toastChatAdded'), 'success');
+        };
+
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-rose-600 text-white' : type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-100 border border-slate-700';
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'} text-sm"></i> <span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
+
+        window.switchAuthTab = function(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabLoginBtn = document.getElementById('tabLoginBtn');
+            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
+                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
+                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
+            }
+        };
+
+        window.showAuthAlert = function(msg) {
+            const alertBox = document.getElementById('authAlert');
+            if (alertBox) {
+                alertBox.textContent = msg;
+                alertBox.classList.remove('hidden');
+            }
+        };
+
+        window.setLanguage = function(lang) {
+            window.currentLang = lang;
+            localStorage.setItem('pulse_chat_lang', lang);
+            document.getElementById('t_subtitle').innerText = window.t('subtitle');
+            document.getElementById('tabLoginBtn').innerText = window.t('tabLogin');
+            document.getElementById('tabRegisterBtn').innerText = window.t('tabRegister');
+            document.getElementById('t_lbl_login_user').innerText = window.t('lblLoginUser');
+            document.getElementById('loginUsername').placeholder = window.t('phLoginUser');
+            document.getElementById('t_lbl_login_pass').innerText = window.t('lblLoginPass');
+            document.getElementById('t_btn_login').innerText = window.t('btnLogin');
+            document.getElementById('t_lbl_reg_user').innerText = window.t('lblRegUser');
+            document.getElementById('regUsername').placeholder = window.t('phRegUser');
+            document.getElementById('t_lbl_reg_pass').innerText = window.t('lblRegPass');
+            document.getElementById('t_lbl_reg_admin').innerText = window.t('lblRegAdmin');
+            document.getElementById('regAdminKey').placeholder = window.t('phRegAdmin');
+            document.getElementById('t_btn_register').innerText = window.t('btnRegister');
+            document.getElementById('chatSearchInput').placeholder = window.t('phSearchChats');
+            document.getElementById('messageInput').placeholder = window.t('phMessageInput');
+            window.renderChats();
+            window.selectChat(window.activeChatId);
+        };
+
+        window.toggleLanguage = function() {
+            window.setLanguage(window.currentLang === 'ru' ? 'en' : 'ru');
+        };
+
+        window.normalizeCode = function(code) {
+            if (!code) return '';
+            code = code.trim();
+            if (!code.startsWith('#')) code = '#' + code;
+            return code;
+        };
 
         window.handleKeyDown = function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -901,6 +1126,19 @@
             if (!text) return '';
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.setLanguage(window.currentLang);
+            const savedUser = localStorage.getItem('pulse_chat_session');
+            if (savedUser) {
+                try {
+                    window.currentUser = JSON.parse(savedUser);
+                    window.initUserSession(window.currentUser);
+                } catch(e) {
+                    localStorage.removeItem('pulse_chat_session');
+                }
+            }
+        });
     </script>
 </body>
 </html>
