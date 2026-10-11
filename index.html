@@ -107,6 +107,7 @@
 
         <!-- 2. MESSAGES SECTION -->
         <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative">
+            <!-- Sidebar Chats -->
             <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-25 inset-y-0 left-0 transition-transform">
                 <div class="p-3 border-b border-[#1e293b] space-y-2 shrink-0">
                     <div class="relative">
@@ -125,10 +126,12 @@
                 <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
             </div>
 
+            <!-- Active Chat Pane -->
             <div id="chatPane" class="flex-1 flex flex-col h-full bg-[#090d16] overflow-hidden relative z-10">
                 <div class="h-14 border-b border-[#1e293b] px-4 flex items-center justify-between bg-[#131c2e]/50 backdrop-blur shrink-0">
                     <div class="flex items-center space-x-3 overflow-hidden">
-                        <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                        <!-- Кнопка выхода из чата (назад к списку) -->
+                        <button type="button" onclick="exitActiveChat()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
                         <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs shrink-0">🤖</div>
                         <div>
                             <h3 id="chatTitle" class="font-semibold text-xs text-white truncate">Pulse Помощник (ИИ)</h3>
@@ -140,15 +143,6 @@
 
                 <div class="relative flex-1 flex flex-col overflow-hidden">
                     <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-                </div>
-
-                <!-- Action Bar (Reply/Edit) -->
-                <div id="inputActionBar" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
-                    <div class="flex items-center space-x-2 text-xs text-indigo-400 truncate">
-                        <i id="inputActionIcon" class="fa-solid fa-reply"></i>
-                        <span id="inputActionText" class="truncate">Действие</span>
-                    </div>
-                    <button type="button" onclick="cancelInputAction()" class="text-slate-400 hover:text-rose-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
                 <!-- Attachment Preview -->
@@ -174,7 +168,7 @@
             </div>
         </div>
 
-        <!-- 3. SETTINGS & FULL ADMIN SECTION -->
+        <!-- 3. SETTINGS & FULL ADMIN SECTION (ВСЕ 25 ИНСТРУМЕНТОВ) -->
         <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 hidden max-w-4xl mx-auto w-full space-y-6">
             <div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
                 <div class="flex items-center space-x-3.5">
@@ -191,9 +185,9 @@
                 <button onclick="logout()" class="px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Выйти</button>
             </div>
 
-            <!-- ВСТРОЕННАЯ АДМИН ПАНЕЛЬ (ВСЕ 25 ИНСТРУМЕНТОВ) -->
+            <!-- ПОЛНАЯ ПАНЕЛЬ АДМИНИСТРАТОРА (25 КНОПОК) -->
             <div id="adminPanelBox" class="hidden bg-[#131c2e] border border-amber-500/30 rounded-2xl p-5 space-y-4 shadow-xl">
-                <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора и Создателя (25 Инструментов)</h3>
+                <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора и Создателя (Все 25 инструментов)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
                     <button onclick="adminTool('cache')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">1. Очистка кэша</button>
                     <button onclick="adminTool('resetChats')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">2. Сброс чатов</button>
@@ -213,7 +207,7 @@
                     <button onclick="showToast('OLED активен', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">16. OLED тема</button>
                     <button onclick="showToast('Язык сброшен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">17. Сброс языка</button>
                     <button onclick="showToast('Запрос паролей отправлен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">18. Сброс паролей</button>
-                    <!-- ОПЦИИ СОЗДАТЕЛЯ (КЛЮЧ 67) -->
+                    <!-- КНОПКИ СОЗДАТЕЛЯ (КЛЮЧ 67) -->
                     <button onclick="creatorTool('unbanAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">19. [Creator] Снять баны</button>
                     <button onclick="creatorTool('superAdmin')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">20. [Creator] Права 67</button>
                     <button onclick="creatorTool('clearCloud')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">21. [Creator] Очистка облака</button>
@@ -239,7 +233,7 @@
         </div>
     </div>
 
-    <!-- MODAL: СОЗДАНИЕ ПОСТА В ЛЕНТЕ -->
+    <!-- MODAL: СОЗДАНИЕ ПОСТА -->
     <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-[#1e293b] pb-3">
@@ -251,7 +245,16 @@
         </div>
     </div>
 
-    <!-- LIGHTBOX ДЛЯ ФОТО -->
+    <!-- MODAL: ДОБАВИТЬ ДРУГА / ГРУППУ -->
+    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Добавить в ЛС</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
+            <input type="text" id="friendCodeInput" placeholder="#username_1234" class="w-full px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white">
+            <button onclick="handleAddFriend()" class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-semibold">Подключиться</button>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX -->
     <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
         <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl">
     </div>
@@ -265,12 +268,10 @@
 
         window.currentUser = null;
         window.activeChatId = 'pulse_bot';
-        window.editingMsgId = null;
-        window.replyingToMsg = null;
         window.selectedAttachment = null;
 
         window.posts = JSON.parse(localStorage.getItem('pulse_posts_db') || '[]') || [
-            { id: 1, author: 'Pulse System', text: 'Добро пожаловать в обновленную версию Pulse v4.5!', time: '12:00' }
+            { id: 1, author: 'Pulse System', text: 'Добро пожаловать в Pulse v4.5!', time: '12:00' }
         ];
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
@@ -278,7 +279,7 @@
             { id: 'saved_notes', name: 'Избранное', avatar: '📌', messages: [{ id: 2, sender: 'Система', text: 'Личные заметки', timestamp: Date.now() }] }
         ];
 
-        // ИСПРАВЛЕННОЕ ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК С ПОДСВЕТКОЙ
+        // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК АВТОРИЗАЦИИ С ЦВЕТОМ
         window.switchAuthTab = function(tab) {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
@@ -300,17 +301,13 @@
             }
         };
 
-        // НАДЕЖНАЯ РЕГИСТРАЦИЯ И ВХОД
         window.handleRegister = function(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value.trim();
             const key = document.getElementById('regAdminKey').value.trim();
 
-            if (!username || !password) {
-                showAlert('Заполните логин и пароль!');
-                return;
-            }
+            if (!username || !password) { showAlert('Заполните логин и пароль!'); return; }
 
             const isCreator = (key === CREATOR_KEY);
             const isAdmin = (key === ADMIN_KEY) || isCreator;
@@ -380,12 +377,9 @@
             selectChat(window.activeChatId);
         }
 
-        window.logout = function() {
-            localStorage.removeItem('pulse_session');
-            location.reload();
-        };
+        window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
 
-        // СООБЩЕНИЯ С ФИКСИРОВАННОЙ СОРТИРОВКОЙ ПО TIMESTAMP
+        // ОТПРАВКА СООБЩЕНИЙ СО СТРОГОЙ СОРТИРОВКОЙ
         window.sendMessage = function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
@@ -396,29 +390,20 @@
 
             const now = Date.now();
             chat.messages.push({
-                id: now,
-                sender: window.currentUser.name,
-                text: text,
-                file: window.selectedAttachment,
-                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                timestamp: now
+                id: now, sender: window.currentUser.name, text: text, file: window.selectedAttachment,
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: now
             });
 
             chat.messages.sort((a, b) => a.timestamp - b.timestamp);
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
 
-            input.value = '';
-            clearAttachment();
-            renderMessages();
+            input.value = ''; clearAttachment(); renderMessages();
 
             if (chat.id === 'pulse_bot') {
                 setTimeout(() => {
                     chat.messages.push({
-                        id: Date.now(),
-                        sender: 'Pulse Бот',
-                        text: `Принято: «${text}». Все системы работают безупречно!`,
-                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                        timestamp: Date.now()
+                        id: Date.now(), sender: 'Pulse Бот', text: `Ответ ИИ на: «${text}». Всё работает отлично!`,
+                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: Date.now()
                     });
                     chat.messages.sort((a, b) => a.timestamp - b.timestamp);
                     localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
@@ -471,41 +456,50 @@
             document.getElementById('chatAvatar').innerText = chat.avatar;
             renderMessages();
             renderChats();
+
+            // Показываем чат на мобильных устройствах
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebarChats').classList.add('-translate-x-full');
+            }
         }
 
-        // ЛЕНТА ПУБЛИКАЦИЙ
+        // КНОПКА ВЫХОДА ИЗ ЧАТА (НАЗАД К СПИСКУ ЧАТОВ)
+        window.exitActiveChat = function() {
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebarChats').classList.remove('-translate-x-full');
+            }
+        };
+
+        window.deleteCurrentChat = function() {
+            if (window.activeChatId === 'pulse_bot' || window.activeChatId === 'saved_notes') return;
+            window.chats = window.chats.filter(c => c.id !== window.activeChatId);
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            selectChat('pulse_bot');
+        };
+
+        // ЛЕНТА
         window.openCreatePostModal = function() { document.getElementById('createPostModal').classList.remove('hidden'); };
         window.closeCreatePostModal = function() { document.getElementById('createPostModal').classList.add('hidden'); };
-
         window.submitPost = function() {
             const text = document.getElementById('postTextInput').value.trim();
             if (!text) return;
             window.posts.unshift({ id: Date.now(), author: window.currentUser.name, text: text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
             localStorage.setItem('pulse_posts_db', JSON.stringify(window.posts));
-            document.getElementById('postTextInput').value = '';
-            closeCreatePostModal();
-            renderPosts();
+            document.getElementById('postTextInput').value = ''; closeCreatePostModal(); renderPosts();
             showToast('Пост опубликован!', 'success');
         };
-
         function renderPosts() {
             const container = document.getElementById('feedContainer');
             container.innerHTML = '';
             window.posts.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'bg-[#131c2e] border border-[#1e293b] rounded-2xl p-4 space-y-2 shadow-lg';
-                card.innerHTML = `
-                    <div class="flex items-center space-x-2">
-                        <span class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs">${p.author.charAt(0).toUpperCase()}</span>
-                        <div><h4 class="font-semibold text-xs text-white">${escapeHtml(p.author)}</h4><span class="text-[10px] text-slate-500">${p.time}</span></div>
-                    </div>
-                    <p class="text-xs text-slate-200 whitespace-pre-wrap">${escapeHtml(p.text)}</p>
-                `;
+                card.innerHTML = `<div class="flex items-center space-x-2"><span class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs">${p.author.charAt(0).toUpperCase()}</span><div><h4 class="font-semibold text-xs text-white">${escapeHtml(p.author)}</h4><span class="text-[10px] text-slate-500">${p.time}</span></div></div><p class="text-xs text-slate-200 whitespace-pre-wrap">${escapeHtml(p.text)}</p>`;
                 container.appendChild(card);
             });
         }
 
-        // НАВИГАЦИЯ МЕЖДУ СЕКЦИЯМИ
+        // НАВИГАЦИЯ МЕЖДУ ВКЛАДКАМИ
         window.switchSection = function(sec) {
             document.getElementById('sectionFeed').classList.toggle('hidden', sec !== 'feed');
             document.getElementById('sectionMessages').classList.toggle('hidden', sec !== 'messages');
@@ -516,7 +510,23 @@
             document.getElementById('navBtnSettings').className = sec === 'settings' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
         };
 
-        // ВПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        window.openAddFriendModal = function() { document.getElementById('addFriendModal').classList.remove('hidden'); };
+        window.closeAddFriendModal = function() { document.getElementById('addFriendModal').classList.add('hidden'); };
+        window.handleAddFriend = function() {
+            const code = document.getElementById('friendCodeInput').value.trim();
+            if(!code) return;
+            window.chats.push({ id: 'friend_'+Date.now(), name: 'ЛС ('+code+')', type: 'friend', avatar: '👤', messages: [] });
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            renderChats(); closeAddFriendModal(); showToast('Чат добавлен', 'success');
+        };
+        window.openCreateGroupModal = function() {
+            const name = prompt('Название группы:');
+            if(!name) return;
+            window.chats.push({ id: 'grp_'+Date.now(), name: name, type: 'group', avatar: '👥', messages: [] });
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            renderChats(); showToast('Группа создана', 'success');
+        };
+
         window.handleFileSelect = function(e) {
             const file = e.target.files[0];
             if (!file) return;
