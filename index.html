@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Chat v2.6 - Ultimate Edition</title>
+    <title>Pulse Chat v2.7 - Ultimate Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -30,6 +30,7 @@
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
         button, input, textarea { -webkit-appearance: none; }
         .msg-group:hover .msg-delete-btn { opacity: 1; }
+        .chat-item:hover .chat-pin-btn { opacity: 1; }
     </style>
 </head>
 <body class="bg-darkBg text-slate-100 h-full overflow-hidden flex flex-col select-none">
@@ -46,7 +47,7 @@
                 <div class="w-14 h-14 bg-cyan-600/20 border border-cyan-500/30 rounded-2xl mx-auto flex items-center justify-center text-cyan-400 text-2xl font-bold shadow-inner">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
-                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.6</h1>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.7</h1>
                 <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Онлайн Мессенджер в Реальном Времени</p>
             </div>
 
@@ -99,6 +100,7 @@
                             <h3 id="currentUserName" class="font-semibold text-xs text-white truncate">Пользователь</h3>
                             <span id="creatorBadge" class="hidden px-1.5 py-0.5 bg-purple-500/20 border border-purple-500/30 text-purple-400 text-[9px] rounded font-bold uppercase">Creator</span>
                             <span id="adminBadge" class="hidden px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[9px] rounded font-semibold uppercase">Admin</span>
+                            <span id="testerBadge" class="hidden px-1.5 py-0.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[9px] rounded font-semibold uppercase">Tester</span>
                         </div>
                         <button type="button" onclick="copyMyCode()" id="currentUserCode" class="text-[10px] text-slate-400 hover:text-cyan-400 transition flex items-center space-x-1 mt-0.5 truncate cursor-pointer">
                             <span>#id</span> <i class="fa-regular fa-copy text-[9px]"></i>
@@ -155,8 +157,13 @@
                 </div>
             </div>
 
-            <!-- Messages Container -->
-            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+            <!-- Messages Container with Scroll-to-bottom button -->
+            <div class="relative flex-1 flex flex-col overflow-hidden">
+                <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+                <button id="scrollDownBtn" onclick="scrollToBottom()" class="hidden absolute bottom-4 right-6 w-9 h-9 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-darkBorder rounded-full shadow-xl flex items-center justify-center transition cursor-pointer z-20">
+                    <i class="fa-solid fa-arrow-down text-xs"></i>
+                </button>
+            </div>
 
             <!-- Mute Notice -->
             <div id="muteNotice" class="hidden p-2 bg-rose-500/10 border-t border-rose-500/20 text-rose-400 text-xs text-center font-medium">
@@ -263,7 +270,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ADVANCED ADMIN & CREATOR CONSOLE (EXACTLY 25 FUNCTIONS) -->
+    <!-- MODAL: ADVANCED ADMIN & CREATOR CONSOLE -->
     <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="w-full max-w-5xl bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-6 space-y-4 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3">
@@ -303,7 +310,6 @@
                 </div>
             </div>
 
-            <!-- Tab 2: Exactly 25 Admin & Creator Functions -->
             <div id="adminTabTools" class="hidden flex-1 overflow-y-auto space-y-4 pr-1">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div class="bg-slate-900 border border-darkBorder p-3 rounded-xl flex flex-col justify-between space-y-2">
@@ -404,7 +410,7 @@
                         <button onclick="creatorToolKillSwitch()" class="py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-medium transition">Отключить</button>
                     </div>
                     <div class="bg-purple-950/20 border border-purple-500/30 p-3 rounded-xl flex flex-col justify-between space-y-2">
-                        <div><h4 class="font-semibold text-purple-300 text-xs">25. [Creator] Ре перезагрузка ядра</h4><p class="text-[10px] text-slate-400">Полный рестарт соединения</p></div>
+                        <div><h4 class="font-semibold text-purple-300 text-xs">25. [Creator] Перезагрузка ядра</h4><p class="text-[10px] text-slate-400">Полный рестарт соединения</p></div>
                         <button onclick="location.reload()" class="py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-medium transition">Перезагрузка</button>
                     </div>
                 </div>
@@ -448,12 +454,14 @@
 
         window.CREATOR_KEY = "67";      
         window.MASTER_ADMIN_KEY = "1488"; 
+        window.TESTER_KEY = "test";
 
         window.currentLang = localStorage.getItem('pulse_chat_lang') || 'ru';
         window.currentUser = null;
         window.activeChatId = 'saved_notes';
         window.selectedAttachment = null;
         window.onlineUsersMap = {};
+        window.lastSeenMap = {};
 
         const translations = {
             ru: {
@@ -524,7 +532,9 @@
                 type: 'friend',
                 avatar: '📌',
                 code: '#saved_notes',
-                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.6!', time: getFormattedTime() }]
+                isPinned: true,
+                unreadCount: 0,
+                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.7!', time: getFormattedTime() }]
             },
             {
                 id: 'bot_pulse',
@@ -532,6 +542,8 @@
                 type: 'bot',
                 avatar: '🤖',
                 code: '#pulse_bot',
+                isPinned: false,
+                unreadCount: 0,
                 messages: [{ id: 2, sender: 'Pulse Помощник', text: 'Привет! Я виртуальный ассистент.', time: getFormattedTime() }]
             }
         ];
@@ -569,6 +581,7 @@
                     window.currentUser.isMuted = data.isMuted || false;
                     window.currentUser.isCreator = data.isCreator || false;
                     window.currentUser.isAdmin = data.isAdmin || false;
+                    window.currentUser.isTester = data.isTester || false;
 
                     if (window.currentUser.isBanned) {
                         window.logout();
@@ -607,7 +620,9 @@
                     const data = docSnap.data();
                     if (data && data.code) {
                         const isOnline = (now - (data.lastSeen || 0)) < 45000;
-                        window.onlineUsersMap[data.code.toLowerCase()] = isOnline;
+                        const codeKey = data.code.toLowerCase();
+                        window.onlineUsersMap[codeKey] = isOnline;
+                        window.lastSeenMap[codeKey] = data.lastSeen || 0;
                     }
                 });
                 updateChatHeaderOnlineStatus();
@@ -640,13 +655,21 @@
                 return;
             }
 
-            const isOnline = window.onlineUsersMap[chat.code?.toLowerCase()] || false;
+            const codeKey = chat.code?.toLowerCase();
+            const isOnline = window.onlineUsersMap[codeKey] || false;
             if (isOnline) {
                 statusEl.innerText = 'Онлайн';
                 statusEl.className = 'text-[10px] sm:text-xs text-emerald-400 font-medium truncate';
                 dotEl.classList.remove('hidden');
             } else {
-                statusEl.innerText = 'Офлайн';
+                const lastSeenTs = window.lastSeenMap[codeKey];
+                if (lastSeenTs) {
+                    const d = new Date(lastSeenTs);
+                    const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                    statusEl.innerText = `Был(а) в сети в ${timeStr}`;
+                } else {
+                    statusEl.innerText = 'Офлайн';
+                }
                 statusEl.className = 'text-[10px] sm:text-xs text-slate-400 truncate';
                 dotEl.classList.add('hidden');
             }
@@ -688,6 +711,8 @@
                     avatar: (data.senderName || 'U').charAt(0).toUpperCase(),
                     code: data.senderCode,
                     pairCode: getPairChatCode(window.currentUser.code, data.senderCode),
+                    isPinned: false,
+                    unreadCount: 0,
                     messages: []
                 };
                 window.chats.push(chat);
@@ -697,6 +722,9 @@
                 if (!chat.messages) chat.messages = [];
                 if (!chat.messages.some(m => m.id === data.message.id)) {
                     chat.messages.push(data.message);
+                    if (window.activeChatId !== chat.id) {
+                        chat.unreadCount = (chat.unreadCount || 0) + 1;
+                    }
                     window.saveChats();
                     window.renderChats();
                     if (window.activeChatId === chat.id) {
@@ -824,6 +852,26 @@
             document.getElementById('fileInput').value = '';
         };
 
+        // Scroll management & Scroll-down button
+        const msgContainer = document.getElementById('messagesContainer');
+        if (msgContainer) {
+            msgContainer.addEventListener('scroll', function() {
+                const btn = document.getElementById('scrollDownBtn');
+                if (!btn) return;
+                const dist = this.scrollHeight - this.scrollTop - this.clientHeight;
+                if (dist > 150) {
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+        }
+
+        window.scrollToBottom = function() {
+            const container = document.getElementById('messagesContainer');
+            if (container) container.scrollTop = container.scrollHeight;
+        };
+
         window.renderMessages = function() {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
@@ -898,6 +946,7 @@
 
                     const isUserCreator = u.isCreator === true;
                     const isUserAdmin = u.isAdmin === true;
+                    const isUserTester = u.isTester === true;
                     const isMe = window.currentUser && window.currentUser.name.toLowerCase() === u.name.toLowerCase();
 
                     const tr = document.createElement('tr');
@@ -913,7 +962,9 @@
                                 ? '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400 border border-purple-500/30 font-bold">👑 CREATOR</span>' 
                                 : isUserAdmin 
                                     ? '<span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold">🛡️ ADMIN</span>' 
-                                    : '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">👤 USER</span>'}
+                                    : isUserTester 
+                                        ? '<span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-semibold">🧪 TESTER</span>'
+                                        : '<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">👤 USER</span>'}
                         </td>
                         <td class="p-3">
                             <div class="flex gap-1 flex-wrap items-center">
@@ -950,6 +1001,7 @@
 
         window.canManageUser = function(targetUser) {
             if (!window.currentUser) return false;
+            if (window.currentUser.isTester || (!window.currentUser.isAdmin && !window.currentUser.isCreator)) return false;
             if (targetUser.name.toLowerCase() === window.currentUser.name.toLowerCase()) return false; 
             if (targetUser.isCreator) return false; 
 
@@ -960,6 +1012,7 @@
         };
 
         window.toggleUserMuteCloud = async function(username) {
+            if (!window.currentUser || window.currentUser.isTester) return;
             try {
                 const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
                 const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
@@ -977,6 +1030,7 @@
         };
 
         window.toggleUserBanCloud = async function(username) {
+            if (!window.currentUser || window.currentUser.isTester) return;
             try {
                 const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
                 const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
@@ -1023,7 +1077,7 @@
             } catch(e) {}
         };
 
-        // IMPLEMENTATION OF 25 FUNCTIONS
+        // TOOLS
         window.adminToolClearCache = function() { localStorage.removeItem('pulse_chat_chats'); window.showToast('Кэш очищен', 'success'); };
         window.adminToolResetChats = function() { window.chats = defaultChats; window.saveChats(); window.renderChats(); window.selectChat('saved_notes'); window.showToast('Чаты сброшены', 'success'); };
         window.adminToolToggleMaintenance = function() { window.showToast('⚠️ Режим техобслуживания изменен', 'info'); };
@@ -1040,7 +1094,6 @@
         window.adminToolUnmuteAll = function() { window.showToast('🔊 Муты со всех пользователей сняты', 'success'); };
         window.adminToolStealthMode = function() { window.showToast('🕶️ Невидимый режим включен', 'success'); };
 
-        // CREATOR EXCLUSIVES (19-25)
         window.creatorToolUnbanAll = function() { if (!window.currentUser.isCreator) return; window.showToast('🔓 Все баны сняты Создателем', 'success'); };
         window.creatorToolSuperAdmin = function() { if (!window.currentUser.isCreator) return; window.showToast('👑 Вы Создатель (67)', 'success'); };
         window.creatorToolClearAllCloudMessages = function() { if (!window.currentUser.isCreator) return; window.showToast('🗑️ Облачные сообщения очищены', 'success'); };
@@ -1120,6 +1173,8 @@
                 type: 'group',
                 avatar: '👥',
                 members: [...new Set(members)],
+                isPinned: false,
+                unreadCount: 0,
                 messages: [{ id: Date.now(), sender: 'Система', text: `Группа "${groupName}" создана.`, time: getFormattedTime() }]
             };
 
@@ -1230,6 +1285,7 @@
 
             const isCreator = (adminKey === window.CREATOR_KEY);
             const isAdmin = (adminKey === window.MASTER_ADMIN_KEY) || isCreator;
+            const isTester = (adminKey === window.TESTER_KEY);
 
             const newUser = {
                 id: 'usr_' + Date.now(),
@@ -1238,6 +1294,7 @@
                 password: password,
                 isCreator: isCreator,
                 isAdmin: isAdmin,
+                isTester: isTester,
                 isBanned: false,
                 isMuted: false,
                 avatar: username.charAt(0).toUpperCase()
@@ -1263,18 +1320,27 @@
             const adminBtn = document.getElementById('adminPanelBtn');
             const adminBadge = document.getElementById('adminBadge');
             const creatorBadge = document.getElementById('creatorBadge');
+            const testerBadge = document.getElementById('testerBadge');
 
             if (user.isCreator) {
                 creatorBadge.classList.remove('hidden');
                 adminBadge.classList.add('hidden');
+                testerBadge.classList.add('hidden');
                 adminBtn.classList.remove('hidden');
             } else if (user.isAdmin) {
                 adminBadge.classList.remove('hidden');
                 creatorBadge.classList.add('hidden');
+                testerBadge.classList.add('hidden');
                 adminBtn.classList.remove('hidden');
+            } else if (user.isTester) {
+                testerBadge.classList.remove('hidden');
+                adminBadge.classList.add('hidden');
+                creatorBadge.classList.add('hidden');
+                adminBtn.classList.add('hidden');
             } else {
                 adminBadge.classList.add('hidden');
                 creatorBadge.classList.add('hidden');
+                testerBadge.classList.add('hidden');
                 adminBtn.classList.add('hidden');
             }
 
@@ -1283,10 +1349,23 @@
             window.showToast(window.t('toastAuthSuccess'), 'success');
         };
 
+        window.togglePinChat = function(chatId, event) {
+            if (event) event.stopPropagation();
+            const chat = window.chats.find(c => c.id === chatId);
+            if (chat) {
+                chat.isPinned = !chat.isPinned;
+                window.saveChats();
+                window.renderChats();
+            }
+        };
+
         window.renderChats = function() {
             const chatListEl = document.getElementById('chatList');
             if (!chatListEl) return;
             chatListEl.innerHTML = '';
+
+            // Sort: Pinned first
+            window.chats.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
 
             window.chats.forEach(chat => {
                 const lastMsg = chat.messages ? chat.messages[chat.messages.length - 1] : null;
@@ -1294,9 +1373,10 @@
                 const lastMsgTime = lastMsg ? lastMsg.time : '';
                 const isActive = chat.id === window.activeChatId;
                 const isOnline = window.onlineUsersMap[chat.code?.toLowerCase()] || false;
+                const unread = chat.unreadCount || 0;
 
                 const item = document.createElement('div');
-                item.className = `p-2.5 rounded-xl cursor-pointer transition flex items-center space-x-3 ${isActive ? 'bg-cyan-600/20 border border-cyan-500/30' : 'hover:bg-slate-800/50'}`;
+                item.className = `chat-item p-2.5 rounded-xl cursor-pointer transition flex items-center space-x-3 ${isActive ? 'bg-cyan-600/20 border border-cyan-500/30' : 'hover:bg-slate-800/50'}`;
                 item.onclick = () => window.selectChat(chat.id);
                 item.innerHTML = `
                     <div class="relative">
@@ -1305,10 +1385,19 @@
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <div class="flex justify-between items-center mb-0.5">
-                            <h4 class="font-semibold text-slate-200 text-xs truncate">${chat.name}</h4>
+                            <h4 class="font-semibold text-slate-200 text-xs truncate flex items-center gap-1">
+                                ${chat.isPinned ? '<i class="fa-solid fa-thumbtack text-[9px] text-cyan-400"></i>' : ''}
+                                ${chat.name}
+                            </h4>
                             <span class="text-[10px] text-slate-500">${lastMsgTime}</span>
                         </div>
-                        <p class="text-[11px] text-slate-400 truncate">${escapeHtml(lastMsgText)}</p>
+                        <div class="flex justify-between items-center">
+                            <p class="text-[11px] text-slate-400 truncate flex-1">${escapeHtml(lastMsgText)}</p>
+                            <div class="flex items-center gap-1.5 ml-1">
+                                <button type="button" onclick="togglePinChat('${chat.id}', event)" title="Закрепить" class="chat-pin-btn opacity-0 group-hover:opacity-100 text-slate-400 hover:text-cyan-400 text-[10px]"><i class="fa-solid fa-thumbtack"></i></button>
+                                ${unread > 0 ? `<span class="px-1.5 py-0.2 bg-cyan-600 text-white text-[10px] font-bold rounded-full">${unread}</span>` : ''}
+                            </div>
+                        </div>
                     </div>
                 `;
                 chatListEl.appendChild(item);
@@ -1319,6 +1408,9 @@
             window.activeChatId = id;
             const chat = window.chats.find(c => c.id === id);
             if (!chat) return;
+
+            chat.unreadCount = 0;
+            window.saveChats();
 
             document.getElementById('chatTitle').innerText = chat.name;
             document.getElementById('chatAvatar').innerText = chat.avatar;
@@ -1349,7 +1441,7 @@
         };
 
         window.toggleAdminModal = function() {
-            if (!window.currentUser || (!window.currentUser.isAdmin && !window.currentUser.isCreator)) {
+            if (!window.currentUser || window.currentUser.isTester || (!window.currentUser.isAdmin && !window.currentUser.isCreator)) {
                 window.showToast(window.t('toastNoAdmin'), 'error');
                 return;
             }
@@ -1389,6 +1481,8 @@
                     avatar: '👤',
                     code: codeInput,
                     pairCode: getPairChatCode(window.currentUser.code, codeInput),
+                    isPinned: false,
+                    unreadCount: 0,
                     messages: [{ id: Date.now(), sender: 'System', text: 'Чат создан.', time: getFormattedTime() }]
                 };
                 window.chats.push(chat);
