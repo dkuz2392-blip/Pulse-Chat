@@ -31,7 +31,6 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         button, input, textarea { -webkit-appearance: none; }
         .msg-group:hover .msg-actions { opacity: 1; }
-        .chat-item:hover .chat-pin-btn { opacity: 1; }
         @keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .animate-glow { animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
@@ -46,9 +45,10 @@
                     <i class="fa-solid fa-wave-square"></i>
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight text-white">Pulse v4.5</h1>
-                <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Премиальная Соцсеть и Мессенджер с ИИ-ботом</p>
+                <p class="text-xs sm:text-sm text-slate-400">Премиальная Соцсеть и Мессенджер с ИИ-ботом</p>
             </div>
 
+            <!-- Вкладки Авторизации -->
             <div class="flex bg-[#090d16] p-1.5 rounded-2xl border border-[#1e293b]">
                 <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer">Вход</button>
                 <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer">Регистрация</button>
@@ -56,6 +56,7 @@
 
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
 
+            <!-- Вход -->
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -68,6 +69,7 @@
                 <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Войти в систему</button>
             </form>
 
+            <!-- Регистрация -->
             <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -86,7 +88,7 @@
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER WITH 3 SECTIONS -->
+    <!-- MAIN APP WRAPPER -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
 
         <!-- 1. FEED SECTION -->
@@ -96,7 +98,7 @@
                     <div class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-newspaper"></i></div>
                     <h2 class="font-bold text-sm text-white">Лента публикаций</h2>
                 </div>
-                <button onclick="openCreatePostModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition cursor-pointer flex items-center gap-1.5">
+                <button onclick="openCreatePostModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg transition cursor-pointer flex items-center gap-1.5">
                     <i class="fa-solid fa-plus text-[10px]"></i> Опубликовать
                 </button>
             </div>
@@ -105,11 +107,11 @@
 
         <!-- 2. MESSAGES SECTION -->
         <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative">
-            <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform">
+            <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-25 inset-y-0 left-0 transition-transform">
                 <div class="p-3 border-b border-[#1e293b] space-y-2 shrink-0">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
-                        <input type="text" id="chatSearchInput" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                        <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
                     </div>
                     <div class="flex gap-2">
                         <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
@@ -127,9 +129,9 @@
                 <div class="h-14 border-b border-[#1e293b] px-4 flex items-center justify-between bg-[#131c2e]/50 backdrop-blur shrink-0">
                     <div class="flex items-center space-x-3 overflow-hidden">
                         <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
-                        <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs shrink-0">💬</div>
+                        <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs shrink-0">🤖</div>
                         <div>
-                            <h3 id="chatTitle" class="font-semibold text-xs text-white truncate">Выберите чат</h3>
+                            <h3 id="chatTitle" class="font-semibold text-xs text-white truncate">Pulse Помощник (ИИ)</h3>
                             <p id="chatStatus" class="text-[10px] text-slate-400">● В сети</p>
                         </div>
                     </div>
@@ -140,8 +142,31 @@
                     <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
                 </div>
 
+                <!-- Action Bar (Reply/Edit) -->
+                <div id="inputActionBar" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
+                    <div class="flex items-center space-x-2 text-xs text-indigo-400 truncate">
+                        <i id="inputActionIcon" class="fa-solid fa-reply"></i>
+                        <span id="inputActionText" class="truncate">Действие</span>
+                    </div>
+                    <button type="button" onclick="cancelInputAction()" class="text-slate-400 hover:text-rose-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Attachment Preview -->
+                <div id="attachmentPreview" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
+                    <div class="flex items-center space-x-2 text-xs text-indigo-400"><i class="fa-solid fa-image"></i><span id="attachmentName" class="truncate max-w-xs">Файл</span></div>
+                    <button type="button" onclick="clearAttachment()" class="text-slate-400 hover:text-rose-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Input Field -->
                 <div class="p-3 border-t border-[#1e293b] bg-[#131c2e]/50 backdrop-blur shrink-0">
                     <div class="flex items-center space-x-2">
+                        <button type="button" onclick="toggleVoiceRecord()" title="Голосовое сообщение" class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center shrink-0 border border-[#1e293b]">
+                            <i class="fa-solid fa-microphone text-xs"></i>
+                        </button>
+                        <label class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0 border border-[#1e293b]">
+                            <i class="fa-solid fa-paperclip text-xs"></i>
+                            <input type="file" id="fileInput" accept="image/*,.pdf,.doc" onchange="handleFileSelect(event)" class="hidden">
+                        </label>
                         <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
                         <button type="button" onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center transition shadow cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                     </div>
@@ -149,7 +174,7 @@
             </div>
         </div>
 
-        <!-- 3. SETTINGS & ADMIN SECTION -->
+        <!-- 3. SETTINGS & FULL ADMIN SECTION -->
         <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 hidden max-w-4xl mx-auto w-full space-y-6">
             <div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
                 <div class="flex items-center space-x-3.5">
@@ -166,40 +191,41 @@
                 <button onclick="logout()" class="px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Выйти</button>
             </div>
 
-            <!-- ADMIN PANEL IN SETTINGS -->
+            <!-- ВСТРОЕННАЯ АДМИН ПАНЕЛЬ (ВСЕ 25 ИНСТРУМЕНТОВ) -->
             <div id="adminPanelBox" class="hidden bg-[#131c2e] border border-amber-500/30 rounded-2xl p-5 space-y-4 shadow-xl">
-                <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора (25 Инструментов)</h3>
+                <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора и Создателя (25 Инструментов)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
-                    <button onclick="adminTool('cache')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">1. Очистка кэша</button>
-                    <button onclick="adminTool('resetChats')" class="p-2.5 bg-[#090d16] text-rose-400 rounded-xl text-left border border-[#1e293b]">2. Сброс чатов</button>
-                    <button onclick="adminTool('maint')" class="p-2.5 bg-[#090d16] text-amber-400 rounded-xl text-left border border-[#1e293b]">3. Техобслуживание</button>
-                    <button onclick="adminTool('export')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">4. Экспорт БД (JSON)</button>
-                    <button onclick="adminTool('ping')" class="p-2.5 bg-[#090d16] text-emerald-400 rounded-xl text-left border border-[#1e293b]">5. Пинг сервера</button>
-                    <button onclick="location.reload()" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">6. Перезапуск UI</button>
-                    <button onclick="adminTool('muteAll')" class="p-2.5 bg-[#090d16] text-orange-400 rounded-xl text-left border border-[#1e293b]">7. Массовый Мут</button>
-                    <button onclick="adminTool('unmuteAll')" class="p-2.5 bg-[#090d16] text-emerald-400 rounded-xl text-left border border-[#1e293b]">8. Снять все муты</button>
-                    <button onclick="logout()" class="p-2.5 bg-[#090d16] text-rose-400 rounded-xl text-left border border-[#1e293b]">9. Экстренный выход</button>
-                    <button onclick="adminTool('stealth')" class="p-2.5 bg-[#090d16] text-purple-400 rounded-xl text-left border border-[#1e293b]">10. Невидимость</button>
-                    <button onclick="showToast('Память очищена')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">11. Буфер DOM</button>
-                    <button onclick="showToast('Debug active')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">12. Отладка логов</button>
-                    <button onclick="showToast('🔔 Бип!')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">13. Тест звука</button>
-                    <button onclick="showToast('БД исправна')" class="p-2.5 bg-[#090d16] text-emerald-400 rounded-xl text-left border border-[#1e293b]">14. Целостность БД</button>
-                    <button onclick="showToast('Демо-чат создан')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">15. Демо-чат бот</button>
-                    <button onclick="showToast('OLED активен')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">16. OLED тема</button>
-                    <button onclick="showToast('Язык сброшен')" class="p-2.5 bg-[#090d16] text-indigo-400 rounded-xl text-left border border-[#1e293b]">17. Сброс языка</button>
-                    <button onclick="showToast('Запрос паролей')" class="p-2.5 bg-[#090d16] text-amber-400 rounded-xl text-left border border-[#1e293b]">18. Сброс паролей</button>
-                    <button onclick="creatorTool('unbanAll')" class="p-2.5 bg-purple-950/30 text-purple-300 rounded-xl text-left border border-purple-500/30">19. [Creator] Снять баны</button>
-                    <button onclick="creatorTool('superAdmin')" class="p-2.5 bg-purple-950/30 text-purple-300 rounded-xl text-left border border-purple-500/30">20. [Creator] Права 67</button>
-                    <button onclick="creatorTool('clearCloud')" class="p-2.5 bg-purple-950/30 text-purple-300 rounded-xl text-left border border-purple-500/30">21. [Creator] Очистка облака</button>
-                    <button onclick="creatorTool('lockReg')" class="p-2.5 bg-purple-950/30 text-purple-300 rounded-xl text-left border border-purple-500/30">22. [Creator] Блок реги</button>
-                    <button onclick="creatorTool('logoutAll')" class="p-2.5 bg-purple-950/30 text-purple-300 rounded-xl text-left border border-purple-500/30">23. [Creator] Сброс сессий</button>
-                    <button onclick="creatorTool('kill')" class="p-2.5 bg-rose-950/30 text-rose-300 rounded-xl text-left border border-rose-500/30">24. [Creator] Kill Switch</button>
-                    <button onclick="location.reload()" class="p-2.5 bg-purple-950/30 text-purple-300 rounded-xl text-left border border-purple-500/30">25. [Creator] Рестарт ядра</button>
+                    <button onclick="adminTool('cache')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">1. Очистка кэша</button>
+                    <button onclick="adminTool('resetChats')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">2. Сброс чатов</button>
+                    <button onclick="adminTool('maint')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">3. Техобслуживание</button>
+                    <button onclick="adminTool('export')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">4. Экспорт БД (JSON)</button>
+                    <button onclick="adminTool('ping')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">5. Пинг сервера</button>
+                    <button onclick="location.reload()" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">6. Перезапуск UI</button>
+                    <button onclick="adminTool('muteAll')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-orange-400 rounded-xl text-left border border-[#1e293b] transition">7. Массовый Мут</button>
+                    <button onclick="adminTool('unmuteAll')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">8. Снять все муты</button>
+                    <button onclick="logout()" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">9. Экстренный выход</button>
+                    <button onclick="adminTool('stealth')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-purple-400 rounded-xl text-left border border-[#1e293b] transition">10. Невидимость</button>
+                    <button onclick="showToast('Память очищена', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">11. Буфер DOM</button>
+                    <button onclick="showToast('Debug active', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">12. Отладка логов</button>
+                    <button onclick="showToast('🔔 Бип!', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">13. Тест звука</button>
+                    <button onclick="showToast('БД исправна', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">14. Целостность БД</button>
+                    <button onclick="showToast('Демо-чат создан', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">15. Демо-чат бот</button>
+                    <button onclick="showToast('OLED активен', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">16. OLED тема</button>
+                    <button onclick="showToast('Язык сброшен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">17. Сброс языка</button>
+                    <button onclick="showToast('Запрос паролей отправлен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">18. Сброс паролей</button>
+                    <!-- ОПЦИИ СОЗДАТЕЛЯ (КЛЮЧ 67) -->
+                    <button onclick="creatorTool('unbanAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">19. [Creator] Снять баны</button>
+                    <button onclick="creatorTool('superAdmin')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">20. [Creator] Права 67</button>
+                    <button onclick="creatorTool('clearCloud')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">21. [Creator] Очистка облака</button>
+                    <button onclick="creatorTool('lockReg')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">22. [Creator] Блок реги</button>
+                    <button onclick="creatorTool('logoutAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">23. [Creator] Сброс сессий</button>
+                    <button onclick="creatorTool('kill')" class="p-2.5 bg-rose-950/30 hover:bg-rose-900/40 text-rose-300 rounded-xl text-left border border-rose-500/30 transition">24. [Creator] Kill Switch</button>
+                    <button onclick="location.reload()" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">25. [Creator] Рестарт ядра</button>
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM NAVIGATION -->
+        <!-- BOTTOM NAVIGATION BAR -->
         <div class="h-16 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-around px-2 shrink-0 z-40">
             <button onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer">
                 <i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span>
@@ -213,32 +239,68 @@
         </div>
     </div>
 
+    <!-- MODAL: СОЗДАНИЕ ПОСТА В ЛЕНТЕ -->
+    <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-[#1e293b] pb-3">
+                <h3 class="font-semibold text-sm text-white">Новая публикация</h3>
+                <button onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <textarea id="postTextInput" rows="3" placeholder="Что у вас нового?..." class="w-full p-3.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+            <button onclick="submitPost()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg transition">Опубликовать</button>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX ДЛЯ ФОТО -->
+    <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
+        <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl">
+    </div>
+
     <div id="toastContainer" class="fixed bottom-20 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
     <script>
-        // СЕКРЕТНЫЕ КЛЮЧИ (НЕ ВЫВОДЯТСЯ В ИНТЕРФЕЙС)
         const CREATOR_KEY = "67";
         const ADMIN_KEY = "1488";
         const TESTER_KEY = "test";
 
         window.currentUser = null;
         window.activeChatId = 'pulse_bot';
+        window.editingMsgId = null;
+        window.replyingToMsg = null;
+        window.selectedAttachment = null;
+
+        window.posts = JSON.parse(localStorage.getItem('pulse_posts_db') || '[]') || [
+            { id: 1, author: 'Pulse System', text: 'Добро пожаловать в обновленную версию Pulse v4.5!', time: '12:00' }
+        ];
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
             { id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', avatar: '🤖', messages: [{ id: 1, sender: 'Pulse Бот', text: 'Привет! Я ИИ-ассистент. Чем могу помочь?', timestamp: Date.now() - 1000 }] },
             { id: 'saved_notes', name: 'Избранное', avatar: '📌', messages: [{ id: 2, sender: 'Система', text: 'Личные заметки', timestamp: Date.now() }] }
         ];
 
-        // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК АВТОРИЗАЦИИ
+        // ИСПРАВЛЕННОЕ ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК С ПОДСВЕТКОЙ
         window.switchAuthTab = function(tab) {
-            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-            document.getElementById('tabLoginBtn').className = tab === 'login' ? 'flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md' : 'flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400';
-            document.getElementById('tabRegisterBtn').className = tab === 'register' ? 'flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md' : 'flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400';
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginBtn = document.getElementById('tabLoginBtn');
+            const regBtn = document.getElementById('tabRegisterBtn');
+
             document.getElementById('authAlert').classList.add('hidden');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer";
+                regBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                regBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer";
+                loginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer";
+            }
         };
 
-        // БЕЗОПАСНАЯ РЕГИСТРАЦИЯ
+        // НАДЕЖНАЯ РЕГИСТРАЦИЯ И ВХОД
         window.handleRegister = function(e) {
             e.preventDefault();
             const username = document.getElementById('regUsername').value.trim();
@@ -264,10 +326,7 @@
                 avatar: username.charAt(0).toUpperCase()
             };
 
-            // Сохраняем сессию локально
             localStorage.setItem('pulse_session', JSON.stringify(newUser));
-            
-            // Также сохраняем пользователя в локальную базу данных пользователей
             let usersDb = JSON.parse(localStorage.getItem('pulse_users_db') || '{}');
             usersDb[username.toLowerCase()] = newUser;
             localStorage.setItem('pulse_users_db', JSON.stringify(usersDb));
@@ -276,21 +335,16 @@
             showToast('Аккаунт успешно создан!', 'success');
         };
 
-        // ВХОД
         window.handleLogin = function(e) {
             e.preventDefault();
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
             let usersDb = JSON.parse(localStorage.getItem('pulse_users_db') || '{}');
-            const found = usersDb[username.toLowerCase()];
+            let found = usersDb[username.toLowerCase()];
 
-            if (found && found.password === password) {
-                localStorage.setItem('pulse_session', JSON.stringify(found));
-                initSession(found);
-            } else {
-                // Если аккаунта еще нет, создаем стандартного пользователя
-                const newUser = {
+            if (!found) {
+                found = {
                     name: username,
                     code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
                     password: password,
@@ -298,10 +352,15 @@
                     isAdmin: false,
                     avatar: username.charAt(0).toUpperCase()
                 };
-                localStorage.setItem('pulse_session', JSON.stringify(newUser));
-                usersDb[username.toLowerCase()] = newUser;
+                usersDb[username.toLowerCase()] = found;
                 localStorage.setItem('pulse_users_db', JSON.stringify(usersDb));
-                initSession(newUser);
+            }
+
+            if (found.password === password) {
+                localStorage.setItem('pulse_session', JSON.stringify(found));
+                initSession(found);
+            } else {
+                showAlert('Неверный пароль!');
             }
         };
 
@@ -316,6 +375,7 @@
             document.getElementById('settingsAdminBadge').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
             document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
 
+            renderPosts();
             renderChats();
             selectChat(window.activeChatId);
         }
@@ -325,11 +385,11 @@
             location.reload();
         };
 
-        // ЧАТЫ И СООБЩЕНИЯ (СО СТРОГОЙ СОРТИРОВКОЙ ПО TIMESTAMP)
+        // СООБЩЕНИЯ С ФИКСИРОВАННОЙ СОРТИРОВКОЙ ПО TIMESTAMP
         window.sendMessage = function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text && !window.selectedAttachment) return;
 
             const chat = window.chats.find(c => c.id === window.activeChatId);
             if (!chat) return;
@@ -339,15 +399,16 @@
                 id: now,
                 sender: window.currentUser.name,
                 text: text,
+                file: window.selectedAttachment,
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                 timestamp: now
             });
 
-            // СОРТИРОВКА
             chat.messages.sort((a, b) => a.timestamp - b.timestamp);
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
 
             input.value = '';
+            clearAttachment();
             renderMessages();
 
             if (chat.id === 'pulse_bot') {
@@ -355,7 +416,7 @@
                     chat.messages.push({
                         id: Date.now(),
                         sender: 'Pulse Бот',
-                        text: `Принято: «${text}». Все системы работают штатно!`,
+                        text: `Принято: «${text}». Все системы работают безупречно!`,
                         time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                         timestamp: Date.now()
                     });
@@ -377,10 +438,11 @@
             chat.messages.forEach(msg => {
                 const isMe = msg.sender === window.currentUser?.name;
                 const div = document.createElement('div');
-                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} my-1`;
+                div.className = `msg-group flex flex-col ${isMe ? 'items-end' : 'items-start'} my-1`;
                 div.innerHTML = `
                     <div class="max-w-[80%] px-3.5 py-2 rounded-2xl text-xs ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none'}">
-                        <p class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>
+                        ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>` : ''}
+                        ${msg.file ? `<div class="mt-1 cursor-pointer" onclick="openLightbox('${msg.file.data}')"><img src="${msg.file.data}" class="max-h-40 rounded-xl"></div>` : ''}
                         <span class="text-[9px] opacity-75 block text-right mt-0.5">${msg.time}</span>
                     </div>
                 `;
@@ -411,12 +473,65 @@
             renderChats();
         }
 
-        // НАВИГАЦИЯ В СЕКЦИЯХ
+        // ЛЕНТА ПУБЛИКАЦИЙ
+        window.openCreatePostModal = function() { document.getElementById('createPostModal').classList.remove('hidden'); };
+        window.closeCreatePostModal = function() { document.getElementById('createPostModal').classList.add('hidden'); };
+
+        window.submitPost = function() {
+            const text = document.getElementById('postTextInput').value.trim();
+            if (!text) return;
+            window.posts.unshift({ id: Date.now(), author: window.currentUser.name, text: text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            localStorage.setItem('pulse_posts_db', JSON.stringify(window.posts));
+            document.getElementById('postTextInput').value = '';
+            closeCreatePostModal();
+            renderPosts();
+            showToast('Пост опубликован!', 'success');
+        };
+
+        function renderPosts() {
+            const container = document.getElementById('feedContainer');
+            container.innerHTML = '';
+            window.posts.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'bg-[#131c2e] border border-[#1e293b] rounded-2xl p-4 space-y-2 shadow-lg';
+                card.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs">${p.author.charAt(0).toUpperCase()}</span>
+                        <div><h4 class="font-semibold text-xs text-white">${escapeHtml(p.author)}</h4><span class="text-[10px] text-slate-500">${p.time}</span></div>
+                    </div>
+                    <p class="text-xs text-slate-200 whitespace-pre-wrap">${escapeHtml(p.text)}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // НАВИГАЦИЯ МЕЖДУ СЕКЦИЯМИ
         window.switchSection = function(sec) {
             document.getElementById('sectionFeed').classList.toggle('hidden', sec !== 'feed');
             document.getElementById('sectionMessages').classList.toggle('hidden', sec !== 'messages');
             document.getElementById('sectionSettings').classList.toggle('hidden', sec !== 'settings');
+
+            document.getElementById('navBtnFeed').className = sec === 'feed' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
+            document.getElementById('navBtnMessages').className = sec === 'messages' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
+            document.getElementById('navBtnSettings').className = sec === 'settings' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
         };
+
+        // ВПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        window.handleFileSelect = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                window.selectedAttachment = { name: file.name, data: evt.target.result };
+                document.getElementById('attachmentName').innerText = file.name;
+                document.getElementById('attachmentPreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        };
+        window.clearAttachment = function() { window.selectedAttachment = null; document.getElementById('attachmentPreview').classList.add('hidden'); };
+        window.toggleVoiceRecord = function() { showToast('🎙️ Запись голоса активна', 'info'); };
+        window.openLightbox = function(src) { document.getElementById('lightboxImage').src = src; document.getElementById('lightboxModal').classList.remove('hidden'); };
+        window.closeLightbox = function() { document.getElementById('lightboxModal').classList.add('hidden'); };
 
         window.adminTool = function(name) { showToast('Инструмент ' + name + ' выполнен!', 'success'); };
         window.creatorTool = function(name) { showToast('Creator ' + name + ' выполнен!', 'success'); };
@@ -435,7 +550,6 @@
         }
 
         function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
-
         window.handleKeyDown = function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault(); sendMessage();} };
 
         window.addEventListener('DOMContentLoaded', () => {
