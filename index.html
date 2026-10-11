@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Chat v2.7 - Ultimate Edition</title>
+    <title>Pulse Chat v2.8 - Fixed Groups</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -47,7 +47,7 @@
                 <div class="w-14 h-14 bg-cyan-600/20 border border-cyan-500/30 rounded-2xl mx-auto flex items-center justify-center text-cyan-400 text-2xl font-bold shadow-inner">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
-                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.7</h1>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Pulse Chat v2.8</h1>
                 <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Онлайн Мессенджер в Реальном Времени</p>
             </div>
 
@@ -157,7 +157,7 @@
                 </div>
             </div>
 
-            <!-- Messages Container with Scroll-to-bottom button -->
+            <!-- Messages Container -->
             <div class="relative flex-1 flex flex-col overflow-hidden">
                 <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
                 <button id="scrollDownBtn" onclick="scrollToBottom()" class="hidden absolute bottom-4 right-6 w-9 h-9 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-darkBorder rounded-full shadow-xl flex items-center justify-center transition cursor-pointer z-20">
@@ -534,7 +534,7 @@
                 code: '#saved_notes',
                 isPinned: true,
                 unreadCount: 0,
-                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.7!', time: getFormattedTime() }]
+                messages: [{ id: 1, sender: 'Система', text: 'Добро пожаловать в Pulse Chat v2.8!', time: getFormattedTime() }]
             },
             {
                 id: 'bot_pulse',
@@ -697,11 +697,32 @@
             if (!window.currentUser) return;
             if (data.senderCode === window.currentUser.code) return;
 
-            let chat = window.chats.find(c => 
-                (c.code && c.code.toLowerCase() === data.senderCode.toLowerCase()) ||
-                (c.pairCode && c.pairCode === data.pairCode) ||
-                (c.id === data.groupId)
-            );
+            let chat = null;
+
+            // FIX: Строгая проверка для групп и личных чатов
+            if (data.groupId) {
+                chat = window.chats.find(c => c.id === data.groupId);
+            } else {
+                chat = window.chats.find(c => 
+                    (c.code && c.code.toLowerCase() === data.senderCode.toLowerCase()) ||
+                    (c.pairCode && c.pairCode === data.pairCode)
+                );
+            }
+
+            // Если группа была создана другим пользователем и пришло первое сообщение — автоматически добавляем её у себя
+            if (!chat && data.groupId && data.groupName) {
+                chat = {
+                    id: data.groupId,
+                    name: data.groupName,
+                    type: 'group',
+                    avatar: '👥',
+                    members: data.groupMembers || [],
+                    isPinned: false,
+                    unreadCount: 0,
+                    messages: []
+                };
+                window.chats.push(chat);
+            }
 
             if (!chat && data.receiverCode === window.currentUser.code) {
                 chat = {
@@ -730,21 +751,23 @@
                     if (window.activeChatId === chat.id) {
                         window.renderMessages();
                     } else {
-                        window.showToast(window.t('newMsgFrom') + (data.senderName || 'друг'));
+                        window.showToast(window.t('newMsgFrom') + (chat.type === 'group' ? chat.name : (data.senderName || 'друг')));
                     }
                 }
             }
         }
 
-        window.sendCloudMessage = async function(pairCode, receiverCode, messageData, groupId = null) {
+        window.sendCloudMessage = async function(pairCode, receiverCode, messageData, groupId = null, groupName = null, groupMembers = null) {
             if (!authenticatedUser) return;
 
             try {
                 const messagesCollection = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
                 await addDoc(messagesCollection, {
-                    pairCode: pairCode,
-                    receiverCode: receiverCode,
-                    groupId: groupId,
+                    pairCode: pairCode || null,
+                    receiverCode: receiverCode || null,
+                    groupId: groupId || null,
+                    groupName: groupName || null,
+                    groupMembers: groupMembers || null,
                     senderCode: window.currentUser.code,
                     senderName: window.currentUser.name,
                     message: messageData,
@@ -852,7 +875,6 @@
             document.getElementById('fileInput').value = '';
         };
 
-        // Scroll management & Scroll-down button
         const msgContainer = document.getElementById('messagesContainer');
         if (msgContainer) {
             msgContainer.addEventListener('scroll', function() {
@@ -889,6 +911,9 @@
                 wrapper.className = `msg-group group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1 relative`;
 
                 let contentHtml = '';
+                if (chat.type === 'group' && !isMe) {
+                    contentHtml += `<span class="text-[10px] font-bold text-cyan-400 mb-0.5 block">${escapeHtml(msg.sender)}</span>`;
+                }
                 if (msg.text) {
                     contentHtml += `<p class="leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>`;
                 }
@@ -1167,12 +1192,14 @@
             const members = rawMembers.split(',').map(m => window.normalizeCode(m)).filter(Boolean);
             members.push(window.currentUser.code);
 
+            const uniqueMembers = [...new Set(members)];
+
             const newGroup = {
                 id: 'grp_' + Date.now(),
                 name: groupName,
                 type: 'group',
                 avatar: '👥',
-                members: [...new Set(members)],
+                members: uniqueMembers,
                 isPinned: false,
                 unreadCount: 0,
                 messages: [{ id: Date.now(), sender: 'Система', text: `Группа "${groupName}" создана.`, time: getFormattedTime() }]
@@ -1217,11 +1244,12 @@
             window.renderMessages();
             window.renderChats();
 
+            // FIX: Строгая маршрутизация сообщений (личные VS групповые)
             if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
                 const pairCode = getPairChatCode(window.currentUser.code, chat.code);
-                window.sendCloudMessage(pairCode, chat.code, newMessage);
+                window.sendCloudMessage(pairCode, chat.code, newMessage, null, null, null);
             } else if (chat.type === 'group') {
-                window.sendCloudMessage(null, null, newMessage, chat.id);
+                window.sendCloudMessage(null, null, newMessage, chat.id, chat.name, chat.members);
             }
 
             if (chat.type === 'bot') {
@@ -1364,7 +1392,6 @@
             if (!chatListEl) return;
             chatListEl.innerHTML = '';
 
-            // Sort: Pinned first
             window.chats.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
 
             window.chats.forEach(chat => {
