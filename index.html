@@ -56,7 +56,7 @@
 
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
 
-            <!-- Вход -->
+            <!-- Форма входа -->
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -69,7 +69,7 @@
                 <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Войти в систему</button>
             </form>
 
-            <!-- Регистрация -->
+            <!-- Форма регистрации (скрытый ключ типа password) -->
             <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -91,7 +91,7 @@
     <!-- MAIN APP WRAPPER -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
 
-        <!-- 1. FEED SECTION -->
+        <!-- 1. FEED SECTION (ЛЕНТА) -->
         <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-[#090d16]">
             <div class="h-14 px-4 border-b border-[#1e293b] bg-[#131c2e]/80 backdrop-blur flex items-center justify-between shrink-0">
                 <div class="flex items-center space-x-2.5">
@@ -105,14 +105,14 @@
             <div id="feedContainer" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl mx-auto w-full"></div>
         </div>
 
-        <!-- 2. MESSAGES SECTION -->
+        <!-- 2. MESSAGES SECTION (СООБЩЕНИЯ) -->
         <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative">
-            <!-- Sidebar Chats -->
+            <!-- Sidebar -->
             <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-25 inset-y-0 left-0 transition-transform">
                 <div class="p-3 border-b border-[#1e293b] space-y-2 shrink-0">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
-                        <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                        <input type="text" id="chatSearchInput" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
                     </div>
                     <div class="flex gap-2">
                         <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
@@ -130,7 +130,6 @@
             <div id="chatPane" class="flex-1 flex flex-col h-full bg-[#090d16] overflow-hidden relative z-10">
                 <div class="h-14 border-b border-[#1e293b] px-4 flex items-center justify-between bg-[#131c2e]/50 backdrop-blur shrink-0">
                     <div class="flex items-center space-x-3 overflow-hidden">
-                        <!-- Кнопка выхода из чата (назад к списку) -->
                         <button type="button" onclick="exitActiveChat()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
                         <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs shrink-0">🤖</div>
                         <div>
@@ -143,12 +142,6 @@
 
                 <div class="relative flex-1 flex flex-col overflow-hidden">
                     <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-                </div>
-
-                <!-- Attachment Preview -->
-                <div id="attachmentPreview" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
-                    <div class="flex items-center space-x-2 text-xs text-indigo-400"><i class="fa-solid fa-image"></i><span id="attachmentName" class="truncate max-w-xs">Файл</span></div>
-                    <button type="button" onclick="clearAttachment()" class="text-slate-400 hover:text-rose-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
                 <!-- Input Field -->
@@ -168,7 +161,7 @@
             </div>
         </div>
 
-        <!-- 3. SETTINGS & FULL ADMIN SECTION (ВСЕ 25 ИНСТРУМЕНТОВ) -->
+        <!-- 3. SETTINGS & FULL ADMIN SECTION (25 ИНСТРУМЕНТОВ) -->
         <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 hidden max-w-4xl mx-auto w-full space-y-6">
             <div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
                 <div class="flex items-center space-x-3.5">
@@ -185,7 +178,7 @@
                 <button onclick="logout()" class="px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Выйти</button>
             </div>
 
-            <!-- ПОЛНАЯ ПАНЕЛЬ АДМИНИСТРАТОРА (25 КНОПОК) -->
+            <!-- ПОЛНАЯ АДМИН ПАНЕЛЬ СО ВСЕМИ 25 ИНСТРУМЕНТАМИ -->
             <div id="adminPanelBox" class="hidden bg-[#131c2e] border border-amber-500/30 rounded-2xl p-5 space-y-4 shadow-xl">
                 <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора и Создателя (Все 25 инструментов)</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
@@ -245,7 +238,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ДОБАВИТЬ ДРУГА / ГРУППУ -->
+    <!-- MODAL: ДОБАВИТЬ ДРУГА -->
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Добавить в ЛС</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
@@ -279,7 +272,6 @@
             { id: 'saved_notes', name: 'Избранное', avatar: '📌', messages: [{ id: 2, sender: 'Система', text: 'Личные заметки', timestamp: Date.now() }] }
         ];
 
-        // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК АВТОРИЗАЦИИ С ЦВЕТОМ
         window.switchAuthTab = function(tab) {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
@@ -379,7 +371,6 @@
 
         window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
 
-        // ОТПРАВКА СООБЩЕНИЙ СО СТРОГОЙ СОРТИРОВКОЙ
         window.sendMessage = function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
@@ -457,13 +448,11 @@
             renderMessages();
             renderChats();
 
-            // Показываем чат на мобильных устройствах
             if (window.innerWidth < 768) {
                 document.getElementById('sidebarChats').classList.add('-translate-x-full');
             }
         }
 
-        // КНОПКА ВЫХОДА ИЗ ЧАТА (НАЗАД К СПИСКУ ЧАТОВ)
         window.exitActiveChat = function() {
             if (window.innerWidth < 768) {
                 document.getElementById('sidebarChats').classList.remove('-translate-x-full');
@@ -477,7 +466,6 @@
             selectChat('pulse_bot');
         };
 
-        // ЛЕНТА
         window.openCreatePostModal = function() { document.getElementById('createPostModal').classList.remove('hidden'); };
         window.closeCreatePostModal = function() { document.getElementById('createPostModal').classList.add('hidden'); };
         window.submitPost = function() {
@@ -499,7 +487,6 @@
             });
         }
 
-        // НАВИГАЦИЯ МЕЖДУ ВКЛАДКАМИ
         window.switchSection = function(sec) {
             document.getElementById('sectionFeed').classList.toggle('hidden', sec !== 'feed');
             document.getElementById('sectionMessages').classList.toggle('hidden', sec !== 'messages');
@@ -519,13 +506,6 @@
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
             renderChats(); closeAddFriendModal(); showToast('Чат добавлен', 'success');
         };
-        window.openCreateGroupModal = function() {
-            const name = prompt('Название группы:');
-            if(!name) return;
-            window.chats.push({ id: 'grp_'+Date.now(), name: name, type: 'group', avatar: '👥', messages: [] });
-            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-            renderChats(); showToast('Группа создана', 'success');
-        };
 
         window.handleFileSelect = function(e) {
             const file = e.target.files[0];
@@ -533,12 +513,10 @@
             const reader = new FileReader();
             reader.onload = (evt) => {
                 window.selectedAttachment = { name: file.name, data: evt.target.result };
-                document.getElementById('attachmentName').innerText = file.name;
-                document.getElementById('attachmentPreview').classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         };
-        window.clearAttachment = function() { window.selectedAttachment = null; document.getElementById('attachmentPreview').classList.add('hidden'); };
+        window.clearAttachment = function() { window.selectedAttachment = null; };
         window.toggleVoiceRecord = function() { showToast('🎙️ Запись голоса активна', 'info'); };
         window.openLightbox = function(src) { document.getElementById('lightboxImage').src = src; document.getElementById('lightboxModal').classList.remove('hidden'); };
         window.closeLightbox = function() { document.getElementById('lightboxModal').classList.add('hidden'); };
