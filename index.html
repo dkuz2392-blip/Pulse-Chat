@@ -111,7 +111,6 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-1">
-                    <!-- Language Switch Button in Header -->
                     <button type="button" onclick="toggleLanguage()" title="Switch Language" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold text-[10px] flex items-center justify-center transition cursor-pointer">
                         <span id="langHeaderBtn">EN</span>
                     </button>
@@ -134,9 +133,7 @@
             </div>
 
             <!-- Chat List -->
-            <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <!-- Chats rendered dynamically -->
-            </div>
+            <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
         </div>
 
         <!-- CHAT AREA -->
@@ -152,15 +149,12 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span id="myFriendCodeDisplay" class="hidden sm:inline-block px-2.5 py-1 bg-slate-900 border border-darkBorder rounded-lg text-[10px] text-cyan-400 font-mono">#0000</span>
-                    <button type="button" onclick="clearAllData()" title="Очистить все данные" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                    <button type="button" onclick="deleteCurrentChat()" title="Удалить этот чат" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             </div>
 
             <!-- Messages Container -->
-            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
-                <!-- Messages rendered dynamically -->
-            </div>
+            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
 
             <!-- Attachment Preview Bar -->
             <div id="attachmentPreview" class="hidden px-4 py-2 bg-darkCard border-t border-darkBorder flex items-center justify-between shrink-0">
@@ -230,13 +224,12 @@
     <!-- TOAST NOTIFICATIONS CONTAINER -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-    <!-- FIREBASE REALTIME BACKEND SCRIPT -->
+    <!-- FIREBASE SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
             ? JSON.parse(__firebase_config) 
@@ -256,10 +249,7 @@
         let authenticatedUser = null;
         let unsubscribeMessages = null;
 
-        // Master Key Definition
         window.MASTER_ADMIN_KEY = "1488";
-
-        // Global Application State & i18n
         window.currentLang = localStorage.getItem('pulse_chat_lang') || 'ru';
         window.currentUser = null;
         window.activeChatId = 'saved_notes';
@@ -298,13 +288,13 @@
                 savedNotesStatus: 'Личный облачный чат',
                 botName: 'Pulse Помощник',
                 botStatus: 'Онлайн Бот',
-                welcomeMsg: 'Добро пожаловать в Pulse Chat! Все ваши сообщения мгновенно синхронизируются через интернет.',
-                botWelcomeMsg: 'Привет! Я встроенный бот Pulse. Напишите мне сообщение, и я отвечу вам!',
+                welcomeMsg: 'Добро пожаловать в Pulse Chat!',
+                botWelcomeMsg: 'Привет! Я встроенный бот Pulse.',
                 botResponsePrefix: '⚡ Pulse Bot: Сообщение получено',
                 botResponseSuffix: 'Все системы работают штатно!',
                 noMessages: 'Нет сообщений. Напишите сообщение ниже!',
                 errInvalidLogin: 'Неверный никнейм или пароль!',
-                errUserExists: 'Пользователь с таким никнеймом уже существует!',
+                errUserExists: 'Пользователь уже существует!',
                 toastAuthSuccess: 'Успешный вход в систему',
                 toastNoAdmin: 'У вас нет прав Администратора!',
                 toastAddSelf: 'Вы не можете добавить самого себя!',
@@ -346,8 +336,8 @@
                 savedNotesStatus: 'Personal Cloud Chat',
                 botName: 'Pulse Assistant',
                 botStatus: 'Online Bot',
-                welcomeMsg: 'Welcome to Pulse Chat! All your messages sync instantly across devices.',
-                botWelcomeMsg: 'Hello! I am the built-in Pulse bot. Send me a message and I will reply!',
+                welcomeMsg: 'Welcome to Pulse Chat!',
+                botWelcomeMsg: 'Hello! I am the built-in Pulse bot.',
                 botResponsePrefix: '⚡ Pulse Bot: Received message',
                 botResponseSuffix: 'All systems operational!',
                 noMessages: 'No messages yet. Type a message below!',
@@ -369,74 +359,10 @@
             return (translations[lang] && translations[lang][key]) ? translations[lang][key] : (translations['ru'][key] || key);
         };
 
-        window.setLanguage = function(lang) {
-            window.currentLang = lang;
-            localStorage.setItem('pulse_chat_lang', lang);
-
-            const ruBtn = document.getElementById('langRuBtn');
-            const enBtn = document.getElementById('langEnBtn');
-            const headerBtn = document.getElementById('langHeaderBtn');
-
-            if (lang === 'ru') {
-                if (ruBtn) ruBtn.className = "px-2 py-0.5 rounded font-semibold text-white bg-cyan-600 transition";
-                if (enBtn) enBtn.className = "px-2 py-0.5 rounded font-semibold text-slate-400 hover:text-white transition";
-                if (headerBtn) headerBtn.innerText = "EN";
-            } else {
-                if (ruBtn) ruBtn.className = "px-2 py-0.5 rounded font-semibold text-slate-400 hover:text-white transition";
-                if (enBtn) enBtn.className = "px-2 py-0.5 rounded font-semibold text-white bg-cyan-600 transition";
-                if (headerBtn) headerBtn.innerText = "RU";
-            }
-
-            document.getElementById('t_subtitle').innerText = window.t('subtitle');
-            document.getElementById('tabLoginBtn').innerText = window.t('tabLogin');
-            document.getElementById('tabRegisterBtn').innerText = window.t('tabRegister');
-            document.getElementById('t_lbl_login_user').innerText = window.t('lblLoginUser');
-            document.getElementById('loginUsername').placeholder = window.t('phLoginUser');
-            document.getElementById('t_lbl_login_pass').innerText = window.t('lblLoginPass');
-            document.getElementById('t_btn_login').innerText = window.t('btnLogin');
-
-            document.getElementById('t_lbl_reg_user').innerText = window.t('lblRegUser');
-            document.getElementById('regUsername').placeholder = window.t('phRegUser');
-            document.getElementById('t_lbl_reg_pass').innerText = window.t('lblRegPass');
-            document.getElementById('t_lbl_reg_admin').innerText = window.t('lblRegAdmin');
-            document.getElementById('regAdminKey').placeholder = window.t('phRegAdmin');
-            document.getElementById('t_btn_register').innerText = window.t('btnRegister');
-
-            document.getElementById('chatSearchInput').placeholder = window.t('phSearchChats');
-            document.getElementById('t_btn_add_friend').innerText = window.t('btnAddFriend');
-            document.getElementById('messageInput').placeholder = window.t('phMessageInput');
-
-            document.getElementById('t_modal_add_title').innerText = window.t('modalAddTitle');
-            document.getElementById('t_lbl_friend_code').innerText = window.t('lblFriendCode');
-            document.getElementById('t_btn_connect').innerText = window.t('btnConnect');
-
-            document.getElementById('t_admin_title').innerText = window.t('adminTitle');
-            document.getElementById('t_lbl_admin_search').innerText = window.t('lblAdminSearch');
-            document.getElementById('spyUserInput').placeholder = window.t('phAdminSearch');
-            document.getElementById('t_btn_admin_find').innerText = window.t('btnAdminFind');
-            
-            const adminPlaceholder = document.getElementById('t_admin_placeholder');
-            if (adminPlaceholder) adminPlaceholder.innerText = window.t('adminPlaceholder');
-
-            if (window.chats && window.chats.length >= 2) {
-                if (window.chats[0].id === 'saved_notes') {
-                    window.chats[0].name = window.t('savedNotesName');
-                    window.chats[0].status = window.t('savedNotesStatus');
-                }
-                if (window.chats[1].id === 'bot_pulse') {
-                    window.chats[1].name = window.t('botName');
-                    window.chats[1].status = window.t('botStatus');
-                }
-            }
-
-            window.renderChats();
-            window.selectChat(window.activeChatId);
-        };
-
-        window.toggleLanguage = function() {
-            const newLang = window.currentLang === 'ru' ? 'en' : 'ru';
-            window.setLanguage(newLang);
-        };
+        // Генератор универсального ID диалога между двумя пользователями
+        function getPairChatCode(codeA, codeB) {
+            return [codeA.toLowerCase(), codeB.toLowerCase()].sort().join('_');
+        }
 
         const defaultChats = [
             {
@@ -446,9 +372,7 @@
                 avatar: '📌',
                 code: '#saved_notes',
                 status: 'Личный облачный чат',
-                messages: [
-                    { id: 1, sender: 'Система', text: translations.ru.welcomeMsg, time: getFormattedTime() }
-                ]
+                messages: [{ id: 1, sender: 'Система', text: translations.ru.welcomeMsg, time: getFormattedTime() }]
             },
             {
                 id: 'bot_pulse',
@@ -457,15 +381,12 @@
                 avatar: '🤖',
                 code: '#pulse_bot',
                 status: 'Онлайн Бот',
-                messages: [
-                    { id: 2, sender: 'Pulse Помощник', text: translations.ru.botWelcomeMsg, time: getFormattedTime() }
-                ]
+                messages: [{ id: 2, sender: 'Pulse Помощник', text: translations.ru.botWelcomeMsg, time: getFormattedTime() }]
             }
         ];
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || defaultChats;
 
-        // AUTHENTICATION INIT
         async function initAuth() {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -487,7 +408,6 @@
 
         initAuth();
 
-        // FIRESTORE REALTIME SYNC (ИСКЛЮЧИТЕЛЬНО ПО ID ЧАТА)
         function subscribeToPublicMessages() {
             if (!authenticatedUser) return;
             if (unsubscribeMessages) unsubscribeMessages();
@@ -498,30 +418,33 @@
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const data = change.doc.data();
-                        if (data && data.message && data.chatCode) {
+                        if (data && data.message) {
                             handleCloudIncomingMessage(data);
                         }
                     }
                 });
-            }, (error) => {
-                console.warn("Firestore snapshot listener alert:", error.message);
             });
         }
 
         function handleCloudIncomingMessage(data) {
             if (!window.currentUser) return;
-            if (data.senderCode === window.currentUser.code) return; // Пропуск собственных сообщений
+            if (data.senderCode === window.currentUser.code) return; // Игнорировать дубли собственного сообщения
 
-            // Ищем чат, чей код совпадает с chatCode из базы (или это чат с этим пользователем)
-            let chat = window.chats.find(c => c.code === data.chatCode || (c.code && c.code.toLowerCase() === data.chatCode.toLowerCase()));
+            // Ищем чат, с которым связано входящее сообщение
+            let chat = window.chats.find(c => 
+                (c.code && c.code.toLowerCase() === data.senderCode.toLowerCase()) ||
+                (c.pairCode && c.pairCode === data.pairCode)
+            );
 
-            if (!chat && (data.receiverCode === window.currentUser.code || data.chatCode === window.currentUser.code)) {
+            if (!chat && data.receiverCode === window.currentUser.code) {
+                // Если чат не был создан, создаем ровно один чат
                 chat = {
                     id: 'friend_' + Date.now(),
-                    name: data.senderName || 'Chat (' + data.senderCode + ')',
+                    name: data.senderName || 'Чат (' + data.senderCode + ')',
                     type: 'friend',
                     avatar: (data.senderName || 'U').charAt(0).toUpperCase(),
                     code: data.senderCode,
+                    pairCode: getPairChatCode(window.currentUser.code, data.senderCode),
                     status: '● Live Realtime',
                     messages: []
                 };
@@ -543,14 +466,13 @@
             }
         }
 
-        // ОТПРАВКА СООБЩЕНИЙ С УКАЗАНИЕМ ТОЧНОГО chatCode текущего чата
-        window.sendCloudMessage = async function(chatCode, receiverCode, messageData) {
+        window.sendCloudMessage = async function(pairCode, receiverCode, messageData) {
             if (!authenticatedUser) return;
 
             try {
                 const messagesCollection = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
                 await addDoc(messagesCollection, {
-                    chatCode: chatCode,
+                    pairCode: pairCode,
                     receiverCode: receiverCode,
                     senderCode: window.currentUser.code,
                     senderName: window.currentUser.name,
@@ -562,147 +484,19 @@
             }
         };
 
-        // UI EVENT HANDLERS
-        window.addEventListener('DOMContentLoaded', () => {
-            window.setLanguage(window.currentLang);
-
-            const savedUser = localStorage.getItem('pulse_chat_session');
-            if (savedUser) {
-                try {
-                    window.currentUser = JSON.parse(savedUser);
-                    window.initUserSession(window.currentUser);
-                } catch(e) {
-                    localStorage.removeItem('pulse_chat_session');
-                }
-            }
-        });
-
-        window.showToast = function(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-            const toast = document.createElement('div');
-            const bgColor = type === 'error' ? 'bg-rose-600 text-white' : type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-100 border border-slate-700';
-            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'} text-sm"></i> <span>${escapeHtml(message)}</span>`;
-            container.appendChild(toast);
-
-            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
-            setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        };
-
-        window.switchAuthTab = function(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const tabLoginBtn = document.getElementById('tabLoginBtn');
-            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-            const alertBox = document.getElementById('authAlert');
-            if (alertBox) alertBox.classList.add('hidden');
-
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
-                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
-                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
-            }
-        };
-
-        window.handleLogin = function(e) {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            if (!username || !password) return;
-
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            const account = registeredUsers[username.toLowerCase()];
-
-            if (account && account.password === password) {
-                localStorage.setItem('pulse_chat_session', JSON.stringify(account));
-                window.initUserSession(account);
-            } else {
-                window.showAuthAlert(window.t('errInvalidLogin'));
-            }
-        };
-
-        window.handleRegister = function(e) {
-            e.preventDefault();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const adminKey = document.getElementById('regAdminKey').value.trim();
-
-            if (!username || !password) return;
-
-            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
-            const userKey = username.toLowerCase();
-
-            if (registeredUsers[userKey]) {
-                window.showAuthAlert(window.t('errUserExists'));
+        window.deleteCurrentChat = function() {
+            if (window.activeChatId === 'saved_notes' || window.activeChatId === 'bot_pulse') {
+                window.showToast('Системные чаты нельзя удалить', 'error');
                 return;
             }
 
-            const isAdmin = (adminKey === window.MASTER_ADMIN_KEY);
-
-            const newUser = {
-                id: 'usr_' + Date.now(),
-                name: username,
-                code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
-                password: password,
-                isAdmin: isAdmin,
-                role: isAdmin ? 'ADMIN' : 'USER',
-                avatar: username.charAt(0).toUpperCase()
-            };
-
-            registeredUsers[userKey] = newUser;
-            localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
-            localStorage.setItem('pulse_chat_session', JSON.stringify(newUser));
-
-            window.initUserSession(newUser);
-        };
-
-        window.showAuthAlert = function(msg) {
-            const alertBox = document.getElementById('authAlert');
-            if (alertBox) {
-                alertBox.textContent = msg;
-                alertBox.classList.remove('hidden');
+            if (confirm('Удалить выбранный чат?')) {
+                window.chats = window.chats.filter(c => c.id !== window.activeChatId);
+                window.saveChats();
+                window.selectChat('saved_notes');
+                window.renderChats();
+                window.showToast('Чат удален', 'success');
             }
-        };
-
-        window.normalizeCode = function(code) {
-            if (!code) return '';
-            code = code.trim();
-            if (!code.startsWith('#')) code = '#' + code;
-            return code;
-        };
-
-        window.initUserSession = function(user) {
-            window.currentUser = user;
-            const authScreen = document.getElementById('authScreen');
-            if (authScreen) authScreen.classList.add('hidden');
-
-            document.getElementById('currentUserName').innerText = user.name;
-            document.getElementById('currentUserAvatar').innerText = user.avatar;
-            document.getElementById('currentUserCode').innerHTML = `<span>${user.code}</span> <i class="fa-regular fa-copy text-[10px]"></i>`;
-            document.getElementById('myFriendCodeDisplay').innerText = user.code;
-
-            if (user.isAdmin === true || user.role === 'ADMIN') {
-                document.getElementById('adminBadge').classList.remove('hidden');
-                document.getElementById('adminPanelBtn').classList.remove('hidden');
-            } else {
-                document.getElementById('adminBadge').classList.add('hidden');
-                document.getElementById('adminPanelBtn').classList.add('hidden');
-            }
-
-            window.renderChats();
-            window.selectChat(window.activeChatId);
-            window.showToast(window.t('toastAuthSuccess'), 'success');
         };
 
         window.sendMessage = function() {
@@ -731,9 +525,10 @@
             window.renderMessages();
             window.renderChats();
 
-            // Исправленная отправка в облако с передачей уникального кода текущего чата
-            if (chat.type === 'friend' && chat.code) {
-                window.sendCloudMessage(chat.code, chat.code, newMessage);
+            // Если чат с пользователем — отправляем в облако через сквозной pairCode
+            if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
+                const pairCode = getPairChatCode(window.currentUser.code, chat.code);
+                window.sendCloudMessage(pairCode, chat.code, newMessage);
             }
 
             if (chat.type === 'bot') {
@@ -754,6 +549,194 @@
             window.clearAttachment();
         };
 
+        window.handleAddFriend = function(e) {
+            e.preventDefault();
+            const codeInput = window.normalizeCode(document.getElementById('friendCodeInput').value);
+            if (!codeInput) return;
+
+            if (codeInput === window.currentUser.code) {
+                window.showToast(window.t('toastAddSelf'), 'error');
+                return;
+            }
+
+            let chat = window.chats.find(c => c.code && c.code.toLowerCase() === codeInput.toLowerCase());
+            if (!chat) {
+                chat = {
+                    id: 'friend_' + Date.now(),
+                    name: 'Чат (' + codeInput + ')',
+                    type: 'friend',
+                    avatar: '👤',
+                    code: codeInput,
+                    pairCode: getPairChatCode(window.currentUser.code, codeInput),
+                    status: window.t('statusRealtime'),
+                    messages: [{ id: Date.now(), sender: 'System', text: 'Чат создан. Подключение установлено.', time: getFormattedTime() }]
+                };
+                window.chats.push(chat);
+                window.saveChats();
+            }
+
+            window.renderChats();
+            window.selectChat(chat.id);
+            window.closeAddFriendModal();
+            window.showToast(window.t('toastChatAdded'), 'success');
+        };
+
+        // Вспомогательные функции UI
+        window.addEventListener('DOMContentLoaded', () => {
+            window.setLanguage(window.currentLang);
+            const savedUser = localStorage.getItem('pulse_chat_session');
+            if (savedUser) {
+                try {
+                    window.currentUser = JSON.parse(savedUser);
+                    window.initUserSession(window.currentUser);
+                } catch(e) {
+                    localStorage.removeItem('pulse_chat_session');
+                }
+            }
+        });
+
+        window.setLanguage = function(lang) {
+            window.currentLang = lang;
+            localStorage.setItem('pulse_chat_lang', lang);
+            document.getElementById('t_subtitle').innerText = window.t('subtitle');
+            document.getElementById('tabLoginBtn').innerText = window.t('tabLogin');
+            document.getElementById('tabRegisterBtn').innerText = window.t('tabRegister');
+            document.getElementById('t_lbl_login_user').innerText = window.t('lblLoginUser');
+            document.getElementById('loginUsername').placeholder = window.t('phLoginUser');
+            document.getElementById('t_lbl_login_pass').innerText = window.t('lblLoginPass');
+            document.getElementById('t_btn_login').innerText = window.t('btnLogin');
+            document.getElementById('t_lbl_reg_user').innerText = window.t('lblRegUser');
+            document.getElementById('regUsername').placeholder = window.t('phRegUser');
+            document.getElementById('t_lbl_reg_pass').innerText = window.t('lblRegPass');
+            document.getElementById('t_lbl_reg_admin').innerText = window.t('lblRegAdmin');
+            document.getElementById('regAdminKey').placeholder = window.t('phRegAdmin');
+            document.getElementById('t_btn_register').innerText = window.t('btnRegister');
+            document.getElementById('chatSearchInput').placeholder = window.t('phSearchChats');
+            document.getElementById('t_btn_add_friend').innerText = window.t('btnAddFriend');
+            document.getElementById('messageInput').placeholder = window.t('phMessageInput');
+            document.getElementById('t_modal_add_title').innerText = window.t('modalAddTitle');
+            document.getElementById('t_lbl_friend_code').innerText = window.t('lblFriendCode');
+            document.getElementById('t_btn_connect').innerText = window.t('btnConnect');
+            document.getElementById('t_admin_title').innerText = window.t('adminTitle');
+            document.getElementById('t_lbl_admin_search').innerText = window.t('lblAdminSearch');
+            document.getElementById('spyUserInput').placeholder = window.t('phAdminSearch');
+            document.getElementById('t_btn_admin_find').innerText = window.t('btnAdminFind');
+            window.renderChats();
+            window.selectChat(window.activeChatId);
+        };
+
+        window.toggleLanguage = function() {
+            window.setLanguage(window.currentLang === 'ru' ? 'en' : 'ru');
+        };
+
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-rose-600 text-white' : type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-100 border border-slate-700';
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'} text-sm"></i> <span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
+
+        window.switchAuthTab = function(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabLoginBtn = document.getElementById('tabLoginBtn');
+            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
+                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                tabRegisterBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg bg-cyan-600 text-white shadow-md transition-all cursor-pointer";
+                tabLoginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer";
+            }
+        };
+
+        window.handleLogin = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+            const account = registeredUsers[username.toLowerCase()];
+            if (account && account.password === password) {
+                localStorage.setItem('pulse_chat_session', JSON.stringify(account));
+                window.initUserSession(account);
+            } else {
+                window.showAuthAlert(window.t('errInvalidLogin'));
+            }
+        };
+
+        window.handleRegister = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const adminKey = document.getElementById('regAdminKey').value.trim();
+            const registeredUsers = JSON.parse(localStorage.getItem('pulse_chat_users') || '{}');
+            const userKey = username.toLowerCase();
+
+            if (registeredUsers[userKey]) {
+                window.showAuthAlert(window.t('errUserExists'));
+                return;
+            }
+
+            const isAdmin = (adminKey === window.MASTER_ADMIN_KEY);
+            const newUser = {
+                id: 'usr_' + Date.now(),
+                name: username,
+                code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
+                password: password,
+                isAdmin: isAdmin,
+                role: isAdmin ? 'ADMIN' : 'USER',
+                avatar: username.charAt(0).toUpperCase()
+            };
+
+            registeredUsers[userKey] = newUser;
+            localStorage.setItem('pulse_chat_users', JSON.stringify(registeredUsers));
+            localStorage.setItem('pulse_chat_session', JSON.stringify(newUser));
+            window.initUserSession(newUser);
+        };
+
+        window.showAuthAlert = function(msg) {
+            const alertBox = document.getElementById('authAlert');
+            if (alertBox) {
+                alertBox.textContent = msg;
+                alertBox.classList.remove('hidden');
+            }
+        };
+
+        window.normalizeCode = function(code) {
+            if (!code) return '';
+            code = code.trim();
+            if (!code.startsWith('#')) code = '#' + code;
+            return code;
+        };
+
+        window.initUserSession = function(user) {
+            window.currentUser = user;
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.classList.add('hidden');
+            document.getElementById('currentUserName').innerText = user.name;
+            document.getElementById('currentUserAvatar').innerText = user.avatar;
+            document.getElementById('currentUserCode').innerHTML = `<span>${user.code}</span> <i class="fa-regular fa-copy text-[10px]"></i>`;
+            if (user.isAdmin) {
+                document.getElementById('adminBadge').classList.remove('hidden');
+                document.getElementById('adminPanelBtn').classList.remove('hidden');
+            }
+            window.renderChats();
+            window.selectChat(window.activeChatId);
+            window.showToast(window.t('toastAuthSuccess'), 'success');
+        };
+
         window.renderMessages = function() {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
@@ -761,7 +744,7 @@
 
             const chat = window.chats.find(c => c.id === window.activeChatId);
             if (!chat || !chat.messages || chat.messages.length === 0) {
-                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-500 space-y-2"> <i class="fa-regular fa-comments text-4xl opacity-20"></i> <p class="text-xs text-center">${window.t('noMessages')}</p> </div>`;
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-500 space-y-2"><p class="text-xs text-center">${window.t('noMessages')}</p></div>`;
                 return;
             }
 
@@ -769,23 +752,18 @@
                 const isMe = msg.sender === window.currentUser?.name;
                 const wrapper = document.createElement('div');
                 wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
-
                 let contentHtml = '';
-                if (msg.text) {
-                    contentHtml += `<p class="leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>`;
-                }
+                if (msg.text) contentHtml += `<p class="leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>`;
                 if (msg.file) {
                     if (msg.file.type && msg.file.type.startsWith('image/')) {
                         contentHtml += `<img src="${msg.file.data}" class="max-w-xs rounded-lg mt-1 border border-slate-700">`;
                     } else {
-                        contentHtml += `<a href="${msg.file.data}" download="${msg.file.name}" class="flex items-center space-x-2 mt-1 p-2 bg-slate-800 rounded-lg text-cyan-400 text-xs"> <i class="fa-solid fa-file-arrow-down"></i> <span class="underline truncate">${msg.file.name}</span> </a>`;
+                        contentHtml += `<a href="${msg.file.data}" download="${msg.file.name}" class="flex items-center space-x-2 mt-1 p-2 bg-slate-800 rounded-lg text-cyan-400 text-xs"><span class="underline truncate">${msg.file.name}</span></a>`;
                     }
                 }
-
-                wrapper.innerHTML = `<div class="max-w-[85%] md:max-w-[70%] px-3.5 py-2 rounded-2xl text-xs md:text-sm ${isMe ? 'bg-cyan-600 text-white rounded-br-none shadow-md' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/50'}"> ${contentHtml} <div class="text-[9px] ${isMe ? 'text-cyan-200' : 'text-slate-400'} text-right mt-1"> ${msg.time} </div> </div>`;
+                wrapper.innerHTML = `<div class="max-w-[85%] md:max-w-[70%] px-3.5 py-2 rounded-2xl text-xs md:text-sm ${isMe ? 'bg-cyan-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none'}">${contentHtml}<div class="text-[9px] ${isMe ? 'text-cyan-200' : 'text-slate-400'} text-right mt-1">${msg.time}</div></div>`;
                 container.appendChild(wrapper);
             });
-
             container.scrollTop = container.scrollHeight;
         };
 
@@ -796,15 +774,13 @@
 
             window.chats.forEach(chat => {
                 const lastMsg = chat.messages ? chat.messages[chat.messages.length - 1] : null;
-                const lastMsgText = lastMsg ? (lastMsg.text || 'Media File') : 'No messages';
+                const lastMsgText = lastMsg ? (lastMsg.text || 'Файл') : 'Нет сообщений';
                 const lastMsgTime = lastMsg ? lastMsg.time : '';
-
                 const isActive = chat.id === window.activeChatId;
                 const item = document.createElement('div');
                 item.className = `p-2.5 rounded-xl cursor-pointer transition flex items-center space-x-3 ${isActive ? 'bg-cyan-600/20 border border-cyan-500/30' : 'hover:bg-slate-800/50'}`;
                 item.onclick = () => window.selectChat(chat.id);
-
-                item.innerHTML = `<div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-white text-xs shrink-0 uppercase"> ${chat.avatar} </div> <div class="flex-1 overflow-hidden"> <div class="flex justify-between items-center mb-0.5"> <h4 class="font-semibold text-slate-200 text-xs truncate">${chat.name}</h4> <span class="text-[10px] text-slate-500">${lastMsgTime}</span> </div> <p class="text-[11px] text-slate-400 truncate">${escapeHtml(lastMsgText)}</p> </div>`;
+                item.innerHTML = `<div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-white text-xs shrink-0 uppercase">${chat.avatar}</div><div class="flex-1 overflow-hidden"><div class="flex justify-between items-center mb-0.5"><h4 class="font-semibold text-slate-200 text-xs truncate">${chat.name}</h4><span class="text-[10px] text-slate-500">${lastMsgTime}</span></div><p class="text-[11px] text-slate-400 truncate">${escapeHtml(lastMsgText)}</p></div>`;
                 chatListEl.appendChild(item);
             });
         };
@@ -832,8 +808,7 @@
                 window.showToast(window.t('toastNoAdmin'), 'error');
                 return;
             }
-            const modal = document.getElementById('adminModal');
-            if (modal) modal.classList.toggle('hidden');
+            document.getElementById('adminModal').classList.toggle('hidden');
         };
 
         window.loadUserMessagesSpy = function() {
@@ -841,7 +816,6 @@
             const spyContainer = document.getElementById('spyMessagesContainer');
             if (!spyContainer) return;
             spyContainer.innerHTML = '';
-
             if (!query) return;
 
             const chat = window.chats.find(c => c.code && c.code.toLowerCase().includes(query) || c.name.toLowerCase().includes(query) || c.id === query);
@@ -853,53 +827,13 @@
             chat.messages.forEach(m => {
                 const row = document.createElement('div');
                 row.className = 'p-1.5 rounded bg-slate-950 border border-slate-800 text-[11px]';
-                row.innerHTML = `<strong class="text-amber-400">${m.sender}:</strong> <span class="text-slate-200">${escapeHtml(m.text || '[File]')}</span> <span class="text-slate-500 text-[9px] float-right">${m.time}</span>`;
+                row.innerHTML = `<strong class="text-amber-400">${m.sender}:</strong> <span class="text-slate-200">${escapeHtml(m.text || '[Файл]')}</span> <span class="text-slate-500 text-[9px] float-right">${m.time}</span>`;
                 spyContainer.appendChild(row);
             });
         };
 
-        window.openAddFriendModal = function() {
-            const modal = document.getElementById('addFriendModal');
-            if (modal) modal.classList.remove('hidden');
-        };
-
-        window.closeAddFriendModal = function() {
-            const modal = document.getElementById('addFriendModal');
-            if (modal) modal.classList.add('hidden');
-        };
-
-        window.handleAddFriend = function(e) {
-            e.preventDefault();
-            const codeInput = window.normalizeCode(document.getElementById('friendCodeInput').value);
-            if (!codeInput) return;
-
-            if (codeInput === window.currentUser.code) {
-                window.showToast(window.t('toastAddSelf'), 'error');
-                return;
-            }
-
-            let chat = window.chats.find(c => c.code === codeInput);
-            if (!chat) {
-                chat = {
-                    id: 'friend_' + Date.now(),
-                    name: 'Chat (' + codeInput + ')',
-                    type: 'friend',
-                    avatar: '👤',
-                    code: codeInput,
-                    status: window.t('statusRealtime'),
-                    messages: [
-                        { id: Date.now(), sender: 'System', text: 'Chat created. Cloud connection established.', time: getFormattedTime() }
-                    ]
-                };
-                window.chats.push(chat);
-                window.saveChats();
-            }
-
-            window.renderChats();
-            window.selectChat(chat.id);
-            window.closeAddFriendModal();
-            window.showToast(window.t('toastChatAdded'), 'success');
-        };
+        window.openAddFriendModal = function() { document.getElementById('addFriendModal').classList.remove('hidden'); };
+        window.closeAddFriendModal = function() { document.getElementById('addFriendModal').classList.add('hidden'); };
 
         window.handleKeyDown = function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -911,14 +845,9 @@
         window.handleFileSelect = function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(evt) {
-                window.selectedAttachment = {
-                    name: file.name,
-                    type: file.type,
-                    data: evt.target.result
-                };
+                window.selectedAttachment = { name: file.name, type: file.type, data: evt.target.result };
                 document.getElementById('attachmentName').innerText = file.name;
                 document.getElementById('attachmentPreview').classList.remove('hidden');
             };
@@ -931,10 +860,7 @@
             document.getElementById('fileInput').value = '';
         };
 
-        window.saveChats = function() {
-            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-        };
-
+        window.saveChats = function() { localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats)); };
         window.logout = function() {
             localStorage.removeItem('pulse_chat_session');
             window.currentUser = null;
@@ -946,11 +872,7 @@
             return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         }
 
-        window.toggleSidebar = function() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.classList.toggle('-translate-x-full');
-        };
-
+        window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); };
         window.copyMyCode = function() {
             if (!window.currentUser) return;
             const textArea = document.createElement('textarea');
@@ -963,23 +885,15 @@
             try {
                 document.execCommand('copy');
                 window.showToast(window.t('toastIdCopied') + window.currentUser.code, 'success');
-            } catch (err) {
-                window.showToast(window.t('toastIdCopyError'), 'error');
-            }
+            } catch (err) {}
             document.body.removeChild(textArea);
-        };
-
-        window.clearAllData = function() {
-            localStorage.clear();
-            location.reload();
         };
 
         window.filterChats = function() {
             const q = document.getElementById('chatSearchInput').value.toLowerCase();
             const items = document.getElementById('chatList').children;
             for (let item of items) {
-                const text = item.innerText.toLowerCase();
-                item.style.display = text.includes(q) ? 'flex' : 'none';
+                item.style.display = item.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
             }
         };
 
