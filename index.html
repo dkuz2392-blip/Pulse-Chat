@@ -83,8 +83,9 @@
                     <input type="password" id="regPassword" required autocomplete="new-password" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="••••••••">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-slate-300">Секретный ключ (67 / 1488 / test)</label>
-                    <input type="password" id="regAdminKey" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Ключ привилегий">
+                    <label class="text-xs font-medium text-slate-300">Секретный ключ привилегий</label>
+                    <!-- Исправление: тип password скрывает вводимый ключ точками -->
+                    <input type="password" id="regAdminKey" autocomplete="off" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Введите секретный ключ (если есть)">
                 </div>
                 <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Создать аккаунт</button>
             </form>
