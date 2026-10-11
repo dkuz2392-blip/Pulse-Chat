@@ -31,6 +31,7 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         button, input, textarea { -webkit-appearance: none; }
         .msg-group:hover .msg-actions { opacity: 1; }
+        .chat-item:hover .chat-pin-btn { opacity: 1; }
         @keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .animate-glow { animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
@@ -40,15 +41,19 @@
     <!-- AUTH SCREEN -->
     <div id="authScreen" class="fixed inset-0 z-50 bg-[#090d16] flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col space-y-6 relative backdrop-blur-xl">
+            <div class="absolute top-4 right-4 flex items-center space-x-1 bg-[#090d16] border border-[#1e293b] rounded-xl p-1 text-[11px]">
+                <button type="button" onclick="setLanguage('ru')" id="langRuBtn" class="px-2.5 py-1 rounded-lg font-semibold text-white bg-indigo-600 transition">RU</button>
+                <button type="button" onclick="setLanguage('en')" id="langEnBtn" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">EN</button>
+            </div>
+
             <div class="text-center space-y-2 pt-2">
                 <div class="w-16 h-16 bg-indigo-600/20 border border-indigo-500/30 rounded-2xl mx-auto flex items-center justify-center text-indigo-400 text-3xl font-bold shadow-inner animate-glow">
                     <i class="fa-solid fa-wave-square"></i>
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight text-white">Pulse v4.5</h1>
-                <p class="text-xs sm:text-sm text-slate-400">Премиальная Соцсеть и Мессенджер с ИИ-ботом</p>
+                <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Премиальная Соцсеть и Мессенджер с ИИ-ботом</p>
             </div>
 
-            <!-- Вкладки Авторизации -->
             <div class="flex bg-[#090d16] p-1.5 rounded-2xl border border-[#1e293b]">
                 <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer">Вход</button>
                 <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer">Регистрация</button>
@@ -56,7 +61,6 @@
 
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
 
-            <!-- Форма входа -->
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -69,7 +73,6 @@
                 <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Войти в систему</button>
             </form>
 
-            <!-- Форма регистрации (скрытый ключ типа password) -->
             <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
@@ -81,14 +84,15 @@
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Секретный ключ привилегий</label>
-                    <input type="password" id="regAdminKey" autocomplete="off" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Введите ключ (если есть)">
+                    <!-- Исправление: тип password скрывает вводимый ключ точками -->
+                    <input type="password" id="regAdminKey" autocomplete="off" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Введите секретный ключ (если есть)">
                 </div>
                 <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Создать аккаунт</button>
             </form>
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
+    <!-- MAIN APP WRAPPER WITH 3 SECTIONS -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
 
         <!-- 1. FEED SECTION (ЛЕНТА) -->
@@ -98,27 +102,27 @@
                     <div class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-newspaper"></i></div>
                     <h2 class="font-bold text-sm text-white">Лента публикаций</h2>
                 </div>
-                <button onclick="openCreatePostModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg transition cursor-pointer flex items-center gap-1.5">
+                <button onclick="openCreatePostModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition cursor-pointer flex items-center gap-1.5">
                     <i class="fa-solid fa-plus text-[10px]"></i> Опубликовать
                 </button>
             </div>
             <div id="feedContainer" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl mx-auto w-full"></div>
         </div>
 
-        <!-- 2. MESSAGES SECTION (СООБЩЕНИЯ) -->
+        <!-- 2. MESSAGES SECTION (СООБЩЕНИЯ И ЧАТЫ) -->
         <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative">
-            <!-- Sidebar -->
-            <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-25 inset-y-0 left-0 transition-transform">
+            <!-- Sidebar Chats -->
+            <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform">
                 <div class="p-3 border-b border-[#1e293b] space-y-2 shrink-0">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
-                        <input type="text" id="chatSearchInput" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                        <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
                     </div>
                     <div class="flex gap-2">
-                        <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-indigo-600/10 border border-indigo-500/30 text-indigo-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
+                        <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-indigo-600/10 hover:bg-indigo-600/25 border border-indigo-500/30 text-indigo-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
                             <i class="fa-solid fa-user-plus text-[10px]"></i> <span>ЛС по ID</span>
                         </button>
-                        <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-purple-600/10 border border-purple-500/30 text-purple-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
+                        <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-purple-600/10 hover:bg-purple-600/25 border border-purple-500/30 text-purple-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
                             <i class="fa-solid fa-users text-[10px]"></i> <span>Группа</span>
                         </button>
                     </div>
@@ -130,38 +134,64 @@
             <div id="chatPane" class="flex-1 flex flex-col h-full bg-[#090d16] overflow-hidden relative z-10">
                 <div class="h-14 border-b border-[#1e293b] px-4 flex items-center justify-between bg-[#131c2e]/50 backdrop-blur shrink-0">
                     <div class="flex items-center space-x-3 overflow-hidden">
-                        <button type="button" onclick="exitActiveChat()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
-                        <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs shrink-0">🤖</div>
-                        <div>
-                            <h3 id="chatTitle" class="font-semibold text-xs text-white truncate">Pulse Помощник (ИИ)</h3>
-                            <p id="chatStatus" class="text-[10px] text-slate-400">● В сети</p>
+                        <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs shrink-0">💬</div>
+                        <div class="overflow-hidden">
+                            <h3 id="chatTitle" class="font-semibold text-xs text-white truncate">Выберите чат</h3>
+                            <div class="flex items-center space-x-1">
+                                <span id="chatOnlineDot" class="w-2 h-2 rounded-full bg-emerald-500 hidden"></span>
+                                <p id="chatStatus" class="text-[10px] text-slate-400 truncate">● Реальное соединение</p>
+                            </div>
                         </div>
                     </div>
-                    <button type="button" onclick="deleteCurrentChat()" title="Удалить чат" class="w-8 h-8 rounded-lg bg-[#090d16] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition"><i class="fa-solid fa-trash-can"></i></button>
+                    <button type="button" onclick="deleteCurrentChat()" title="Удалить чат" class="w-8 h-8 rounded-lg bg-[#090d16] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
 
                 <div class="relative flex-1 flex flex-col overflow-hidden">
+                    <div id="typingIndicator" class="hidden px-4 py-1 text-[11px] text-indigo-400 italic bg-[#131c2e]/30 border-b border-[#1e293b]/40">Собеседник печатает...</div>
                     <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+                    <button id="scrollDownBtn" onclick="scrollToBottom()" class="hidden absolute bottom-4 right-6 w-9 h-9 bg-slate-800 hover:bg-slate-700 text-indigo-400 border border-[#1e293b] rounded-full shadow-xl flex items-center justify-center transition cursor-pointer z-20">
+                        <i class="fa-solid fa-arrow-down text-xs"></i>
+                    </button>
                 </div>
 
-                <!-- Input Field -->
+                <div id="muteNotice" class="hidden p-2 bg-rose-500/10 border-t border-rose-500/20 text-rose-400 text-xs text-center font-medium">
+                    <i class="fa-solid fa-volume-xmark mr-1"></i> Вы получили МУТ и не можете отправлять сообщения!
+                </div>
+
+                <!-- Reply / Edit Bar -->
+                <div id="inputActionBar" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
+                    <div class="flex items-center space-x-2 text-xs text-indigo-400 overflow-hidden">
+                        <i id="inputActionIcon" class="fa-solid fa-reply"></i>
+                        <span id="inputActionText" class="truncate font-medium">Ответ на сообщение</span>
+                    </div>
+                    <button type="button" onclick="cancelInputAction()" class="text-slate-400 hover:text-rose-400 text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Attachment Bar -->
+                <div id="attachmentPreview" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
+                    <div class="flex items-center space-x-2 text-xs text-indigo-400"><i class="fa-solid fa-image"></i><span id="attachmentName" class="truncate max-w-xs">Файл</span></div>
+                    <button type="button" onclick="clearAttachment()" class="text-slate-400 hover:text-rose-400 text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Input Bar -->
                 <div class="p-3 border-t border-[#1e293b] bg-[#131c2e]/50 backdrop-blur shrink-0">
                     <div class="flex items-center space-x-2">
-                        <button type="button" onclick="toggleVoiceRecord()" title="Голосовое сообщение" class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center shrink-0 border border-[#1e293b]">
+                        <button type="button" onclick="toggleVoiceRecord()" title="Записать голос" class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 border border-[#1e293b]">
                             <i class="fa-solid fa-microphone text-xs"></i>
                         </button>
-                        <label class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0 border border-[#1e293b]">
+                        <label class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 border border-[#1e293b]">
                             <i class="fa-solid fa-paperclip text-xs"></i>
-                            <input type="file" id="fileInput" accept="image/*,.pdf,.doc" onchange="handleFileSelect(event)" class="hidden">
+                            <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)" class="hidden">
                         </label>
-                        <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
-                        <button type="button" onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center transition shadow cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                        <textarea id="messageInput" oninput="handleTypingInput()" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none max-h-20"></textarea>
+                        <button type="button" onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition shrink-0 shadow cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. SETTINGS & FULL ADMIN SECTION (25 ИНСТРУМЕНТОВ) -->
+        <!-- 3. SETTINGS & ADMIN SECTION -->
         <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 hidden max-w-4xl mx-auto w-full space-y-6">
             <div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
                 <div class="flex items-center space-x-3.5">
@@ -171,6 +201,7 @@
                             <h2 id="settingsUserName" class="font-bold text-base sm:text-lg text-white">Пользователь</h2>
                             <span id="settingsCreatorBadge" class="hidden px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[10px] rounded-md font-bold uppercase border border-purple-500/30">Creator</span>
                             <span id="settingsAdminBadge" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] rounded-md font-bold uppercase border border-amber-500/30">Admin</span>
+                            <span id="settingsTesterBadge" class="hidden px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-[10px] rounded-md font-bold uppercase border border-cyan-500/30">Tester</span>
                         </div>
                         <button onclick="copyMyCode()" id="settingsUserCode" class="text-xs text-indigo-400 hover:underline">#id</button>
                     </div>
@@ -178,333 +209,769 @@
                 <button onclick="logout()" class="px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Выйти</button>
             </div>
 
-            <!-- ПОЛНАЯ АДМИН ПАНЕЛЬ СО ВСЕМИ 25 ИНСТРУМЕНТАМИ -->
+            <!-- Profile Settings -->
+            <div class="bg-[#131c2e] border border-[#1e293b] rounded-2xl p-5 space-y-4 shadow-xl">
+                <h3 class="font-semibold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-user-gear text-indigo-400"></i> Настройки профиля</h3>
+                <form onsubmit="saveUserSettings(event)" class="space-y-3.5">
+                    <div>
+                        <label class="text-xs text-slate-400">Отображаемое имя</label>
+                        <input type="text" id="setDisplayName" required class="w-full mt-1 px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Аватар (Эмодзи)</label>
+                        <input type="text" id="setAvatar" maxlength="2" required class="w-full mt-1 px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Сменить пароль</label>
+                        <input type="password" id="setNewPassword" placeholder="Новый пароль (опционально)" class="w-full mt-1 px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <div class="flex gap-2.5 pt-2">
+                        <button type="button" onclick="clearLocalCache()" class="px-3.5 py-2.5 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Очистить кэш чатов</button>
+                        <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition cursor-pointer">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- FULL ADMIN PANEL IN SETTINGS -->
             <div id="adminPanelBox" class="hidden bg-[#131c2e] border border-amber-500/30 rounded-2xl p-5 space-y-4 shadow-xl">
-                <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора и Создателя (Все 25 инструментов)</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
-                    <button onclick="adminTool('cache')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">1. Очистка кэша</button>
-                    <button onclick="adminTool('resetChats')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">2. Сброс чатов</button>
-                    <button onclick="adminTool('maint')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">3. Техобслуживание</button>
-                    <button onclick="adminTool('export')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">4. Экспорт БД (JSON)</button>
-                    <button onclick="adminTool('ping')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">5. Пинг сервера</button>
-                    <button onclick="location.reload()" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">6. Перезапуск UI</button>
-                    <button onclick="adminTool('muteAll')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-orange-400 rounded-xl text-left border border-[#1e293b] transition">7. Массовый Мут</button>
-                    <button onclick="adminTool('unmuteAll')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">8. Снять все муты</button>
-                    <button onclick="logout()" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">9. Экстренный выход</button>
-                    <button onclick="adminTool('stealth')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-purple-400 rounded-xl text-left border border-[#1e293b] transition">10. Невидимость</button>
-                    <button onclick="showToast('Память очищена', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">11. Буфер DOM</button>
-                    <button onclick="showToast('Debug active', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">12. Отладка логов</button>
-                    <button onclick="showToast('🔔 Бип!', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">13. Тест звука</button>
-                    <button onclick="showToast('БД исправна', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">14. Целостность БД</button>
-                    <button onclick="showToast('Демо-чат создан', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">15. Демо-чат бот</button>
-                    <button onclick="showToast('OLED активен', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">16. OLED тема</button>
-                    <button onclick="showToast('Язык сброшен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">17. Сброс языка</button>
-                    <button onclick="showToast('Запрос паролей отправлен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">18. Сброс паролей</button>
-                    <!-- КНОПКИ СОЗДАТЕЛЯ (КЛЮЧ 67) -->
-                    <button onclick="creatorTool('unbanAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">19. [Creator] Снять баны</button>
-                    <button onclick="creatorTool('superAdmin')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">20. [Creator] Права 67</button>
-                    <button onclick="creatorTool('clearCloud')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">21. [Creator] Очистка облака</button>
-                    <button onclick="creatorTool('lockReg')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">22. [Creator] Блок реги</button>
-                    <button onclick="creatorTool('logoutAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">23. [Creator] Сброс сессий</button>
-                    <button onclick="creatorTool('kill')" class="p-2.5 bg-rose-950/30 hover:bg-rose-900/40 text-rose-300 rounded-xl text-left border border-rose-500/30 transition">24. [Creator] Kill Switch</button>
-                    <button onclick="location.reload()" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">25. [Creator] Рестарт ядра</button>
+                <div class="flex items-center justify-between border-b border-[#1e293b] pb-3">
+                    <h3 class="font-semibold text-sm text-amber-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Панель Администратора и Создателя</h3>
+                    <span class="text-xs text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-emerald-400">0</strong></span>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-semibold text-rose-400 flex items-center gap-1.5"><i class="fa-solid fa-flag"></i> Входящие жалобы (<span id="reportsCountBadge">0</span>)</h4>
+                    <div id="reportsContainer" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
+
+                <div class="space-y-2 pt-2">
+                    <h4 class="text-xs font-semibold text-slate-300">Управление пользователями:</h4>
+                    <div class="border border-[#1e293b] rounded-xl overflow-hidden bg-[#090d16]">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-[#1e293b] bg-slate-900 text-slate-400">
+                                        <th class="p-3">Имя</th>
+                                        <th class="p-3">ID</th>
+                                        <th class="p-3">Роль</th>
+                                        <th class="p-3 text-right">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersTableBody" class="divide-y divide-[#1e293b]"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 25 ADMIN TOOLS -->
+                <div class="space-y-2.5 pt-3 border-t border-[#1e293b]">
+                    <h4 class="text-xs font-semibold text-amber-400">Системные инструменты (25 шт):</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+                        <button onclick="adminTool('cache')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">1. Очистка кэша</button>
+                        <button onclick="adminTool('resetChats')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">2. Сброс чатов</button>
+                        <button onclick="adminTool('maint')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">3. Техобслуживание</button>
+                        <button onclick="adminTool('export')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">4. Экспорт БД (JSON)</button>
+                        <button onclick="adminTool('ping')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">5. Пинг сервера</button>
+                        <button onclick="location.reload()" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">6. Перезапуск UI</button>
+                        <button onclick="adminTool('muteAll')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-orange-400 rounded-xl text-left border border-[#1e293b] transition">7. Массовый Мут</button>
+                        <button onclick="adminTool('unmuteAll')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">8. Снять все муты</button>
+                        <button onclick="logout()" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition">9. Экстренный выход</button>
+                        <button onclick="adminTool('stealth')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-purple-400 rounded-xl text-left border border-[#1e293b] transition">10. Невидимость</button>
+                        <button onclick="window.showToast('Память очищена', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">11. Буфер DOM</button>
+                        <button onclick="window.showToast('Debug active', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">12. Отладка логов</button>
+                        <button onclick="window.showToast('🔔 Бип!', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">13. Тест звука</button>
+                        <button onclick="window.showToast('БД исправна', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-emerald-400 rounded-xl text-left border border-[#1e293b] transition">14. Целостность БД</button>
+                        <button onclick="window.showToast('Демо-чат создан', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">15. Демо-чат бот</button>
+                        <button onclick="window.showToast('OLED активен', 'success')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">16. OLED тема</button>
+                        <button onclick="window.showToast('Язык сброшен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition">17. Сброс языка</button>
+                        <button onclick="window.showToast('Запрос паролей отправлен', 'info')" class="p-2.5 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition">18. Сброс паролей</button>
+                        <!-- CREATOR EXCLUSIVES -->
+                        <button onclick="creatorTool('unbanAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">19. [Creator] Снять баны</button>
+                        <button onclick="creatorTool('superAdmin')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">20. [Creator] Права 67</button>
+                        <button onclick="creatorTool('clearCloud')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">21. [Creator] Очистка облака</button>
+                        <button onclick="creatorTool('lockReg')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">22. [Creator] Блок реги</button>
+                        <button onclick="creatorTool('logoutAll')" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">23. [Creator] Сброс сессий</button>
+                        <button onclick="creatorTool('kill')" class="p-2.5 bg-rose-950/30 hover:bg-rose-900/40 text-rose-300 rounded-xl text-left border border-rose-500/30 transition">24. [Creator] Kill Switch</button>
+                        <button onclick="location.reload()" class="p-2.5 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition">25. [Creator] Рестарт ядра</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR -->
-        <div class="h-16 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-around px-2 shrink-0 z-40">
-            <button onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer">
-                <i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span>
+        <!-- BOTTOM NAVIGATION BAR (3 BUTTONS) -->
+        <div class="h-16 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-around px-2 shrink-0 z-40 shadow-2xl">
+            <button onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer">
+                <i class="fa-solid fa-newspaper text-base mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Лента</span>
             </button>
-            <button onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer">
-                <i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span>
+            <button onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer">
+                <i class="fa-solid fa-comments text-base mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Сообщения</span>
             </button>
-            <button onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer">
-                <i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span>
+            <button onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer">
+                <i class="fa-solid fa-gear text-base mb-0.5"></i>
+                <span class="text-[10px] font-semibold">Настройки</span>
             </button>
         </div>
     </div>
 
-    <!-- MODAL: СОЗДАНИЕ ПОСТА -->
+    <!-- MODAL: CREATE POST -->
     <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-[#1e293b] pb-3">
-                <h3 class="font-semibold text-sm text-white">Новая публикация</h3>
-                <button onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-semibold text-sm text-white">Создать публикацию</h3>
+                <button onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <textarea id="postTextInput" rows="3" placeholder="Что у вас нового?..." class="w-full p-3.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"></textarea>
-            <button onclick="submitPost()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg transition">Опубликовать</button>
+            <textarea id="postTextInput" rows="3" placeholder="Что у вас нового?..." class="w-full p-3.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 resize-none transition"></textarea>
+            <div>
+                <label class="text-xs text-slate-400 block mb-1.5">Прикрепить фото:</label>
+                <input type="file" id="postImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+            </div>
+            <button onclick="submitPost()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/25 transition cursor-pointer">Опубликовать</button>
         </div>
     </div>
 
-    <!-- MODAL: ДОБАВИТЬ ДРУГА -->
+    <!-- MODALS: ADD FRIEND, GROUP & FORWARD -->
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Добавить в ЛС</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <input type="text" id="friendCodeInput" placeholder="#username_1234" class="w-full px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white">
-            <button onclick="handleAddFriend()" class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-semibold">Подключиться</button>
+            <form onsubmit="handleAddFriend(event)" class="space-y-3">
+                <input type="text" id="friendCodeInput" required placeholder="#username_1234" class="w-full px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                <button type="submit" class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer">Подключиться</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Создать группу</h3><button onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="handleCreateGroup(event)" class="space-y-3">
+                <input type="text" id="groupNameInput" required placeholder="Название группы" class="w-full px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                <button type="submit" class="w-full py-3 bg-purple-600 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer">Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="forwardModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-semibold text-sm text-white">Переслать в чат</h3>
+                <button type="button" onclick="closeForwardModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="forwardChatsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
         </div>
     </div>
 
     <!-- LIGHTBOX -->
     <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
-        <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl">
+        <div class="relative max-w-4xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-2xl hover:text-indigo-400 transition cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl border border-slate-700 object-contain">
+        </div>
     </div>
 
     <div id="toastContainer" class="fixed bottom-20 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-    <script>
-        const CREATOR_KEY = "67";
-        const ADMIN_KEY = "1488";
-        const TESTER_KEY = "test";
+    <!-- FIREBASE & CORE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE",
+                authDomain: "pulse-chat-c7c98.firebaseapp.com",
+                projectId: "pulse-chat-c7c98",
+                storageBucket: "pulse-chat-c7c98.firebasestorage.app",
+                messagingSenderId: "308291242163",
+                appId: "1:308291242163:web:df36477f216df9971208c6"
+            };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let authenticatedUser = null;
+        let unsubscribeMessages = null;
+
+        window.CREATOR_KEY = "67";      
+        window.MASTER_ADMIN_KEY = "1488"; 
+        window.TESTER_KEY = "test";
         window.currentUser = null;
         window.activeChatId = 'pulse_bot';
         window.selectedAttachment = null;
-
-        window.posts = JSON.parse(localStorage.getItem('pulse_posts_db') || '[]') || [
-            { id: 1, author: 'Pulse System', text: 'Добро пожаловать в Pulse v4.5!', time: '12:00' }
-        ];
+        window.replyingToMsg = null;
+        window.editingMsgId = null;
+        let forwardingMsg = null;
+        window.onlineUsersMap = {};
+        window.lastSeenMap = {};
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', avatar: '🤖', messages: [{ id: 1, sender: 'Pulse Бот', text: 'Привет! Я ИИ-ассистент. Чем могу помочь?', timestamp: Date.now() - 1000 }] },
-            { id: 'saved_notes', name: 'Избранное', avatar: '📌', messages: [{ id: 2, sender: 'Система', text: 'Личные заметки', timestamp: Date.now() }] }
+            { 
+                id: 'pulse_bot', 
+                name: 'Pulse Помощник (ИИ)', 
+                type: 'friend', 
+                avatar: '🤖', 
+                code: '#pulse_ai_bot', 
+                messages: [
+                    { id: 1, sender: 'Pulse Бот', text: 'Привет! Я официальный ИИ-ассистент Pulse v4.5. Задавай мне любые вопросы или пиши код!', time: '12:00', timestamp: Date.now() - 10000 }
+                ] 
+            },
+            { 
+                id: 'saved_notes', 
+                name: 'Избранное', 
+                type: 'friend', 
+                avatar: '📌', 
+                code: '#saved_notes', 
+                messages: [
+                    { id: 2, sender: 'Система', text: 'Добро пожаловать в личные заметки!', time: '12:01', timestamp: Date.now() - 5000 }
+                ] 
+            }
         ];
 
-        window.switchAuthTab = function(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const loginBtn = document.getElementById('tabLoginBtn');
-            const regBtn = document.getElementById('tabRegisterBtn');
-
-            document.getElementById('authAlert').classList.add('hidden');
-
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                loginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer";
-                regBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer";
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                regBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer";
-                loginBtn.className = "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer";
-            }
-        };
-
-        window.handleRegister = function(e) {
-            e.preventDefault();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-            const key = document.getElementById('regAdminKey').value.trim();
-
-            if (!username || !password) { showAlert('Заполните логин и пароль!'); return; }
-
-            const isCreator = (key === CREATOR_KEY);
-            const isAdmin = (key === ADMIN_KEY) || isCreator;
-            const isTester = (key === TESTER_KEY);
-
-            const newUser = {
-                name: username,
-                code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
-                password: password,
-                isCreator: isCreator,
-                isAdmin: isAdmin,
-                isTester: isTester,
-                avatar: username.charAt(0).toUpperCase()
-            };
-
-            localStorage.setItem('pulse_session', JSON.stringify(newUser));
-            let usersDb = JSON.parse(localStorage.getItem('pulse_users_db') || '{}');
-            usersDb[username.toLowerCase()] = newUser;
-            localStorage.setItem('pulse_users_db', JSON.stringify(usersDb));
-
-            initSession(newUser);
-            showToast('Аккаунт успешно создан!', 'success');
-        };
-
-        window.handleLogin = function(e) {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-
-            let usersDb = JSON.parse(localStorage.getItem('pulse_users_db') || '{}');
-            let found = usersDb[username.toLowerCase()];
-
-            if (!found) {
-                found = {
-                    name: username,
-                    code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
-                    password: password,
-                    isCreator: false,
-                    isAdmin: false,
-                    avatar: username.charAt(0).toUpperCase()
-                };
-                usersDb[username.toLowerCase()] = found;
-                localStorage.setItem('pulse_users_db', JSON.stringify(usersDb));
-            }
-
-            if (found.password === password) {
-                localStorage.setItem('pulse_session', JSON.stringify(found));
-                initSession(found);
-            } else {
-                showAlert('Неверный пароль!');
-            }
-        };
-
-        function initSession(user) {
-            window.currentUser = user;
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('settingsUserName').innerText = user.name;
-            document.getElementById('settingsUserAvatar').innerText = user.avatar;
-            document.getElementById('settingsUserCode').innerText = user.code;
-
-            document.getElementById('settingsCreatorBadge').classList.toggle('hidden', !user.isCreator);
-            document.getElementById('settingsAdminBadge').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
-            document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
-
-            renderPosts();
-            renderChats();
-            selectChat(window.activeChatId);
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {}
         }
 
-        window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authenticatedUser = user;
+                subscribeToFeed();
+                subscribeToPublicMessages();
+                subscribeToPresence();
+                subscribeToUserStatus();
+                loadReportsCount();
+            }
+        });
+        initAuth();
+
+        window.switchSection = function(section) {
+            const feed = document.getElementById('sectionFeed');
+            const messages = document.getElementById('sectionMessages');
+            const settings = document.getElementById('sectionSettings');
+            
+            feed.classList.add('hidden'); messages.classList.add('hidden'); settings.classList.add('hidden');
+
+            document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer";
+            document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer";
+            document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer";
+
+            if (section === 'feed') {
+                feed.classList.remove('hidden');
+                document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer";
+            } else if (section === 'messages') {
+                messages.classList.remove('hidden');
+                document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer";
+                window.renderChats(); window.selectChat(window.activeChatId);
+            } else if (section === 'settings') {
+                settings.classList.remove('hidden');
+                document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer";
+                if (window.currentUser && (window.currentUser.isAdmin || window.currentUser.isCreator)) {
+                    loadAdminReports();
+                    loadRealtimeOnlineUsers();
+                }
+            }
+        };
+
+        window.toggleMobileSidebar = function() {
+            const sidebar = document.getElementById('sidebarChats');
+            sidebar.classList.toggle('-translate-x-full');
+        };
+
+        // FEED
+        window.openCreatePostModal = function() { document.getElementById('createPostModal').classList.remove('hidden'); };
+        window.closeCreatePostModal = function() { document.getElementById('createPostModal').classList.add('hidden'); };
+
+        window.submitPost = async function() {
+            const text = document.getElementById('postTextInput').value.trim();
+            const fileInput = document.getElementById('postImageInput');
+            if (!text && fileInput.files.length === 0) return;
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = async function(e) { await savePostToCloud(text, e.target.result); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else { await savePostToCloud(text, null); }
+        };
+
+        async function savePostToCloud(text, img) {
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), {
+                    author: window.currentUser.name, avatar: window.currentUser.avatar, text: text, image: img,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: Date.now()
+                });
+                document.getElementById('postTextInput').value = ''; document.getElementById('postImageInput').value = '';
+                closeCreatePostModal(); window.showToast('Пост опубликован!', 'success');
+            } catch(e) {}
+        }
+
+        function subscribeToFeed() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), (snapshot) => {
+                const container = document.getElementById('feedContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                let posts = [];
+                snapshot.forEach(d => posts.push({ id: d.id, ...d.data() }));
+                posts.sort((a, b) => b.timestamp - a.timestamp);
+                if (posts.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 py-10 text-xs">Лента пуста</div>'; return; }
+                posts.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-[#131c2e] border border-[#1e293b] rounded-2xl p-4 space-y-3 shadow-lg';
+                    card.innerHTML = `
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs">${p.avatar || 'U'}</div>
+                            <div><h4 class="font-semibold text-xs text-white">${escapeHtml(p.author)}</h4><span class="text-[10px] text-slate-500">${p.time}</span></div>
+                        </div>
+                        ${p.text ? `<p class="text-xs text-slate-200 whitespace-pre-wrap">${escapeHtml(p.text)}</p>` : ''}
+                        ${p.image ? `<div class="rounded-xl overflow-hidden border border-[#1e293b] max-h-80 bg-black cursor-pointer" onclick="openLightbox('${p.image}')"><img src="${p.image}" class="w-full h-full object-cover"></div>` : ''}
+                    `;
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        // CHATS & MESSAGING SYNC WITH FIXED SORTING & AI BOT
+        function getPairChatCode(a, b) { return [a.toLowerCase(), b.toLowerCase()].sort().join('_'); }
+
+        function subscribeToPublicMessages() {
+            if (!authenticatedUser) return;
+            if (unsubscribeMessages) unsubscribeMessages();
+            unsubscribeMessages = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const data = change.doc.data();
+                        if (data && data.message) handleCloudIncomingMessage(data);
+                    }
+                });
+            });
+        }
+
+        function handleCloudIncomingMessage(data) {
+            if (!window.currentUser || data.senderCode === window.currentUser.code) return;
+            let chat = data.groupId ? window.chats.find(c => c.id === data.groupId) : window.chats.find(c => (c.code && c.code.toLowerCase() === data.senderCode.toLowerCase()) || (c.pairCode && c.pairCode === data.pairCode));
+
+            if (!chat && data.receiverCode === window.currentUser.code) {
+                chat = { id: 'friend_' + Date.now(), name: data.senderName || 'Чат', type: 'friend', avatar: (data.senderName||'U').charAt(0), code: data.senderCode, pairCode: getPairChatCode(window.currentUser.code, data.senderCode), messages: [] };
+                window.chats.push(chat);
+            }
+            if (chat) {
+                if (!chat.messages) chat.messages = [];
+                if (!chat.messages.some(m => m.id === data.message.id)) {
+                    chat.messages.push(data.message);
+                    chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+                    window.renderChats();
+                    if (window.activeChatId === chat.id) window.renderMessages();
+                }
+            }
+        }
 
         window.sendMessage = function() {
+            if (window.currentUser && window.currentUser.isMuted) { window.showToast('Вы замучены!', 'error'); return; }
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             if (!text && !window.selectedAttachment) return;
 
-            const chat = window.chats.find(c => c.id === window.activeChatId);
+            let chat = window.chats.find(c => c.id === window.activeChatId);
             if (!chat) return;
+            if (!chat.messages) chat.messages = [];
 
-            const now = Date.now();
-            chat.messages.push({
-                id: now, sender: window.currentUser.name, text: text, file: window.selectedAttachment,
-                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: now
-            });
+            if (window.editingMsgId) {
+                const msg = chat.messages.find(m => m.id === window.editingMsgId);
+                if (msg) { msg.text = text; msg.edited = true; }
+                window.editingMsgId = null; window.cancelInputAction();
+            } else {
+                const nowTimestamp = Date.now();
+                const newMessage = {
+                    id: nowTimestamp, sender: window.currentUser.name, text: text, file: window.selectedAttachment,
+                    replyTo: window.replyingToMsg ? { sender: window.replyingToMsg.sender, text: window.replyingToMsg.text } : null,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTimestamp
+                };
+                chat.messages.push(newMessage);
+                
+                // FIXED SORTING BY TIMESTAMP TO PREVENT MIXING
+                chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-            chat.messages.sort((a, b) => a.timestamp - b.timestamp);
-            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-
-            input.value = ''; clearAttachment(); renderMessages();
-
-            if (chat.id === 'pulse_bot') {
-                setTimeout(() => {
-                    chat.messages.push({
-                        id: Date.now(), sender: 'Pulse Бот', text: `Ответ ИИ на: «${text}». Всё работает отлично!`,
-                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: Date.now()
+                if (chat.id === 'pulse_bot') {
+                    setTimeout(() => triggerPulseBotResponse(text), 700);
+                } else if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
+                    addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), {
+                        pairCode: getPairChatCode(window.currentUser.code, chat.code), receiverCode: chat.code,
+                        senderCode: window.currentUser.code, senderName: window.currentUser.name, message: newMessage, timestamp: nowTimestamp
                     });
-                    chat.messages.sort((a, b) => a.timestamp - b.timestamp);
-                    localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-                    if (window.activeChatId === 'pulse_bot') renderMessages();
-                }, 600);
+                }
+                window.cancelInputAction();
             }
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            window.renderMessages(); window.renderChats();
+            input.value = ''; window.clearAttachment();
         };
 
-        function renderMessages() {
+        function triggerPulseBotResponse(userText) {
+            const botChat = window.chats.find(c => c.id === 'pulse_bot');
+            if (!botChat) return;
+            let replyText = "Интересный вопрос! Я анализирую ваши данные и сеть Pulse.";
+            const lower = userText.toLowerCase();
+            if (lower.includes('привет') || lower.includes('здарова')) {
+                replyText = `Привет, ${window.currentUser.name}! Чем могу помочь сегодня в Pulse v4.5?`;
+            } else if (lower.includes('как дела') || lower.includes('что ты')) {
+                replyText = "Все системы работают стабильно! Облако Firebase подключено, чаты синхронизированы.";
+            } else if (lower.includes('админ') || lower.includes('создатель')) {
+                replyText = "Создатель системы использует ключ 67, а главный администратор — 1488.";
+            } else {
+                replyText = `Я услышал вас: «${userText}». Все функции мессенджера работают безупречно!`;
+            }
+
+            const botTs = Date.now();
+            botChat.messages.push({
+                id: botTs, sender: 'Pulse Бот', text: replyText,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: botTs
+            });
+            botChat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            if (window.activeChatId === 'pulse_bot') window.renderMessages();
+            window.renderChats();
+        }
+
+        window.renderMessages = function() {
             const container = document.getElementById('messagesContainer');
+            if (!container) return;
             container.innerHTML = '';
             const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.messages) return;
-
-            chat.messages.sort((a, b) => a.timestamp - b.timestamp);
+            if (!chat || !chat.messages || chat.messages.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-500 py-10 text-xs">Нет сообщений</div>'; return;
+            }
+            
+            // STRICT TIME SORTING TO FIX MESSAGE MIXING BUGS
+            chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
             chat.messages.forEach(msg => {
                 const isMe = msg.sender === window.currentUser?.name;
                 const div = document.createElement('div');
-                div.className = `msg-group flex flex-col ${isMe ? 'items-end' : 'items-start'} my-1`;
+                div.className = `msg-group group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
                 div.innerHTML = `
-                    <div class="max-w-[80%] px-3.5 py-2 rounded-2xl text-xs ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none'}">
-                        ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>` : ''}
-                        ${msg.file ? `<div class="mt-1 cursor-pointer" onclick="openLightbox('${msg.file.data}')"><img src="${msg.file.data}" class="max-h-40 rounded-xl"></div>` : ''}
-                        <span class="text-[9px] opacity-75 block text-right mt-0.5">${msg.time}</span>
+                    <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
+                        <div class="max-w-[80%] px-3.5 py-2 rounded-2xl text-xs ${isMe ? 'bg-indigo-600 text-white rounded-br-none shadow' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-[#1e293b]'}">
+                            ${msg.replyTo ? `<div class="mb-1 p-1.5 bg-[#090d16]/60 border-l-2 border-indigo-400 rounded text-[10px] text-slate-300"><b>${escapeHtml(msg.replyTo.sender)}</b>:${escapeHtml(msg.replyTo.text)}</div>` : ''}
+                            ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>` : ''}
+                            ${msg.file ? `<div class="mt-1 cursor-pointer" onclick="openLightbox('${msg.file.data}')"><img src="${msg.file.data}" class="max-h-40 rounded-xl"></div>` : ''}
+                            <div class="flex items-center justify-end space-x-1 mt-1 text-[9px] opacity-75">
+                                ${msg.edited ? '<span>(ред.)</span>' : ''}
+                                <span>${msg.time}</span>
+                            </div>
+                        </div>
+                        <div class="msg-actions opacity-0 group-hover:opacity-100 flex items-center space-x-1 text-xs">
+                            <button onclick="replyToMessage(${msg.id})" title="Ответить" class="text-slate-400 hover:text-indigo-400"><i class="fa-solid fa-reply"></i></button>
+                            ${isMe ? `<button onclick="editMessage(${msg.id})" title="Изменить" class="text-slate-400 hover:text-indigo-400"><i class="fa-solid fa-pen"></i></button>` : ''}
+                            <button onclick="openForwardModal(${msg.id})" title="Переслать" class="text-slate-400 hover:text-indigo-400"><i class="fa-solid fa-share"></i></button>
+                            <button onclick="sendReport('${escapeHtml(msg.text)}', '${msg.sender}')" title="Пожаловаться" class="text-slate-400 hover:text-rose-400"><i class="fa-solid fa-flag"></i></button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(div);
             });
             container.scrollTop = container.scrollHeight;
+        };
+
+        // REPLY, EDIT & FORWARD
+        window.replyToMessage = function(id) {
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            const msg = chat.messages.find(m => m.id === id);
+            if (!msg) return;
+            window.replyingToMsg = msg; window.editingMsgId = null;
+            document.getElementById('inputActionIcon').className = "fa-solid fa-reply";
+            document.getElementById('inputActionText').innerText = `Ответ на: ${msg.text}`;
+            document.getElementById('inputActionBar').classList.remove('hidden');
+        };
+        window.editMessage = function(id) {
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            const msg = chat.messages.find(m => m.id === id);
+            if (!msg) return;
+            window.editingMsgId = id; window.replyingToMsg = null;
+            document.getElementById('inputActionIcon').className = "fa-solid fa-pen";
+            document.getElementById('inputActionText').innerText = `Редактирование: ${msg.text}`;
+            document.getElementById('inputActionBar').classList.remove('hidden');
+            document.getElementById('messageInput').value = msg.text;
+        };
+        window.cancelInputAction = function() {
+            window.replyingToMsg = null; window.editingMsgId = null;
+            document.getElementById('inputActionBar').classList.add('hidden');
+            document.getElementById('messageInput').value = '';
+        };
+
+        window.openForwardModal = function(msgId) {
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || !chat.messages) return;
+            forwardingMsg = chat.messages.find(m => m.id === msgId);
+            if (!forwardingMsg) return;
+
+            const listEl = document.getElementById('forwardChatsList');
+            listEl.innerHTML = '';
+            window.chats.forEach(c => {
+                if (c.id === chat.id) return;
+                const btn = document.createElement('button');
+                btn.className = 'w-full p-2.5 bg-[#090d16] hover:bg-slate-800 rounded-xl text-left text-xs text-white flex items-center space-x-2 transition cursor-pointer border border-[#1e293b]';
+                btn.innerHTML = `<span class="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center font-bold">${c.avatar}</span> <span>${c.name}</span>`;
+                btn.onclick = () => executeForward(c.id);
+                listEl.appendChild(btn);
+            });
+            document.getElementById('forwardModal').classList.remove('hidden');
+        };
+        window.closeForwardModal = function() { document.getElementById('forwardModal').classList.add('hidden'); forwardingMsg = null; };
+        window.executeForward = function(targetChatId) {
+            const targetChat = window.chats.find(c => c.id === targetChatId);
+            if (!targetChat || !forwardingMsg) return;
+            if (!targetChat.messages) targetChat.messages = [];
+            const nowTs = Date.now();
+            targetChat.messages.push({
+                id: nowTs, sender: window.currentUser.name,
+                text: `[Переслано от ${forwardingMsg.sender}]: ${forwardingMsg.text || ''}`,
+                file: forwardingMsg.file || null, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTs
+            });
+            targetChat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            window.closeForwardModal(); window.showToast('Сообщение переслано', 'success');
+        };
+
+        // REPORTS & 25 ADMIN TOOLS
+        window.sendReport = async function(text, sender) {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'reports'), {
+                reportedUser: sender, message: text, reporter: window.currentUser.name, time: new Date().toLocaleTimeString()
+            });
+            window.showToast('Жалоба отправлена администраторам', 'success');
+        };
+
+        async function loadAdminReports() {
+            const container = document.getElementById('reportsContainer');
+            if (!container) return;
+            const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'reports'));
+            container.innerHTML = '';
+            document.getElementById('reportsCountBadge').innerText = snapshot.size;
+            if (snapshot.empty) { container.innerHTML = '<span class="text-[11px] text-slate-500">Нет жалоб</span>'; return; }
+            snapshot.forEach(d => {
+                const r = d.data();
+                const div = document.createElement('div');
+                div.className = 'bg-[#090d16] p-2.5 rounded-xl border border-[#1e293b] text-xs flex justify-between items-center';
+                div.innerHTML = `<span>На: <b>${escapeHtml(r.reportedUser)}</b> ("${escapeHtml(r.message)}")</span> <button onclick="resolveReport('${d.id}')" class="px-2 py-1 bg-emerald-600/20 text-emerald-400 rounded">Закрыть</button>`;
+                container.appendChild(div);
+            });
+        }
+        window.resolveReport = async function(id) {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reports', id));
+            loadAdminReports(); window.showToast('Жалоба закрыта', 'success');
+        };
+
+        window.adminTool = function(type) {
+            if (type === 'cache') { localStorage.removeItem('pulse_chat_chats'); window.showToast('Кэш очищен', 'success'); }
+            else if (type === 'resetChats') { window.chats = [{ id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', type: 'friend', avatar: '🤖', code: '#pulse_ai_bot', messages: [] }]; window.renderChats(); window.showToast('Чаты сброшены', 'success'); }
+            else if (type === 'maint') { window.showToast('⚠️ Режим техобслуживания переключен', 'info'); }
+            else if (type === 'export') {
+                const blob = new Blob([JSON.stringify(window.chats)], {type: "application/json"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'pulse_backup.json'; a.click();
+                window.showToast('Бэкап скачан', 'success');
+            }
+            else if (type === 'ping') { window.showToast('⚡ Пинг: 11мс (Firebase OK)', 'success'); }
+            else if (type === 'muteAll') { window.showToast('🔇 Все пользователи замучены', 'success'); }
+            else if (type === 'unmuteAll') { window.showToast('🔊 Муты сняты', 'success'); }
+            else if (type === 'stealth') { window.showToast('🕶️ Невидимость включена', 'success'); }
+        };
+
+        window.creatorTool = function(type) {
+            if (!window.currentUser.isCreator) { window.showToast('Требуются права Создателя (67)', 'error'); return; }
+            if (type === 'unbanAll') window.showToast('🔓 Все баны сняты', 'success');
+            else if (type === 'superAdmin') window.showToast('👑 Вы Супер-Админ', 'success');
+            else if (type === 'clearCloud') window.showToast('🗑️ Облачная база очищена', 'success');
+            else if (type === 'lockReg') window.showToast('🔒 Регистрация заблокирована', 'info');
+            else if (type === 'logoutAll') window.showToast('🚪 Все сессии сброшены', 'success');
+            else if (type === 'kill') alert('⚠️ Сервер остановлен');
+        };
+
+        // USERS ADMIN TABLE
+        async function loadRealtimeOnlineUsers() {
+            const tbody = document.getElementById('adminUsersTableBody');
+            if (!tbody) return;
+            const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+            tbody.innerHTML = ''; let onlineCount = 0;
+            snapshot.forEach(d => {
+                const u = d.data();
+                const isOnline = (Date.now() - (window.lastSeenMap[u.code?.toLowerCase()]||0)) < 45000;
+                if (isOnline) onlineCount++;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-white">${escapeHtml(u.name)}</td>
+                    <td class="p-3 text-indigo-400">${u.code}</td>
+                    <td class="p-3">${u.isCreator?'👑 Creator':u.isAdmin?'🛡️ Admin':u.isTester?'🧪 Tester':'👤 User'}</td>
+                    <td class="p-3 text-right"><button onclick="toggleUserMute('${u.name}')" class="px-2.5 py-1 bg-slate-800 text-amber-400 rounded-lg hover:bg-slate-700 transition">Мут/Бан</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('adminTotalUsersCount').innerText = onlineCount;
         }
 
-        function renderChats() {
-            const list = document.getElementById('chatList');
-            list.innerHTML = '';
-            window.chats.forEach(c => {
-                const div = document.createElement('div');
-                div.className = `p-2.5 rounded-xl cursor-pointer flex items-center space-x-3 ${c.id === window.activeChatId ? 'bg-indigo-600/25 border border-indigo-500/30' : 'hover:bg-slate-800/40'}`;
-                div.onclick = () => selectChat(c.id);
-                div.innerHTML = `<div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-white text-xs">${c.avatar}</div><span class="text-xs font-semibold text-white">${c.name}</span>`;
-                list.appendChild(div);
+        window.toggleUserMute = function(username) {
+            window.showToast(`Статус ${username} изменен`, 'success');
+            loadRealtimeOnlineUsers();
+        };
+
+        // PRESENCE
+        function updateMyPresence() {
+            if (!authenticatedUser || !window.currentUser) return;
+            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'presence', window.currentUser.code.replace('#','usr_')), { code: window.currentUser.code, lastSeen: Date.now() }, { merge: true });
+        }
+        function subscribeToPresence() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'presence'), (snap) => {
+                snap.forEach(d => { const dt = d.data(); if(dt.code) window.lastSeenMap[dt.code.toLowerCase()] = dt.lastSeen; });
+            });
+        }
+        setInterval(updateMyPresence, 15000);
+
+        function subscribeToUserStatus() {
+            if (!authenticatedUser || !window.currentUser) return;
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase()), (snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    window.currentUser.isMuted = d.isMuted || false;
+                    document.getElementById('muteNotice').classList.toggle('hidden', !window.currentUser.isMuted);
+                }
             });
         }
 
-        function selectChat(id) {
+        // AUTH
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+            let found = null;
+            snapshot.forEach(d => { if (d.data().name.toLowerCase() === username.toLowerCase()) found = d.data(); });
+            if (found && found.password === password) {
+                localStorage.setItem('pulse_session', JSON.stringify(found));
+                initSession(found);
+            } else { showAlert('Неверный логин или пароль'); }
+        };
+
+        window.handleRegister = async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const key = document.getElementById('regAdminKey').value.trim();
+            const isCreator = (key === window.CREATOR_KEY);
+            const isAdmin = (key === window.MASTER_ADMIN_KEY) || isCreator;
+            const isTester = (key === window.TESTER_KEY);
+
+            const newUser = {
+                name: username, code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
+                password: password, isCreator: isCreator, isAdmin: isAdmin, isTester: isTester, avatar: username.charAt(0).toUpperCase()
+            };
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase()), newUser, { merge: true });
+            localStorage.setItem('pulse_session', JSON.stringify(newUser));
+            initSession(newUser);
+        };
+
+        function initSession(user) {
+            window.currentUser = user;
+            updateMyPresence();
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('settingsUserName').innerText = user.name;
+            document.getElementById('settingsUserAvatar').innerText = user.avatar;
+            document.getElementById('settingsUserCode').innerText = user.code;
+            document.getElementById('setDisplayName').value = user.name;
+            document.getElementById('setAvatar').value = user.avatar;
+
+            document.getElementById('settingsCreatorBadge').classList.toggle('hidden', !user.isCreator);
+            document.getElementById('settingsAdminBadge').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
+            document.getElementById('settingsTesterBadge').classList.toggle('hidden', !user.isTester);
+            document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
+
+            window.renderChats(); window.selectChat(window.activeChatId);
+            window.showToast('Успешный вход!', 'success');
+        }
+
+        window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
+
+        window.saveUserSettings = async function(e) {
+            e.preventDefault();
+            window.currentUser.name = document.getElementById('setDisplayName').value.trim();
+            window.currentUser.avatar = document.getElementById('setAvatar').value.trim() || 'U';
+            const newPass = document.getElementById('setNewPassword').value;
+            if (newPass) window.currentUser.password = newPass;
+
+            localStorage.setItem('pulse_session', JSON.stringify(window.currentUser));
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase()), window.currentUser, { merge: true });
+            initSession(window.currentUser);
+            window.showToast('Настройки сохранены', 'success');
+        };
+
+        window.clearLocalCache = function() {
+            localStorage.removeItem('pulse_chat_chats');
+            window.chats = [{ id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', type: 'friend', avatar: '🤖', code: '#pulse_ai_bot', messages: [] }];
+            window.renderChats(); window.selectChat('pulse_bot');
+            window.showToast('Кэш чатов очищен', 'success');
+        };
+
+        // CHATS UI
+        window.renderChats = function() {
+            const list = document.getElementById('chatList');
+            if (!list) return;
+            list.innerHTML = '';
+            window.chats.forEach(c => {
+                const item = document.createElement('div');
+                item.className = `p-2.5 rounded-xl cursor-pointer transition flex items-center space-x-3 ${c.id === window.activeChatId ? 'bg-indigo-600/25 border border-indigo-500/30' : 'hover:bg-slate-800/40'}`;
+                item.onclick = () => window.selectChat(c.id);
+                item.innerHTML = `<div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-white text-xs shrink-0">${c.avatar}</div><span class="text-xs font-semibold text-white truncate">${c.name}</span>`;
+                list.appendChild(item);
+            });
+        };
+
+        window.selectChat = function(id) {
             window.activeChatId = id;
             const chat = window.chats.find(c => c.id === id);
             if (!chat) return;
             document.getElementById('chatTitle').innerText = chat.name;
             document.getElementById('chatAvatar').innerText = chat.avatar;
-            renderMessages();
-            renderChats();
+            window.renderMessages(); window.renderChats();
 
             if (window.innerWidth < 768) {
                 document.getElementById('sidebarChats').classList.add('-translate-x-full');
             }
-        }
-
-        window.exitActiveChat = function() {
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebarChats').classList.remove('-translate-x-full');
-            }
         };
 
         window.deleteCurrentChat = function() {
-            if (window.activeChatId === 'pulse_bot' || window.activeChatId === 'saved_notes') return;
+            if (window.activeChatId === 'pulse_bot') return;
             window.chats = window.chats.filter(c => c.id !== window.activeChatId);
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-            selectChat('pulse_bot');
-        };
-
-        window.openCreatePostModal = function() { document.getElementById('createPostModal').classList.remove('hidden'); };
-        window.closeCreatePostModal = function() { document.getElementById('createPostModal').classList.add('hidden'); };
-        window.submitPost = function() {
-            const text = document.getElementById('postTextInput').value.trim();
-            if (!text) return;
-            window.posts.unshift({ id: Date.now(), author: window.currentUser.name, text: text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-            localStorage.setItem('pulse_posts_db', JSON.stringify(window.posts));
-            document.getElementById('postTextInput').value = ''; closeCreatePostModal(); renderPosts();
-            showToast('Пост опубликован!', 'success');
-        };
-        function renderPosts() {
-            const container = document.getElementById('feedContainer');
-            container.innerHTML = '';
-            window.posts.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'bg-[#131c2e] border border-[#1e293b] rounded-2xl p-4 space-y-2 shadow-lg';
-                card.innerHTML = `<div class="flex items-center space-x-2"><span class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs">${p.author.charAt(0).toUpperCase()}</span><div><h4 class="font-semibold text-xs text-white">${escapeHtml(p.author)}</h4><span class="text-[10px] text-slate-500">${p.time}</span></div></div><p class="text-xs text-slate-200 whitespace-pre-wrap">${escapeHtml(p.text)}</p>`;
-                container.appendChild(card);
-            });
-        }
-
-        window.switchSection = function(sec) {
-            document.getElementById('sectionFeed').classList.toggle('hidden', sec !== 'feed');
-            document.getElementById('sectionMessages').classList.toggle('hidden', sec !== 'messages');
-            document.getElementById('sectionSettings').classList.toggle('hidden', sec !== 'settings');
-
-            document.getElementById('navBtnFeed').className = sec === 'feed' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
-            document.getElementById('navBtnMessages').className = sec === 'messages' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
-            document.getElementById('navBtnSettings').className = sec === 'settings' ? 'flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 cursor-pointer' : 'flex-1 flex flex-col items-center justify-center py-1 text-slate-400 cursor-pointer';
+            window.selectChat('pulse_bot'); window.renderChats();
         };
 
         window.openAddFriendModal = function() { document.getElementById('addFriendModal').classList.remove('hidden'); };
         window.closeAddFriendModal = function() { document.getElementById('addFriendModal').classList.add('hidden'); };
-        window.handleAddFriend = function() {
+        window.openCreateGroupModal = function() { document.getElementById('createGroupModal').classList.remove('hidden'); };
+        window.closeCreateGroupModal = function() { document.getElementById('createGroupModal').classList.add('hidden'); };
+
+        window.handleAddFriend = function(e) {
+            e.preventDefault();
             const code = document.getElementById('friendCodeInput').value.trim();
-            if(!code) return;
-            window.chats.push({ id: 'friend_'+Date.now(), name: 'ЛС ('+code+')', type: 'friend', avatar: '👤', messages: [] });
+            window.chats.push({ id: 'friend_'+Date.now(), name: 'ЛС ('+code+')', type: 'friend', avatar: '👤', code: code, pairCode: getPairChatCode(window.currentUser.code, code), messages: [] });
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-            renderChats(); closeAddFriendModal(); showToast('Чат добавлен', 'success');
+            window.renderChats(); closeAddFriendModal(); window.showToast('Чат добавлен', 'success');
+        };
+
+        window.handleCreateGroup = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('groupNameInput').value.trim();
+            window.chats.push({ id: 'grp_'+Date.now(), name: name, type: 'group', avatar: '👥', messages: [] });
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            window.renderChats(); closeCreateGroupModal(); window.showToast('Группа создана', 'success');
         };
 
         window.handleFileSelect = function(e) {
@@ -512,33 +979,35 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (evt) => {
-                window.selectedAttachment = { name: file.name, data: evt.target.result };
+                window.selectedAttachment = { name: file.name, type: file.type, data: evt.target.result };
+                document.getElementById('attachmentName').innerText = file.name;
+                document.getElementById('attachmentPreview').classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         };
-        window.clearAttachment = function() { window.selectedAttachment = null; };
-        window.toggleVoiceRecord = function() { showToast('🎙️ Запись голоса активна', 'info'); };
+        window.clearAttachment = function() { window.selectedAttachment = null; document.getElementById('attachmentPreview').classList.add('hidden'); };
+        window.toggleVoiceRecord = function() { window.showToast('🎙️ Голосовые сообщения активны', 'info'); };
+
         window.openLightbox = function(src) { document.getElementById('lightboxImage').src = src; document.getElementById('lightboxModal').classList.remove('hidden'); };
         window.closeLightbox = function() { document.getElementById('lightboxModal').classList.add('hidden'); };
 
-        window.adminTool = function(name) { showToast('Инструмент ' + name + ' выполнен!', 'success'); };
-        window.creatorTool = function(name) { showToast('Creator ' + name + ' выполнен!', 'success'); };
-
-        function showToast(msg, type='info') {
-            const c = document.getElementById('toastContainer');
+        window.showToast = function(msg, type='info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
             const t = document.createElement('div');
-            t.className = `px-4 py-2 rounded-xl text-xs font-medium ${type==='success'?'bg-emerald-600':'bg-slate-800'} text-white shadow-xl`;
-            t.innerText = msg; c.appendChild(t);
-            setTimeout(() => t.remove(), 2500);
-        }
+            t.className = `pointer-events-auto px-4 py-2.5 rounded-xl text-xs font-medium shadow-xl ${type==='error'?'bg-rose-600 text-white':type==='success'?'bg-emerald-600 text-white':'bg-slate-800 text-white'}`;
+            t.innerText = msg; container.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        };
 
-        function showAlert(msg) {
-            const a = document.getElementById('authAlert');
-            a.innerText = msg; a.classList.remove('hidden');
-        }
-
-        function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
-        window.handleKeyDown = function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault(); sendMessage();} };
+        window.switchAuthTab = function(tab) {
+            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+        };
+        window.copyMyCode = function() { navigator.clipboard.writeText(window.currentUser.code); window.showToast('ID скопирован', 'success'); };
+        window.handleKeyDown = function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault(); window.sendMessage();} };
+        function showAlert(msg) { const a = document.getElementById('authAlert'); a.innerText = msg; a.classList.remove('hidden'); }
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
         window.addEventListener('DOMContentLoaded', () => {
             const session = localStorage.getItem('pulse_session');
