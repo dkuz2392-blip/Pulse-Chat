@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v8.0 - Enterprise Ultra (RC1)</title>
+    <title>Pulse Workspace v8.5 - Pro Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -35,7 +35,7 @@
             --bg-color: #07090e;
             --card-color: #0e131f;
             --border-color: #1a2333;
-            --accent-color: #4f46e5;
+            --accent-color: #6366f1;
         }
         body.theme-linear { --bg-color: #090d16; --card-color: #131c2e; --border-color: #1e293b; --accent-color: #6366f1; }
         body.theme-cyber { --bg-color: #050508; --card-color: #0f1017; --border-color: #261d33; --accent-color: #a855f7; }
@@ -45,28 +45,28 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .animate-modal { animation: fadeIn 0.2s ease forwards; }
+        .animate-modal { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
 
     <!-- AUTH SCREEN -->
     <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 flex flex-col space-y-4 animate-modal my-auto">
+        <div class="w-full max-w-sm bg-darkCard/90 backdrop-blur-2xl border border-darkBorder rounded-3xl shadow-2xl p-6 flex flex-col space-y-4 animate-modal my-auto">
             <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-base font-bold shadow-inner">
-                    <i class="fa-solid fa-layer-group"></i>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-primaryAccent/30">
+                    <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div class="flex items-center space-x-1 bg-darkBg border border-darkBorder rounded-xl p-1 text-[10px]">
-                    <button type="button" onclick="setTheme('linear')" class="px-2 py-0.5 rounded-lg font-semibold text-white bg-primaryAccent transition">Linear</button>
-                    <button type="button" onclick="setTheme('oled')" class="px-2 py-0.5 rounded-lg font-semibold text-slate-400 hover:text-white transition">OLED</button>
-                    <button type="button" onclick="setTheme('cyber')" class="px-2 py-0.5 rounded-lg font-semibold text-slate-400 hover:text-white transition">Cyber</button>
+                    <button type="button" onclick="setTheme('linear')" class="px-2.5 py-1 rounded-lg font-semibold text-white bg-primaryAccent transition">Linear</button>
+                    <button type="button" onclick="setTheme('oled')" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">OLED</button>
+                    <button type="button" onclick="setTheme('cyber')" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">Cyber</button>
                 </div>
             </div>
 
-            <div class="space-y-0.5">
-                <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace</h1>
-                <p class="text-xs text-slate-400">Enterprise Ultra (RC1)</p>
+            <div class="space-y-1">
+                <h1 class="text-xl font-extrabold tracking-tight text-white">Pulse Ecosystem</h1>
+                <p class="text-xs text-slate-400">Современная облачная платформа</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -74,7 +74,7 @@
                 <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">Регистрация</button>
             </div>
 
-            <div id="authAlert" class="hidden p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
+            <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
 
             <div id="loginForm" class="space-y-3">
                 <div class="space-y-1">
@@ -85,7 +85,7 @@
                     <label class="text-[11px] font-medium text-slate-300">Пароль</label>
                     <input type="password" id="loginPassword" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
-                <button type="button" id="btnLoginSubmit" onclick="handleLogin()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
+                <button type="button" onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
             </div>
 
             <div id="registerForm" class="space-y-3 hidden">
@@ -101,7 +101,7 @@
                     <label class="text-[11px] font-medium text-slate-300">Секретный ключ (опционально)</label>
                     <input type="password" id="regAdminKey" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ключ доступа">
                 </div>
-                <button type="button" id="btnRegSubmit" onclick="handleRegister()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
+                <button type="button" onclick="handleRegister()" class="w-full py-3 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
             </div>
         </div>
     </div>
@@ -113,29 +113,29 @@
 
             <!-- 1. FEED SECTION -->
             <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-darkBg h-full">
-                <div class="h-14 px-4 border-b border-darkBorder bg-darkCard/80 backdrop-blur-xl flex items-center justify-between shrink-0">
+                <div class="h-14 px-4 border-b border-darkBorder bg-darkCard/9oz backdrop-blur-xl flex items-center justify-between shrink-0 shadow-sm">
                     <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-primaryAccent/15 text-primaryAccent flex items-center justify-center text-xs shadow-inner"><i class="fa-solid fa-newspaper"></i></div>
+                        <div class="w-8 h-8 rounded-xl bg-primaryAccent/15 text-primaryAccent flex items-center justify-center text-xs shadow-inner"><i class="fa-solid fa-compass"></i></div>
                         <div>
                             <h2 class="font-bold text-xs text-white">Инфопоток</h2>
-                            <p class="text-[9px] text-slate-400">Публикации сети</p>
+                            <p class="text-[9px] text-slate-400">Лента публикаций и историй</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button type="button" onclick="openCreateStoryModal()" class="px-2.5 py-1.5 bg-darkBg border border-darkBorder text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer">
+                        <button type="button" onclick="openCreateStoryModal()" class="px-2.5 py-1.5 bg-darkCard border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1 cursor-pointer hover:border-primaryAccent transition">
                             <i class="fa-solid fa-circle-plus text-primaryAccent"></i> Истории
                         </button>
-                        <button type="button" onclick="openCreatePostModal()" class="px-3 py-1.5 bg-primaryAccent text-white rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer shadow-md">
-                            <i class="fa-solid fa-plus text-[9px]"></i> Запись
+                        <button type="button" onclick="openCreatePostModal()" class="px-3.5 py-1.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition">
+                            <i class="fa-solid fa-plus text-[10px]"></i> Запись
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-darkCard/30 border-b border-darkBorder px-4 py-3 shrink-0">
+                <div class="bg-darkCard/40 border-b border-darkBorder px-4 py-3 shrink-0">
                     <div id="storiesTray" class="flex items-center space-x-3 overflow-x-auto pb-1">
-                        <div onclick="openCreateStoryModal()" class="flex flex-col items-center space-y-1 shrink-0 cursor-pointer">
-                            <div class="w-12 h-12 rounded-xl bg-darkBg border-2 border-dashed border-primaryAccent/50 flex items-center justify-center text-primaryAccent"><i class="fa-solid fa-plus text-xs"></i></div>
-                            <span class="text-[10px] text-slate-400">Ваша</span>
+                        <div onclick="openCreateStoryModal()" class="flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group">
+                            <div class="w-13 h-13 w-12 h-12 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/60 flex items-center justify-center text-primaryAccent group-hover:scale-105 transition shadow-md"><i class="fa-solid fa-plus text-xs"></i></div>
+                            <span class="text-[10px] text-slate-300 font-medium">Ваша</span>
                         </div>
                     </div>
                 </div>
@@ -146,24 +146,24 @@
             <!-- 2. MESSAGES SECTION -->
             <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative h-full">
                 <div id="sidebarChats" class="w-full md:w-72 bg-darkCard border-r border-darkBorder flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform">
-                    <div class="p-3 border-b border-darkBorder flex gap-1.5 shrink-0">
-                        <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-darkBg border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer">
-                            <i class="fa-solid fa-user-plus text-primaryAccent text-[10px]"></i> <span>ЛС</span>
+                    <div class="p-3 border-b border-darkBorder flex gap-2 shrink-0 bg-darkCard/50">
+                        <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2.5 bg-darkBg border border-darkBorder text-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:border-primaryAccent transition shadow-sm">
+                            <i class="fa-solid fa-user-plus text-primaryAccent text-[11px]"></i> <span>Личные</span>
                         </button>
-                        <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-darkBg border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer">
-                            <i class="fa-solid fa-users text-primaryAccent text-[10px]"></i> <span>Группа</span>
+                        <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2.5 bg-darkBg border border-darkBorder text-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:border-primaryAccent transition shadow-sm">
+                            <i class="fa-solid fa-users text-primaryAccent text-[11px]"></i> <span>Группа</span>
                         </button>
                     </div>
-                    <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+                    <div id="chatList" class="flex-1 overflow-y-auto p-2.5 space-y-1.5"></div>
                 </div>
 
                 <div id="chatPane" class="flex-1 flex flex-col h-full bg-darkBg overflow-hidden relative z-10">
-                    <div class="h-14 border-b border-darkBorder px-4 flex items-center justify-between bg-darkCard/60 backdrop-blur-xl shrink-0">
-                        <div class="flex items-center space-x-2.5 overflow-hidden">
-                            <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                    <div class="h-14 border-b border-darkBorder px-4 flex items-center justify-between bg-darkCard/80 backdrop-blur-xl shrink-0">
+                        <div class="flex items-center space-x-3 overflow-hidden">
+                            <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
                             <div class="overflow-hidden">
                                 <h3 id="chatTitle" class="font-bold text-xs text-white truncate">Чат</h3>
-                                <p id="chatStatus" class="text-[10px] text-slate-400 truncate">● Облачная синхронизация</p>
+                                <p id="chatStatus" class="text-[10px] text-emerald-400 truncate flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Онлайн связь</p>
                             </div>
                         </div>
                     </div>
@@ -172,40 +172,73 @@
                         <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
                     </div>
 
-                    <div class="p-3 border-t border-darkBorder bg-darkCard/80 backdrop-blur-xl shrink-0 space-y-2">
-                        <div id="imagePreviewContainer" class="hidden flex items-center gap-2 bg-darkBg p-2 rounded-xl border border-darkBorder">
-                            <img id="imagePreviewThumb" class="w-10 h-10 object-cover rounded-lg">
-                            <span class="text-xs text-slate-300 truncate flex-1">Картинка прикреплена</span>
-                            <button onclick="clearImagePreview()" class="text-rose-400 px-2 py-1 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="p-3 border-t border-darkBorder bg-darkCard/90 backdrop-blur-xl shrink-0 space-y-2.5">
+                        <div id="imagePreviewContainer" class="hidden flex items-center gap-2.5 bg-darkBg p-2 rounded-xl border border-darkBorder">
+                            <img id="imagePreviewThumb" class="w-11 h-11 object-cover rounded-lg border border-darkBorder">
+                            <span class="text-xs text-slate-300 truncate flex-1 font-medium">Прикрепленное изображение</span>
+                            <button onclick="clearImagePreview()" class="text-rose-400 w-7 h-7 rounded-lg hover:bg-rose-500/10 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <label class="w-9 h-9 rounded-xl bg-darkBg border border-darkBorder text-slate-300 flex items-center justify-center shrink-0 cursor-pointer hover:border-primaryAccent transition">
-                                <i class="fa-solid fa-image text-xs text-primaryAccent"></i>
+                            <label class="w-10 h-10 rounded-xl bg-darkBg border border-darkBorder text-slate-300 flex items-center justify-center shrink-0 cursor-pointer hover:border-primaryAccent hover:text-white transition shadow-sm">
+                                <i class="fa-solid fa-image text-primaryAccent"></i>
                                 <input type="file" id="chatImageInput" accept="image/*" class="hidden" onchange="previewChatImage(this)">
                             </label>
-                            <input type="text" id="messageInput" onkeydown="if(event.key==='Enter')sendMessage()" placeholder="Сообщение..." class="flex-1 px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
-                            <button type="button" onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-primaryAccent text-white flex items-center justify-center shrink-0 cursor-pointer shadow-md"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                            <input type="text" id="messageInput" onkeydown="if(event.key==='Enter')sendMessage()" placeholder="Напишите сообщение..." class="flex-1 px-4 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                            <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-xl bg-primaryAccent text-white flex items-center justify-center shrink-0 cursor-pointer shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. SETTINGS & ADMIN PANEL SECTION -->
+            <!-- 3. SETTINGS & USER PANEL SECTION -->
             <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 hidden max-w-lg mx-auto w-full space-y-4 h-full">
-                <div class="flex items-center justify-between border-b border-darkBorder pb-4">
-                    <div>
-                        <h2 id="settingsUserName" class="font-bold text-sm text-white">Профиль</h2>
-                        <button type="button" onclick="copyMyCode()" id="settingsUserCode" class="text-[11px] text-primaryAccent hover:underline font-mono">#id</button>
+                <div class="flex items-center justify-between border-b border-darkBorder pb-4 bg-darkCard/50 p-4 rounded-2xl border">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-primaryAccent/20 border border-primaryAccent/40 flex items-center justify-center text-primaryAccent font-bold text-base shadow-inner" id="settingsUserAvatar">U</div>
+                        <div>
+                            <h2 id="settingsUserName" class="font-bold text-sm text-white">Профиль</h2>
+                            <button type="button" onclick="copyMyCode()" id="settingsUserCode" class="text-[11px] text-primaryAccent hover:underline font-mono">#id</button>
+                        </div>
                     </div>
-                    <button type="button" onclick="confirmLogout()" class="px-3.5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold cursor-pointer">Выйти</button>
+                    <button type="button" onclick="confirmLogout()" class="px-3.5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold cursor-pointer hover:bg-rose-500/20 transition">Выйти</button>
                 </div>
 
+                <!-- НАСТРОЙКИ ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ -->
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-3.5 shadow-lg">
+                    <h3 class="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-sliders text-primaryAccent"></i> Настройки аккаунта</h3>
+                    
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] text-slate-300 font-medium">Статус «О себе»</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="userStatusInput" placeholder="Напишите ваш статус..." class="flex-1 px-3 py-2 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
+                            <button type="button" onclick="saveUserStatus()" class="px-3 py-2 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Сохранить</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-darkBorder">
+                        <div>
+                            <span class="text-xs font-medium text-white block">Звуковые уведомления</span>
+                            <span class="text-[10px] text-slate-400">Звук при новых сообщениях</span>
+                        </div>
+                        <input type="checkbox" id="soundToggle" onchange="toggleSoundSetting(this)" class="w-4 h-4 accent-primaryAccent rounded cursor-pointer">
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-darkBorder">
+                        <div>
+                            <span class="text-xs font-medium text-white block">Очистить локальный кэш</span>
+                            <span class="text-[10px] text-slate-400">Сбросить временные данные браузера</span>
+                        </div>
+                        <button type="button" onclick="clearUserCache()" class="px-3 py-1.5 bg-darkBg border border-darkBorder text-slate-300 rounded-xl text-xs hover:border-primaryAccent transition">Очистить</button>
+                    </div>
+                </div>
+
+                <!-- ТЕМА ОФОРМЛЕНИЯ -->
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-3 shadow-lg">
-                    <h3 class="font-bold text-xs text-white uppercase tracking-wider">ТЕМА ОФОРМЛЕНИЯ</h3>
+                    <h3 class="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-palette text-primaryAccent"></i> ТЕМА ОФОРМЛЕНИЯ</h3>
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="setTheme('linear')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent">Linear</button>
-                        <button type="button" onclick="setTheme('oled')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent">OLED</button>
-                        <button type="button" onclick="setTheme('cyber')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent">Cyber</button>
+                        <button type="button" onclick="setTheme('linear')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent transition font-medium">Linear</button>
+                        <button type="button" onclick="setTheme('oled')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent transition font-medium">OLED</button>
+                        <button type="button" onclick="setTheme('cyber')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent transition font-medium">Cyber</button>
                     </div>
                 </div>
 
@@ -231,8 +264,7 @@
                             <button type="button" onclick="f7_unbanUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-emerald-400 text-left truncate"><i class="fa-solid fa-user-check mr-1"></i> Разбан юзера</button>
                             <button type="button" onclick="f8_muteUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 text-left truncate"><i class="fa-solid fa-volume-xmark mr-1"></i> Мут чата</button>
 
-                            <button type="button" onclick="f16_cleanStorage()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-purple-300 text-left truncate"><i class="fa-solid fa-broom mr-1"></i> Очист. кэша</button>
-                            <button type="button" onclick="loadAdminUsers()" class="p-2 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center truncate"><i class="fa-solid fa-rotate mr-1"></i> Обновить</button>
+                            <button type="button" onclick="loadAdminUsers()" class="p-2 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center col-span-2 truncate"><i class="fa-solid fa-rotate mr-1"></i> Обновить пользователей</button>
                         </div>
 
                         <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ -->
@@ -256,7 +288,7 @@
 
         <!-- BOTTOM NAVIGATION BAR -->
         <div class="absolute bottom-0 inset-x-0 h-16 bg-darkCard/95 border-t border-darkBorder flex items-center justify-around px-2 z-40 shadow-2xl backdrop-blur-xl">
-            <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
+            <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-compass text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
             <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
             <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
         </div>
@@ -264,64 +296,64 @@
 
     <!-- MODALS -->
     <!-- 1. ADD FRIEND MODAL -->
-    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
-            <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
-                <h3 class="font-bold text-xs text-white">Новый ЛС чат</h3>
-                <button type="button" onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
+                <h3 class="font-bold text-xs text-white uppercase tracking-wider">Новый ЛС чат</h3>
+                <button type="button" onclick="closeAddFriendModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="friendUsernameInput" placeholder="Никнейм собеседника..." class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
-            <button type="button" onclick="submitAddFriend()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Открыть чат</button>
+            <input type="text" id="friendUsernameInput" placeholder="Введите никнейм собеседника..." class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+            <button type="button" onclick="submitAddFriend()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition">Открыть чат</button>
         </div>
     </div>
 
     <!-- 2. CREATE GROUP MODAL -->
-    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
-            <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
-                <h3 class="font-bold text-xs text-white">Создать группу</h3>
-                <button type="button" onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
+                <h3 class="font-bold text-xs text-white uppercase tracking-wider">Создать группу</h3>
+                <button type="button" onclick="closeCreateGroupModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="groupNameInput" placeholder="Название группы..." class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
-            <button type="button" onclick="submitCreateGroup()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Создать</button>
+            <input type="text" id="groupNameInput" placeholder="Название группы..." class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+            <button type="button" onclick="submitCreateGroup()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition">Создать группу</button>
         </div>
     </div>
 
     <!-- 3. CREATE POST MODAL -->
-    <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
-            <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
-                <h3 class="font-bold text-xs text-white">Новая публикация</h3>
-                <button type="button" onclick="closeCreatePostModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+    <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
+                <h3 class="font-bold text-xs text-white uppercase tracking-wider">Новая публикация</h3>
+                <button type="button" onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <textarea id="postTextInput" rows="3" placeholder="Что нового?..." class="w-full p-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent resize-none"></textarea>
+            <textarea id="postTextInput" rows="3" placeholder="Что нового в вашей сети?..." class="w-full p-3.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent resize-none transition"></textarea>
             <div id="postImagePreviewContainer" class="hidden relative">
-                <img id="postImageThumb" class="w-full h-32 object-cover rounded-xl border border-darkBorder">
-                <button onclick="clearPostImagePreview()" class="absolute top-2 right-2 bg-black/60 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+                <img id="postImageThumb" class="w-full h-36 object-cover rounded-xl border border-darkBorder">
+                <button onclick="clearPostImagePreview()" class="absolute top-2 right-2 bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex items-center justify-between pt-1">
-                <label class="px-3 py-2 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-300 cursor-pointer flex items-center gap-1.5 hover:border-primaryAccent transition">
+                <label class="px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-300 cursor-pointer flex items-center gap-2 hover:border-primaryAccent transition">
                     <i class="fa-solid fa-image text-primaryAccent"></i> Картинка
                     <input type="file" id="postImageInput" accept="image/*" class="hidden" onchange="previewPostImage(this)">
                 </label>
-                <button type="button" onclick="submitPost()" class="px-4 py-2 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Опубликовать</button>
+                <button type="button" onclick="submitPost()" class="px-4 py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold shadow-md shadow-primaryAccent/30">Опубликовать</button>
             </div>
         </div>
     </div>
 
-    <div id="createStoryModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
-            <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
-                <h3 class="font-bold text-xs text-white">Добавить историю</h3>
-                <button type="button" onclick="closeCreateStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+    <!-- 4. CREATE STORY MODAL -->
+    <div id="createStoryModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
+                <h3 class="font-bold text-xs text-white uppercase tracking-wider">Добавить историю</h3>
+                <button type="button" onclick="closeCreateStoryModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="storyTextInput" placeholder="Текст истории..." class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white">
-            <button type="button" onclick="submitStory()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Опубликовать</button>
+            <input type="text" id="storyTextInput" placeholder="Текст или мысль истории..." class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+            <button type="button" onclick="submitStory()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold shadow-lg shadow-primaryAccent/30">Опубликовать историю</button>
         </div>
     </div>
 
     <script>
-        // ХЕЛПЕР ЗАЩИТЫ ОТ XSS
         function escapeHTML(str) {
             if (!str) return '';
             return String(str)
@@ -332,7 +364,6 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // ХЕШИРОВАНИЕ ПАРОЛЕЙ (SHA-256)
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password + "_pulse_salt_2026");
@@ -378,6 +409,9 @@
             if (session) {
                 try { initSession(JSON.parse(session)); } catch(e) { localStorage.removeItem('pulse_session'); }
             }
+            const soundPref = localStorage.getItem('pulse_sound') === 'true';
+            const soundCheckbox = document.getElementById('soundToggle');
+            if(soundCheckbox) soundCheckbox.checked = soundPref;
         });
 
         window.switchAuthTab = function(tab) {
@@ -430,7 +464,8 @@
                     isAdmin,
                     isBanned: false,
                     isMuted: false,
-                    isVerified: false
+                    isVerified: false,
+                    status: 'В сети в Pulse'
                 };
                 
                 await db.collection('users').doc(username).set(newUser);
@@ -446,7 +481,11 @@
             document.getElementById('mainAppContainer').classList.remove('hidden');
             document.getElementById('settingsUserName').innerText = escapeHTML(user.name);
             document.getElementById('settingsUserCode').innerText = escapeHTML(user.code || '#usr');
+            document.getElementById('settingsUserAvatar').innerText = escapeHTML(user.name.charAt(0).toUpperCase());
             document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
+            
+            const statusInput = document.getElementById('userStatusInput');
+            if(statusInput) statusInput.value = user.status || '';
             
             loadUserChats();
             window.selectChat(window.activeChatId);
@@ -472,7 +511,32 @@
 
         window.toggleMobileSidebar = function() { document.getElementById('sidebarChats').classList.toggle('-translate-x-full'); };
 
-        // ПОСТЫ В ЛЕНТУ С КАРТИНКАМИ
+        // ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ
+        window.saveUserStatus = async function() {
+            const newStatus = document.getElementById('userStatusInput').value.trim();
+            if(!window.currentUser) return;
+            try {
+                await db.collection('users').doc(window.currentUser.name).update({ status: newStatus });
+                let updated = {...window.currentUser, status: newStatus};
+                window.currentUser = Object.freeze(updated);
+                localStorage.setItem('pulse_session', JSON.stringify(updated));
+                alert('Статус успешно обновлен!');
+            } catch(e) {
+                alert('Ошибка сохранения статуса');
+            }
+        };
+
+        window.toggleSoundSetting = function(el) {
+            localStorage.setItem('pulse_sound', el.checked);
+        };
+
+        window.clearUserCache = function() {
+            localStorage.clear();
+            alert('Кэш очищен. Перезагрузите страницу.');
+            location.reload();
+        };
+
+        // ЛЕНТА И ПОСТЫ
         window.openCreatePostModal = () => document.getElementById('createPostModal').classList.remove('hidden');
         window.closeCreatePostModal = () => { document.getElementById('createPostModal').classList.add('hidden'); clearPostImagePreview(); };
         
@@ -517,19 +581,19 @@
                     const p = doc.data();
                     const firstLetter = escapeHTML(p.author ? p.author.charAt(0).toUpperCase() : 'U');
                     const card = document.createElement('div');
-                    card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-2.5 shadow-lg';
+                    card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-3 shadow-xl';
                     
-                    let imageHtml = p.image ? `<img src="${p.image}" class="w-full h-48 object-cover rounded-xl border border-darkBorder">` : '';
+                    let imageHtml = p.image ? `<img src="${p.image}" class="w-full h-52 object-cover rounded-xl border border-darkBorder">` : '';
                     
                     card.innerHTML = `
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs">${firstLetter}</div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs shadow-inner">${firstLetter}</div>
                             <div>
                                 <h4 class="font-bold text-xs text-white">${escapeHTML(p.author)}</h4>
                                 <span class="text-[10px] text-slate-500">${escapeHTML(p.time||'')}</span>
                             </div>
                         </div>
-                        ${p.text ? `<p class="text-xs text-slate-200">${escapeHTML(p.text)}</p>` : ''}
+                        ${p.text ? `<p class="text-xs text-slate-200 leading-relaxed">${escapeHTML(p.text)}</p>` : ''}
                         ${imageHtml}
                     `;
                     container.appendChild(card);
@@ -558,14 +622,14 @@
                     if (Date.now() - s.timestamp > 86400000) return;
                     const firstLetter = escapeHTML(s.author ? s.author.charAt(0).toUpperCase() : 'U');
                     const div = document.createElement('div');
-                    div.className = 'flex flex-col items-center space-y-1 shrink-0';
-                    div.innerHTML = `<div class="w-12 h-12 rounded-xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center"><div class="w-full h-full bg-darkBg rounded-[10px] flex items-center justify-center font-bold text-[10px] text-white">${firstLetter}</div></div><span class="text-[10px] text-slate-300 truncate max-w-[48px]">${escapeHTML(s.author)}</span>`;
+                    div.className = 'flex flex-col items-center space-y-1.5 shrink-0';
+                    div.innerHTML = `<div class="w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center shadow-md"><div class="w-full h-full bg-darkBg rounded-[14px] flex items-center justify-center font-bold text-xs text-white">${firstLetter}</div></div><span class="text-[10px] text-slate-300 truncate max-w-[48px]">${escapeHTML(s.author)}</span>`;
                     tray.appendChild(div);
                 });
             });
         }
 
-        // ЗАГРУЗКА И ОТОБРАЖЕНИЕ ЧАТОВ
+        // ЧАТЫ И СООБЩЕНИЯ
         async function loadUserChats() {
             window.chats = [{ id: 'pulse_global', name: 'Общий чат', type: 'group' }];
             try {
@@ -586,8 +650,8 @@
             list.innerHTML = '';
             window.chats.forEach(c => {
                 const item = document.createElement('div');
-                item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center space-x-2 bg-darkBg border border-darkBorder text-white text-xs font-semibold';
-                item.innerHTML = `<i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'}"></i> <span class="truncate">${escapeHTML(c.name)}</span>`;
+                item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center space-x-2.5 bg-darkBg/60 border border-darkBorder hover:border-primaryAccent text-white text-xs font-semibold shadow-sm';
+                item.innerHTML = `<div class="w-7 h-7 rounded-lg bg-darkCard border border-darkBorder flex items-center justify-center shrink-0"><i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'} text-[10px]"></i></div> <span class="truncate">${escapeHTML(c.name)}</span>`;
                 item.onclick = () => { 
                     window.selectChat(c.id); 
                     if(window.innerWidth < 768) {
@@ -598,7 +662,6 @@
             });
         };
 
-        // REALTIME ЧАТЫ
         window.selectChat = function(id) {
             window.activeChatId = id;
             const chat = window.chats.find(c => c.id === id);
@@ -625,13 +688,14 @@
                         const div = document.createElement('div');
                         div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
                         
-                        let imageHtml = m.image ? `<img src="${m.image}" class="mt-2 w-48 h-auto rounded-lg border border-darkBorder">` : '';
+                        let imageHtml = m.image ? `<img src="${m.image}" class="mt-2 w-48 h-auto rounded-xl border border-darkBorder shadow">` : '';
                         
                         div.innerHTML = `
-                            <div class="max-w-[75%] px-3.5 py-2 rounded-xl text-xs ${isMe ? 'bg-primaryAccent text-white' : 'bg-darkCard text-slate-200 border border-darkBorder'}">
-                                <b>${escapeHTML(m.sender)}</b>: ${escapeHTML(m.text || '')}
+                            <div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-xs ${isMe ? 'bg-primaryAccent text-white shadow-md shadow-primaryAccent/20' : 'bg-darkCard text-slate-200 border border-darkBorder'}">
+                                <b class="block text-[10px] opacity-80 mb-0.5">${escapeHTML(m.sender)}</b>
+                                ${escapeHTML(m.text || '')}
                                 ${imageHtml}
-                                <div class="text-[8px] opacity-60 text-right mt-0.5">${escapeHTML(m.time||'')}</div>
+                                <div class="text-[8px] opacity-60 text-right mt-1">${escapeHTML(m.time||'')}</div>
                             </div>
                         `;
                         container.appendChild(div);
@@ -692,7 +756,7 @@
             });
         };
 
-        // ОТКРЫТИЕ И СОЗДАНИЕ ЛС ЧАТА (МОДАЛЬНОЕ ОКНО)
+        // МОДАЛКИ ЛС И ГРУПП
         window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
         window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
 
@@ -745,7 +809,6 @@
             }
         };
 
-        // СОЗДАНИЕ ГРУППОВЫХ ЧАТОВ
         window.openCreateGroupModal = () => document.getElementById('createGroupModal').classList.remove('hidden');
         window.closeCreateGroupModal = () => document.getElementById('createGroupModal').classList.add('hidden');
 
@@ -832,15 +895,6 @@
         window.f6_banUser = async () => { const u=prompt('Ник для бана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: true }); logAdminAction('Забанен: ' + u); loadAdminUsers(); } };
         window.f7_unbanUser = async () => { const u=prompt('Ник для разбана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: false }); logAdminAction('Разбанен: ' + u); loadAdminUsers(); } };
         window.f8_muteUser = async () => { const u=prompt('Ник для мута:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isMuted: true }); logAdminAction('Выдан мут: ' + u); } };
-        window.f16_cleanStorage = () => { 
-            const session = localStorage.getItem('pulse_session');
-            const theme = localStorage.getItem('pulse_theme');
-            localStorage.clear();
-            if (session) localStorage.setItem('pulse_session', session);
-            if (theme) localStorage.setItem('pulse_theme', theme);
-            logAdminAction('Сервисный кэш очищен');
-            alert('Кэш приложения очищен!');
-        };
 
         window.adminDeleteUser = async function(id) {
             if (!confirm('Удалить аккаунт ' + id + '?')) return;
