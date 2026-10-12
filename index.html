@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Enterprise Workspace v5.3</title>
+    <title>Pulse Enterprise Workspace v5.4</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -50,30 +50,27 @@
             --accent-color: #3b82f6;
         }
 
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; background-color: var(--bg-color); color: #f3f4f6; transition: background-color 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #f3f4f6; transition: background-color 0.3s ease; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        button, input, textarea { -webkit-appearance: none; }
         @keyframes waveAnim { 0%, 100% { height: 6px; } 50% { height: 28px; } }
         .wave-bar { animation: waveAnim 1.2s ease-in-out infinite; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .animate-modal { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-        /* Принудительный скролл для мобильных таблиц */
         .admin-table-wrapper {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             width: 100%;
-            max-width: 100%;
         }
     </style>
 </head>
-<body class="h-full overflow-hidden flex flex-col select-none theme-linear">
+<body class="h-full flex flex-col select-none theme-linear overflow-x-hidden">
 
     <!-- AUTH SCREEN -->
-    <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-xl flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-8 flex flex-col space-y-6 animate-modal">
+    <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg/95 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-8 flex flex-col space-y-6 animate-modal my-auto">
             <div class="flex items-center justify-between">
                 <div class="w-12 h-12 rounded-2xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-xl font-bold shadow-inner">
                     <i class="fa-solid fa-layer-group"></i>
@@ -97,38 +94,38 @@
 
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+            <div id="loginForm" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
-                    <input type="text" id="loginUsername" required autocomplete="username" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ваш никнейм">
+                    <input type="text" id="loginUsername" autocomplete="username" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ваш никнейм">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Пароль</label>
-                    <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
+                    <input type="password" id="loginPassword" autocomplete="current-password" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
-            </form>
+                <button type="button" onclick="handleLogin()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
+            </div>
 
-            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <div id="registerForm" class="space-y-4 hidden">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
-                    <input type="text" id="regUsername" required autocomplete="username" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Придумайте никнейм">
+                    <input type="text" id="regUsername" autocomplete="username" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Придумайте никнейм">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Пароль</label>
-                    <input type="password" id="regPassword" required autocomplete="new-password" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
+                    <input type="password" id="regPassword" autocomplete="new-password" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Секретный ключ (опционально)</label>
                     <input type="password" id="regAdminKey" autocomplete="off" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ключ доступа">
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
-            </form>
+                <button type="button" onclick="handleRegister()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
+            </div>
         </div>
     </div>
 
     <!-- MAIN APP WRAPPER -->
-    <div class="flex-1 flex flex-col overflow-hidden relative">
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
 
         <!-- 1. FEED SECTION WITH STORIES TRAY -->
         <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-darkBg">
@@ -263,10 +260,10 @@
             <!-- Profile Settings -->
             <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
                 <h3 class="font-bold text-xs text-white uppercase tracking-wider">Параметры профиля</h3>
-                <form onsubmit="saveUserSettings(event)" class="space-y-4">
+                <div class="space-y-4">
                     <div>
                         <label class="text-xs font-medium text-slate-400">Имя</label>
-                        <input type="text" id="setDisplayName" required class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+                        <input type="text" id="setDisplayName" class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
                     </div>
                     <div>
                         <label class="text-xs font-medium text-slate-400">О себе (Био)</label>
@@ -283,9 +280,9 @@
                         </div>
                     </div>
                     <div class="pt-2 flex justify-end">
-                        <button type="submit" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
+                        <button type="button" onclick="saveUserSettings()" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
                     </div>
-                </form>
+                </div>
             </div>
 
             <!-- ADMIN PANEL -->
@@ -380,20 +377,20 @@
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
             <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Добавить чат</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <form onsubmit="handleAddFriend(event)" class="space-y-4">
-                <input type="text" id="friendCodeInput" required placeholder="#username_1234" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
-                <button type="submit" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Подключиться</button>
-            </form>
+            <div class="space-y-4">
+                <input type="text" id="friendCodeInput" placeholder="#username_1234" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                <button type="button" onclick="handleAddFriend()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Подключиться</button>
+            </div>
         </div>
     </div>
 
     <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
             <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Создать группу</h3><button onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <form onsubmit="handleCreateGroup(event)" class="space-y-4">
-                <input type="text" id="groupNameInput" required placeholder="Название группы" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
-                <button type="submit" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Создать</button>
-            </form>
+            <div class="space-y-4">
+                <input type="text" id="groupNameInput" placeholder="Название группы" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                <button type="button" onclick="handleCreateGroup()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Создать</button>
+            </div>
         </div>
     </div>
 
@@ -858,10 +855,11 @@
             document.getElementById('chatStatus').innerText = isOnline ? '● В сети' : '● Был(а) недавно';
         }
 
-        window.handleLogin = async function(e) {
-            e.preventDefault();
+        window.handleLogin = async function() {
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
+            if (!username || !password) { showAlert('Заполните все поля'); return; }
+            
             const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
             let found = null;
             snapshot.forEach(d => { if (d.data().name.toLowerCase() === username.toLowerCase()) found = d.data(); });
@@ -872,11 +870,12 @@
             } else { showAlert('Неверный логин или пароль'); }
         };
 
-        window.handleRegister = async function(e) {
-            e.preventDefault();
+        window.handleRegister = async function() {
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value;
             const key = document.getElementById('regAdminKey').value.trim();
+            if (!username || !password) { showAlert('Заполните обязательные поля'); return; }
+
             const isCreator = (key === window.CREATOR_KEY);
             const isAdmin = (key === window.MASTER_ADMIN_KEY) || isCreator;
 
@@ -910,8 +909,8 @@
 
         window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
 
-        window.saveUserSettings = async function(e) {
-            e.preventDefault();
+        window.saveUserSettings = async function() {
+            if (!window.currentUser) return;
             window.currentUser.name = document.getElementById('setDisplayName').value.trim();
             window.currentUser.bio = document.getElementById('setUserBio').value.trim();
             if (window.uploadedAvatarBase64) {
@@ -1072,17 +1071,17 @@
         window.openCreateGroupModal = function() { document.getElementById('createGroupModal').classList.remove('hidden'); };
         window.closeCreateGroupModal = function() { document.getElementById('createGroupModal').classList.add('hidden'); };
 
-        window.handleAddFriend = function(e) {
-            e.preventDefault();
+        window.handleAddFriend = function() {
             const code = document.getElementById('friendCodeInput').value.trim();
+            if (!code) return;
             window.chats.push({ id: 'friend_'+Date.now(), name: 'ЛС ('+code+')', type: 'friend', avatar: '👤', code: code, pairCode: getPairChatCode(window.currentUser.code, code), messages: [] });
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
             window.renderChats(); closeAddFriendModal(); window.showToast('Чат добавлен', 'success');
         };
 
-        window.handleCreateGroup = function(e) {
-            e.preventDefault();
+        window.handleCreateGroup = function() {
             const name = document.getElementById('groupNameInput').value.trim();
+            if (!name) return;
             const newGroup = { id: 'grp_'+Date.now(), name: name, type: 'group', avatar: '👥', messages: [] };
             window.chats.push(newGroup);
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
