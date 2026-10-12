@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pulse Workspace v6.1 - Enterprise Edition</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS с версионированием от кэша -->
+    <script src="https://cdn.tailwindcss.com?v=6.1.1"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -22,7 +22,7 @@
         }
     </script>
     <!-- FontAwesome & Google Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.1.1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -444,6 +444,15 @@
     </div>
 
     <div id="toastContainer" class="fixed bottom-24 right-5 z-[140] flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Автоматический сброс устаревшего кэша при обновлении версии -->
+    <script>
+        const APP_VERSION = '6.1.1';
+        if (localStorage.getItem('pulse_app_ver') !== APP_VERSION) {
+            localStorage.removeItem('pulse_session');
+            localStorage.setItem('pulse_app_ver', APP_VERSION);
+        }
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1552,7 +1561,7 @@
             bindAction('submitStoryBtn', () => window.submitStory());
 
             bindAction('openAddFriendModalBtn', () => window.openAddFriendModal());
-            bindAction('closeAddFriendBtn', () => window.openAddFriendModal());
+            bindAction('closeAddFriendBtn', () => window.closeAddFriendModal());
             bindAction('submitAddFriendBtn', () => window.handleAddFriend());
 
             bindAction('openCreateGroupModalBtn', () => window.openCreateGroupModal());
