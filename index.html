@@ -217,7 +217,7 @@
                     </div>
                 </div>
 
-                <!-- ADMIN PANEL (FULL 26 ENTERPRISE FUNCTIONS + UNIVERSAL SCANNER) -->
+                <!-- ADMIN PANEL -->
                 <div id="adminPanelBox" class="hidden space-y-3 pb-8">
                     <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-lg">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
@@ -259,7 +259,7 @@
 
         </div>
 
-        <!-- FIXED BOTTOM NAVIGATION BAR (EXPANDED TO 4 ITEMS) -->
+        <!-- FIXED BOTTOM NAVIGATION BAR -->
         <div class="absolute bottom-0 inset-x-0 h-16 bg-darkCard/95 border-t border-darkBorder flex items-center justify-around px-2 z-40 shadow-2xl backdrop-blur-xl">
             <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
             <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Чаты</span></button>
@@ -326,7 +326,7 @@
         window.activeChatId = 'pulse_bot';
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace v8.0 4x!', time: '12:00' }] }
+            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace 4x!', time: '12:00' }] }
         ];
 
         window.tasksList = JSON.parse(localStorage.getItem('pulse_4x_tasks') || 'null') || [
@@ -360,7 +360,11 @@
             const password = document.getElementById('loginPassword').value;
             if (!username || !password) { showAlert('Заполните поля'); return; }
             try {
-                const docSnap = await db.collection('users').doc(username).get();
+                // Авторизация проверяет и корневую коллекцию, и структуру pulse-chat-app
+                let docSnap = await db.collection('users').doc(username).get();
+                if (!docSnap.exists) {
+                    docSnap = await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(username).get();
+                }
                 if (docSnap.exists && docSnap.data().password === password) {
                     initSession(docSnap.data());
                 } else { showAlert('Неверный логин или пароль'); }
@@ -376,7 +380,9 @@
                 const isCreator = key === window.CREATOR_KEY;
                 const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
                 const newUser = { name: username, code: '#' + username + '_123', password, isCreator, isAdmin };
+                // Сохраняем в обе точки для надежности
                 await db.collection('users').doc(username).set(newUser);
+                await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(username).set(newUser);
                 initSession(newUser);
             } catch(e) { showAlert('Ошибка регистрации'); }
         };
@@ -563,21 +569,18 @@
             window.selectChat('pulse_bot'); window.renderChats();
         };
 
-        // ADMIN FUNCTIONS (Универсальный сканер всех возможных коллекций пользователей)
+        // ADMIN FUNCTIONS (Сканирует и стандартную базу, и структуру pulse-chat-app -> публичный)
         window.loadAdminUsers = async function() {
             const tbody = document.getElementById('adminUsersTableBody');
             const countEl = document.getElementById('adminTotalUsersCount');
             if (!tbody) return;
 
-            tbody.innerHTML = '<tr><td colspan="2" class="p-3 text-slate-400">Поиск пользователей во всех базах...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="2" class="p-3 text-slate-400">Сканирование базы данных...</td></tr>';
             const allUsersMap = new Map();
 
             const pathsToSearch = [
                 db.collection('users'),
-                db.collection('profiles'),
-                db.collection('accounts'),
-                db.collection('artifacts').doc('pulse-workspace-v6').collection('public').doc('data').collection('users'),
-                db.collection('artifacts').doc('pulse-workspace-v5').collection('public').doc('data').collection('users')
+                db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный')
             ];
 
             for (const collectionRef of pathsToSearch) {
@@ -616,14 +619,14 @@
                 `;
                 tbody.appendChild(tr);
             });
-            logAdminAction(`Найдено пользователей в системе: ${allUsersMap.size}`);
+            logAdminAction(`Найдено пользователей: ${allUsersMap.size}`);
         };
 
         window.adminDeleteUserByRef = async function(path) {
             if (!confirm('Удалить этого пользователя?')) return;
             try {
                 await db.doc(path).delete();
-                logAdminAction('Удален пользователь по пути: ' + path);
+                logAdminAction('Удален пользователь: ' + path);
                 loadAdminUsers();
             } catch(e) {
                 alert('Ошибка: ' + e.message);
@@ -672,3 +675,4 @@
     </script>
 </body>
 </html>
+
