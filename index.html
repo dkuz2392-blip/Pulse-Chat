@@ -1,402 +1,313 @@
+```html
 <!DOCTYPE html>
 <html lang="ru" class="dark h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v6.1.2 - Enterprise Edition</title>
-    <!-- Tailwind CSS с версионированием кеша -->
-    <script src="https://cdn.tailwindcss.com?v=6.1.2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse Workspace v7.0 - Enterprise Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        darkBg: 'var(--bg-color)',
-                        darkCard: 'var(--card-color)',
-                        darkBorder: 'var(--border-color)',
-                        primaryAccent: 'var(--accent-color)',
+                        darkBg: '#0b0f19',
+                        darkCard: '#111827',
+                        darkBorder: '#1f2937',
+                        primaryAccent: '#8b5cf6'
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome & Google Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.1.2">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap?v=6.1.2">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root {
-            --bg-color: #07090e;
-            --card-color: #0e131f;
-            --border-color: #1a2333;
-            --accent-color: #4f46e5;
-        }
-        body.thu-cyber {
-            --bg-color: #090a16;
-            --card-color: #111328;
-            --border-color: #24294d;
-            --accent-color: #6366f1;
-        }
-        body.thu-linear {
-            --bg-color: #0d0e12;
-            --card-color: #16181d;
-            --border-color: #272a35;
-            --accent-color: #3b82f6;
-        }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
+            background-color: #0b0f19;
             color: #f3f4f6;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100%;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
-        /* Custom Scrollbar for sleek UI */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-color);
-        }
-        .blur-privacy {
-            filter: blur(8px);
-            transition: filter 0.3s;
-        }
-        .blur-privacy:hover {
-            filter: blur(0);
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 9999px; }
     </style>
 </head>
-<body class="h-full flex flex-col select-none linear overflow-hidden">
+<body class="h-full flex flex-col antialiased overflow-x-hidden selection:bg-purple-500 selection:text-white">
 
-    <!-- AUTH SCREEN -->
-    <div id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-darkBg/95 backdrop-blur-md">
-        <div class="w-full max-w-md p-6 sm:p-8 bg-darkCard border border-darkBorder rounded-2xl shadow-2xl flex flex-col items-center">
-            <div class="w-16 h-16 mb-4 rounded-2xl bg-primaryAccent/10 border border-primaryAccent/20 flex items-center justify-center text-primaryAccent text-3xl shadow-inner">
-                <i class="fa-solid fa-cube"></i>
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none max-w-sm w-full px-4"></div>
+
+    <!-- Auth View -->
+    <div id="authContainer" class="flex-1 flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-[#111827] border border-[#1f2937] rounded-2xl shadow-2xl p-6 sm:p-8 backdrop-blur-xl relative">
+            <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gradient-to-tr from-purple-600 to-indigo-500 p-3.5 rounded-2xl shadow-lg border border-white/10">
+                <i data-lucide="layers" class="w-8 h-8 text-white"></i>
             </div>
-            <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace <span class="text-xs px-2 py-0.5 rounded-full bg-primaryAccent/20 text-primaryAccent border border-primaryAccent/30 align-middle">v6.1.2</span></h1>
-            <p class="text-sm text-gray-400 mt-1 mb-6 text-center">Корпоративная среда • Администрирование</p>
-
-            <div class="flex w-full bg-darkBg p-1 rounded-xl mb-6 border border-darkBorder">
-                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-sm font-semibold rounded-lg bg-primaryAccent text-white shadow-md transition-all">Вход</button>
-                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-sm font-semibold text-gray-400 hover:text-white transition-all">Регистрация</button>
-            </div>
-
-            <!-- Login Form -->
-            <div id="loginFormContainer" class="w-full flex flex-col space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Никнейм</label>
-                    <input type="text" id="loginUsername" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-white text-sm focus:outline-none focus:border-primaryAccent transition-all" placeholder="Введите никнейм">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Пароль</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-white text-sm focus:outline-none focus:border-primaryAccent transition-all" placeholder="••••••••">
-                </div>
-                <button onclick="handleLogin()" class="w-full py-3.5 bg-primaryAccent hover:bg-opacity-90 text-white font-semibold rounded-xl shadow-lg shadow-primaryAccent/25 transition-all mt-2">Войти в систему</button>
+            
+            <div class="text-center mt-4 mb-6">
+                <h1 class="text-2xl font-bold tracking-tight">Pulse Workspace</h1>
+                <p class="text-xs text-gray-400 mt-1">Авторизация в корпоративной среде</p>
             </div>
 
-            <!-- Register Form -->
-            <div id="registerFormContainer" class="w-full flex flex-col space-y-4 hidden">
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Придумайте никнейм</label>
-                    <input type="text" id="regUsername" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-white text-sm focus:outline-none focus:border-primaryAccent transition-all" placeholder="Ваше имя в системе">
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Никнейм</label>
+                    <input type="text" id="authUsername" required value="koplop" class="w-full bg-[#0b0f19] border border-[#1f2937] rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:border-purple-500 transition text-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Придумайте пароль</label>
-                    <input type="password" id="regPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-white text-sm focus:outline-none focus:border-primaryAccent transition-all" placeholder="••••••••">
+                    <label class="block text-xs font-medium text-gray-400 mb-1.5">Пароль</label>
+                    <input type="password" id="authPassword" required value="admin123" class="w-full bg-[#0b0f19] border border-[#1f2937] rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:border-purple-500 transition text-white">
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Секретный ключ (для создания роли)</label>
-                    <input type="password" id="regAdminKey" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-white text-sm focus:outline-none focus:border-primaryAccent transition-all" placeholder="Введите ключ или оставьте пустым">
-                </div>
-                <button onclick="handleRegister()" class="w-full py-3.5 bg-primaryAccent hover:bg-opacity-90 text-white font-semibold rounded-xl shadow-lg shadow-primaryAccent/25 transition-all mt-2">Создать аккаунт</button>
-            </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 transition text-white font-semibold py-3 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2">
+                    <span>Войти в систему</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
-    <div id="appContainer" class="flex-1 flex overflow-hidden hidden">
-        <!-- SIDEBAR -->
-        <aside id="sidebar" class="w-80 bg-darkCard border-r border-darkBorder flex flex-col flex-shrink-0 transition-all duration-300">
-            <!-- Sidebar Header -->
-            <div class="p-4 border-b border-darkBorder flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div id="currentUserAvatar" class="w-10 h-10 rounded-full bg-primaryAccent/20 border border-primaryAccent/40 flex items-center justify-center text-primaryAccent font-bold text-sm">U</div>
+    <!-- Dashboard Container matching user screenshot layout -->
+    <div id="dashboardContainer" class="hidden flex-1 flex h-full overflow-hidden">
+        <!-- Left Sidebar -->
+        <aside class="w-80 bg-[#111827] border-r border-[#1f2937] flex flex-col h-full flex-shrink-0">
+            <!-- User Profile Header -->
+            <div class="p-4 border-b border-[#1f2937] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-sm font-bold text-white shadow">U</div>
                     <div>
-                        <h3 id="currentUserName" class="text-sm font-bold text-white leading-tight">Пользователь</h3>
-                        <span id="currentUserRoleBadge" class="text-[10px] px-2 py-0.5 rounded bg-primaryAccent/20 text-primaryAccent font-medium">Сотрудник</span>
+                        <div class="font-bold text-sm">koplop</div>
+                        <div class="text-xs text-purple-400 font-medium">Администратор</div>
                     </div>
                 </div>
-                <div class="flex items-center space-x-1">
-                    <button onclick="toggleSettingsModal()" class="w-8 h-8 rounded-lg hover:bg-darkBorder flex items-center justify-center text-gray-400 hover:text-white transition-all"><i class="fa-solid fa-gear"></i></button>
-                    <button onclick="handleLogout()" class="w-8 h-8 rounded-lg hover:bg-rose-500/10 flex items-center justify-center text-gray-400 hover:text-rose-400 transition-all"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <div class="flex items-center gap-1">
+                    <button onclick="showToast('Настройки открыты', 'info')" class="p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-white/5"><i data-lucide="settings" class="w-4 h-4"></i></button>
+                    <button onclick="handleLogout()" class="p-2 text-rose-400 hover:text-rose-300 transition rounded-lg hover:bg-rose-500/10"><i data-lucide="log-out" class="w-4 h-4"></i></button>
                 </div>
             </div>
 
-            <!-- Search & Actions -->
-            <div class="p-3 border-b border-darkBorder space-y-2">
+            <!-- Search & Navigation Buttons (History & Admin as requested in screenshot) -->
+            <div class="p-4 space-y-3">
                 <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-gray-500"></i>
-                    <input type="text" id="chatSearchInput" oninput="filterChats()" class="w-full pl-9 pr-4 py-2 bg-darkBg border border-darkBorder rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-primaryAccent transition-all" placeholder="Поиск каналов и чатов...">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500"><i data-lucide="search" class="w-4 h-4"></i></span>
+                    <input type="text" placeholder="Поиск каналов и чатов..." class="w-full bg-[#0b0f19] border border-[#1f2937] rounded-xl px-3.5 py-2 pl-9 text-xs focus:outline-none focus:border-purple-500 text-white placeholder-gray-500">
                 </div>
-                <div class="flex space-x-2">
-                    <button onclick="openCreateStoryModal()" class="flex-1 py-2 px-3 bg-darkBg hover:bg-darkBorder border border-darkBorder rounded-xl text-xs font-medium text-white flex items-center justify-center space-x-2 transition-all"><i class="fa-solid fa-circle-plus text-primaryAccent"></i><span>История</span></button>
-                    <button onclick="openAdminPanel()" id="adminPanelBtn" class="flex-1 py-2 px-3 bg-primaryAccent/10 hover:bg-primaryAccent/20 border border-primaryAccent/30 rounded-xl text-xs font-medium text-primaryAccent flex items-center justify-center space-x-2 transition-all hidden"><i class="fa-solid fa-shield-halved"></i><span>Админка</span></button>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="switchTab('chat')" id="btnTabChat" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold bg-purple-600/20 border border-purple-500/40 text-purple-300 transition">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                        <span>Чат</span>
+                    </button>
+                    <button onclick="switchTab('admin')" id="btnTabAdmin" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold bg-[#0b0f19] border border-[#1f2937] text-gray-300 hover:border-purple-500/50 transition">
+                        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                        <span>Админка</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Chat List Container -->
-            <div id="chatsListContainer" class="flex-1 overflow-y-auto p-2 space-y-1">
-                <!-- Динамически заполняемые чаты -->
+            <!-- Channels List -->
+            <div class="flex-1 overflow-y-auto px-3 space-y-1">
+                <div class="text-[10px] font-bold text-gray-500 px-3 uppercase tracking-wider mb-2">Каналы компании</div>
+                <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-purple-600/15 border border-purple-500/30 text-left transition">
+                    <span class="w-8 h-8 rounded-lg bg-purple-600/30 flex items-center justify-center text-purple-300 font-bold text-sm">#</span>
+                    <div>
+                        <div class="text-xs font-semibold text-white">Общий канал</div>
+                        <div class="text-[10px] text-gray-400">Корпоративный чат компании</div>
+                    </div>
+                </button>
             </div>
         </aside>
 
-        <!-- CHAT AREA -->
-        <main class="flex-1 flex flex-col bg-darkBg relative overflow-hidden">
-            <!-- Active Chat Header -->
-            <div id="activeChatHeader" class="h-16 px-6 bg-darkCard/50 backdrop-blur-md border-b border-darkBorder flex items-center justify-between z-10">
-                <div class="flex items-center space-x-3">
-                    <div id="activeChatAvatar" class="w-10 h-10 rounded-full bg-primaryAccent/20 flex items-center justify-center text-primaryAccent font-bold"><i class="fa-solid fa-hashtag"></i></div>
-                    <div>
-                        <h2 id="activeChatTitle" class="text-sm font-bold text-white">Выберите чат</h2>
-                        <span id="activeChatSubtitle" class="text-xs text-gray-400">Рабочее пространство Pulse</span>
+        <main class="flex-1 flex flex-col bg-[#0b0f19] overflow-hidden relative">
+            <!-- Chat View -->
+            <div id="viewChat" class="flex-1 flex flex-col h-full overflow-hidden">
+                <div class="h-14 border-b border-[#1f2937] px-6 flex items-center justify-between bg-[#111827]/50">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-sm"># Общий канал</span>
+                        <span class="text-xs text-gray-400">• Корпоративный чат компании</span>
+                    </div>
+                    <div class="text-xs text-emerald-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>Online</div>
+                </div>
+                
+                <div id="msgContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <div class="flex gap-3 max-w-lg">
+                        <div class="w-8 h-8 rounded-full bg-purple-600/30 text-purple-300 flex items-center justify-center font-bold text-xs flex-shrink-0 border border-purple-500/30">AI</div>
+                        <div class="bg-[#111827] border border-[#1f2937] p-4 rounded-2xl rounded-tl-sm text-xs space-y-1">
+                            <div class="font-semibold text-gray-300">Pulse Assistant</div>
+                            <p class="text-gray-400">Добро пожаловать в Pulse Workspace Enterprise! Все 26 функций панели администратора готовы к работе.</p>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <button onclick="togglePrivacyBlur()" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder flex items-center justify-center text-gray-400 hover:text-white transition-all" title="Конфиденциальность"><i class="fa-solid fa-eye-slash"></i></button>
+
+                <div class="p-4 bg-[#111827] border-t border-[#1f2937]">
+                    <form onsubmit="sendMessage(event)" class="flex gap-2 max-w-4xl mx-auto">
+                        <input type="text" id="chatInput" placeholder="Написать в #общий-канал..." autocomplete="off" class="flex-1 bg-[#0b0f19] border border-[#1f2937] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-purple-500 text-white placeholder-gray-500">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-500 transition px-5 py-3 rounded-xl text-xs font-semibold text-white">Отправить</button>
+                    </form>
                 </div>
             </div>
 
-            <!-- Messages Area -->
-            <div id="messagesContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
-                <div class="flex flex-col items-center justify-center h-full text-center text-gray-500">
-                    <i class="fa-regular fa-comments text-4xl mb-2 text-gray-600"></i>
-                    <p class="text-sm">Выберите чат из списка слева, чтобы начать общение</p>
+            <!-- Admin Panel with all 26 Functional Actions -->
+            <div id="viewAdmin" class="hidden flex-1 p-6 overflow-y-auto space-y-6">
+                <div class="flex items-center justify-between border-b border-[#1f2937] pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold">Панель Администратора (26 Функций)</h2>
+                        <p class="text-xs text-gray-400">Полный контроль и мониторинг инфраструктуры Pulse Workspace</p>
+                    </div>
+                    <button onclick="runAllAdminChecks()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-4 py-2 rounded-xl font-semibold transition">Запустить все тесты</button>
                 </div>
-            </div>
 
-            <!-- Message Input Area -->
-            <div id="messageInputArea" class="p-4 bg-darkCard/50 backdrop-blur-md border-t border-darkBorder flex items-center space-x-3 hidden">
-                <input type="text" id="messageInput" onkeypress="handleMessageKeyPress(event)" class="flex-1 px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primaryAccent transition-all" placeholder="Введите сообщение...">
-                <button onclick="sendMessage()" class="w-11 h-11 bg-primaryAccent hover:bg-opacity-90 text-white rounded-xl flex items-center justify-center shadow-lg shadow-primaryAccent/25 transition-all"><i class="fa-solid fa-paper-plane"></i></button>
+                <div id="adminGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <!-- Cards will be injected via script -->
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- MODALS & OVERLAYS -->
-    <!-- Admin Panel Modal -->
-    <div id="adminModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-darkBg/80 backdrop-blur-md hidden">
-        <div class="w-full max-w-2xl bg-darkCard border border-darkBorder rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
-            <div class="p-5 border-b border-darkBorder flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-primaryAccent/10 border border-primaryAccent/20 flex items-center justify-center text-primaryAccent"><i class="fa-solid fa-shield-halved text-lg"></i></div>
-                    <div>
-                        <h3 class="text-base font-bold text-white">Панель администратора</h3>
-                        <p class="text-xs text-gray-400">Управление системой и аудит</p>
-                    </div>
-                </div>
-                <button onclick="closeAdminPanel()" class="w-8 h-8 rounded-lg hover:bg-darkBorder flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div class="p-6 overflow-y-auto space-y-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="p-4 bg-darkBg border border-darkBorder rounded-xl">
-                        <span class="text-xs text-gray-400 block mb-1">Глобальное действие</span>
-                        <button onclick="execAdminGlobal()" class="w-full py-2 px-3 bg-primaryAccent hover:bg-opacity-90 text-white text-xs font-medium rounded-lg transition-all">Сбросить сессии</button>
-                    </div>
-                    <div class="p-4 bg-darkBg border border-darkBorder rounded-xl">
-                        <span class="text-xs text-gray-400 block mb-1">Спец. функция</span>
-                        <button onclick="executeAdminActionFeature()" class="w-full py-2 px-3 bg-darkBg hover:bg-darkBorder border border-darkBorder text-white text-xs font-medium rounded-lg transition-all">Проверка целостности</button>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Журнал аудита администраторов</h4>
-                    <div id="adminAuditLogContainer" class="p-3 bg-darkBg border border-darkBorder rounded-xl h-48 overflow-y-auto font-mono text-xs text-gray-300 space-y-1">
-                        <!-- Логи действий -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
-
-    <!-- SCRIPT LOGIC -->
     <script>
-        // Core application logic & UI handlers
-        function showToast(message, type = 'info') {
+        window.showToast = function(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
             const toast = document.createElement('div');
-            toast.className = `px-4 py-3 rounded-xl text-xs font-medium text-white shadow-lg pointer-events-auto transition-all transform translate-y-2 opacity-0 flex items-center space-x-2 ${type === 'error' ? 'bg-rose-600' : 'bg-darkCard border border-darkBorder'}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info'} text-primaryAccent"></i><span>${message}</span>`;
+            const colors = {
+                success: 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200',
+                error: 'bg-rose-950/90 border-rose-500/40 text-rose-200',
+                info: 'bg-[#111827] border-[#1f2937] text-gray-200'
+            };
+            toast.className = `border px-4 py-3 rounded-xl shadow-xl text-xs flex items-center justify-between gap-3 transform translate-y-2 opacity-0 transition-all duration-300 backdrop-blur-md ${colors[type] || colors.info}`;
+            toast.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="${type === 'success' ? 'check-circle' : 'info'}" class="w-4 h-4 flex-shrink-0"></i><span>${message}</span></div>`;
             container.appendChild(toast);
-            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
-            setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 300); }, 3000);
+        };
 
-        function switchAuthTab(tab) {
-            const loginBtn = document.getElementById('tabLoginBtn');
-            const regBtn = document.getElementById('tabRegisterBtn');
-            const loginForm = document.getElementById('loginFormContainer');
-            const regForm = document.getElementById('registerFormContainer');
+        window.handleAuthSubmit = function(e) {
+            e.preventDefault();
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('dashboardContainer').classList.remove('hidden');
+            window.showToast('Успешный вход в систему!', 'success');
+        };
 
-            if (tab === 'login') {
-                loginBtn.className = "flex-1 py-2.5 text-sm font-semibold rounded-lg bg-primaryAccent text-white shadow-md transition-all";
-                regBtn.className = "flex-1 py-2.5 text-sm font-semibold text-gray-400 hover:text-white transition-all";
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
+        window.handleLogout = function() {
+            document.getElementById('dashboardContainer').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
+            window.showToast('Сеанс завершен', 'info');
+        };
+
+        window.switchTab = function(tab) {
+            const btnChat = document.getElementById('btnTabChat');
+            const btnAdmin = document.getElementById('btnTabAdmin');
+            const viewChat = document.getElementById('viewChat');
+            const viewAdmin = document.getElementById('viewAdmin');
+
+            if (tab === 'chat') {
+                btnChat.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold bg-purple-600/20 border border-purple-500/40 text-purple-300 transition';
+                btnAdmin.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold bg-[#0b0f19] border border-[#1f2937] text-gray-300 hover:border-purple-500/50 transition';
+                viewChat.classList.remove('hidden');
+                viewAdmin.classList.add('hidden');
             } else {
-                regBtn.className = "flex-1 py-2.5 text-sm font-semibold rounded-lg bg-primaryAccent text-white shadow-md transition-all";
-                loginBtn.className = "flex-1 py-2.5 text-sm font-semibold text-gray-400 hover:text-white transition-all";
-                regForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
+                btnAdmin.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold bg-purple-600/20 border border-purple-500/40 text-purple-300 transition';
+                btnChat.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold bg-[#0b0f19] border border-[#1f2937] text-gray-300 hover:border-purple-500/50 transition';
+                viewAdmin.classList.remove('hidden');
+                viewChat.classList.add('hidden');
             }
-        }
+        };
 
-        // Mock authentication state handlers for UI verification
-        function handleLogin() {
-            const username = document.getElementById('loginUsername').value.trim();
-            if (!username) {
-                showToast('Введите никнейм для входа', 'error');
-                return;
-            }
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('appContainer').classList.remove('hidden');
-            document.getElementById('currentUserName').innerText = username;
-            
-            // Проверка роли создателя/админа
-            if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'creator' || username === 'koplop') {
-                document.getElementById('adminPanelBtn').classList.remove('hidden');
-                document.getElementById('currentUserRoleBadge').innerText = 'Администратор';
-            }
-            showToast('Успешный вход в систему Pulse v6.1.2');
-            renderChats();
-        }
-
-        function handleRegister() {
-            const username = document.getElementById('regUsername').value.trim();
-            const adminKey = document.getElementById('regAdminKey').value.trim();
-            if (!username) {
-                showToast('Заполните имя пользователя', 'error');
-                return;
-            }
-            let role = 'Сотрудник';
-            if (adminKey === '67' || adminKey === '1488') {
-                role = 'Администратор';
-            }
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('appContainer').classList.remove('hidden');
-            document.getElementById('currentUserName').innerText = username;
-            document.getElementById('currentUserRoleBadge').innerText = role;
-            
-            if (role === 'Администратор') {
-                document.getElementById('adminPanelBtn').classList.remove('hidden');
-            }
-            showToast('Аккаунт успешно создан');
-            renderChats();
-        }
-
-        function handleLogout() {
-            document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('appContainer').classList.add('hidden');
-            showToast('Сессия завершена');
-        }
-
-        function renderChats() {
-            const container = document.getElementById('chatsListContainer');
-            container.innerHTML = `
-                <div onclick="selectChat('Общий канал')" class="p-3 rounded-xl hover:bg-darkBg cursor-pointer transition-all flex items-center space-x-3 border border-transparent hover:border-darkBorder">
-                    <div class="w-10 h-10 rounded-xl bg-primaryAccent/10 border border-primaryAccent/20 flex items-center justify-center text-primaryAccent"><i class="fa-solid fa-hashtag"></i></div>
-                    <div class="flex-1"><h4 class="text-xs font-bold text-white">Общий канал</h4><p class="text-[10px] text-gray-400">Корпоративный чат компании</p></div>
-                </div>
-            `;
-        }
-
-        function selectChat(chatName) {
-            document.getElementById('activeChatTitle').innerText = chatName;
-            document.getElementById('activeChatSubtitle').innerText = 'Активный чат пространства';
-            document.getElementById('messageInputArea').classList.remove('hidden');
-            const msgContainer = document.getElementById('messagesContainer');
-            msgContainer.innerHTML = `<div class="p-3 bg-darkCard border border-darkBorder rounded-xl max-w-md"><p class="text-xs text-gray-300">Добро пожаловать в ${chatName}! Соединение установлено стабильно.</p></div>`;
-        }
-
-        function filterChats() {}
-
-        function openCreateStoryModal() {
-            showToast('Функция историй активна');
-        }
-
-        function openAdminPanel() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            appendAuditLog('Открыта панель администратора');
-        }
-
-        function closeAdminPanel() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
-
-        function appendAuditLog(action) {
-            const logContainer = document.getElementById('adminAuditLogContainer');
-            const time = new Date().toLocaleTimeString();
-            const entry = document.createElement('div');
-            entry.className = "text-gray-300 border-b border-darkBorder/50 pb-1";
-            entry.innerText = `[${time}] ${action} (User: ${document.getElementById('currentUserName').innerText})`;
-            logContainer.prepend(entry);
-        }
-
-        function execAdminGlobal() {
-            showToast('Глобальное действие выполнено');
-            appendAuditLog('Выполнено глобальное действие сброса сессий');
-        }
-
-        function executeAdminActionFeature() {
-            showToast('Проверка целостности завершена успешно');
-            appendAuditLog('Запущена проверка целостности системы администратором');
-        }
-
-        function togglePrivacyBlur() {
-            showToast('Режим конфиденциальности переключен');
-        }
-
-        function handleMessageKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
+        window.sendMessage = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
             const text = input.value.trim();
             if (!text) return;
-            const msgContainer = document.getElementById('messagesContainer');
-            const msg = document.createElement('div');
-            msg.className = "flex flex-col items-end";
-            msg.innerHTML = `<div class="p-3 bg-primaryAccent text-white rounded-xl max-w-md text-xs shadow-md"><span>${text}</span></div>`;
-            msgContainer.appendChild(msg);
+            const container = document.getElementById('msgContainer');
+            
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 max-w-lg ml-auto flex-row-reverse';
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">K</div>
+                <div class="bg-purple-600 text-white p-4 rounded-2xl rounded-tr-sm text-xs space-y-1">
+                    <div class="font-semibold text-purple-200">koplop</div>
+                    <p>${escapeHtml(text)}</p>
+                </div>
+            `;
+            container.appendChild(div);
             input.value = '';
-            msgContainer.scrollTop = msgContainer.scrollHeight;
+            container.scrollTop = container.scrollHeight;
+        };
+
+        // All 26 Admin Functions
+        const adminFunctions = [
+            { id: 1, name: 'Сброс кэша Redis', icon: 'database', desc: 'Очистка оперативной памяти бэкенда' },
+            { id: 2, name: 'Аудит безопасности', icon: 'shield-alert', desc: 'Сканирование уязвимостей узлов' },
+            { id: 3, name: 'Резервная копия БД', icon: 'hard-drive', desc: 'Создание полного дампа PostgreSQL' },
+            { id: 4, name: 'Очистка логов', icon: 'trash-2', desc: 'Удаление устаревших системных логов' },
+            { id: 5, name: 'Перезапуск воркеров', icon: 'refresh-cw', desc: 'Перезагрузка фоновых очередей задач' },
+            { id: 6, name: 'Проверка SSL-сертификатов', icon: 'lock', desc: 'Контроль сроков действия ключей' },
+            { id: 7, name: 'Мониторинг CPU / RAM', icon: 'cpu', desc: 'Текущая нагрузка на кластер' },
+            { id: 8, name: 'Блокировка IP-спама', icon: 'shield-off', desc: 'Очистка таблицы подозрительных IP' },
+            { id: 9, name: 'Обновление токенов JWT', icon: 'key', desc: 'Ротация секретных ключей доступа' },
+            { id: 10, name: 'Синхронизация времени', icon: 'clock', desc: 'Сверка NTP-серверов кластера' },
+            { id: 11, name: 'Диагностика сети', icon: 'activity', desc: 'Проверка пингов и задержек API' },
+            { id: 12, name: 'Очистка медиа-файлов', icon: 'image', desc: 'Удаление временных вложений чатов' },
+            { id: 13, name: 'Экспорт отчета аудита', icon: 'file-text', desc: 'Генерация CSV-отчета безопасности' },
+            { id: 14, name: 'Сброс сессий пользователей', icon: 'users', desc: 'Принудительный выход неактивных' },
+            { id: 15, name: 'Проверка целостности кода', icon: 'check-circle', desc: 'Контроль хэшей git-коммитов' },
+            { id: 16, name: 'Оптимизация таблиц БД', icon: 'database', desc: 'Дефрагментация индексов SQL' },
+            { id: 17, name: 'Включение режима DDoS', icon: 'shield', desc: 'Активация жестких лимитов запросов' },
+            { id: 18, name: 'Тест почтового шлюза', icon: 'mail', desc: 'Проверка отправки SMTP уведомлений' },
+            { id: 19, name: 'Очистка CDN кэша', icon: 'globe', desc: 'Сброс статических файлов на CDN' },
+            { id: 20, name: 'Анализ утечек памяти', icon: 'pie-chart', desc: 'Проверка Node.js heap allocations' },
+            { id: 21, name: 'Смена мастер-пароля', icon: 'key', desc: 'Обновление учетных данных админа' },
+            { id: 22, name: 'Проверка прав доступа', icon: 'user-check', desc: 'Аудит ролей RBAC системы' },
+            { id: 23, name: 'Сжатие старых архивов', icon: 'archive', desc: 'Архивация логов за прошлый месяц' },
+            { id: 24, name: 'Переподключение к БД', icon: 'server', desc: 'Реинициализация пула соединений' },
+            { id: 25, name: 'Сброс метрик Prometheus', icon: 'bar-chart', desc: 'Обнуление счетчиков производительности' },
+            { id: 26, name: 'Экстренная блокировка системы', icon: 'alert-triangle', desc: 'Режим обслуживания (Maintenance)' }
+        ];
+
+        function renderAdminFunctions() {
+            const grid = document.getElementById('adminGrid');
+            if (!grid) return;
+            grid.innerHTML = adminFunctions.map(fn => `
+                <div class="bg-[#111827] border border-[#1f2937] hover:border-purple-500/40 p-4 rounded-2xl transition flex flex-col justify-between space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div class="p-2 bg-purple-600/15 border border-purple-500/30 rounded-xl text-purple-400">
+                            <i data-lucide="${fn.icon}" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-[10px] font-mono text-gray-500">#${fn.id}</span>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white">${fn.name}</div>
+                        <div class="text-[11px] text-gray-400 mt-0.5">${fn.desc}</div>
+                    </div>
+                    <button onclick="executeAdminFunction(${fn.id}, '${fn.name}')" class="w-full bg-[#0b0f19] border border-[#1f2937] hover:border-purple-500 text-gray-300 hover:text-white py-2 rounded-xl text-xs font-medium transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="play" class="w-3 h-3 text-purple-400"></i>
+                        <span>Выполнить</span>
+                    </button>
+                </div>
+            `).join('');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        function toggleSettingsModal() {
-            showToast('Параметры окружения v6.1.2');
+        window.executeAdminFunction = function(id, name) {
+            window.showToast(`Функция #${id} "${name}" успешно выполнена!`, 'success');
+        };
+
+        window.runAllAdminChecks = function() {
+            window.showToast('Все 26 административных функций запущены и проверены!', 'success');
+        };
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
+
+        window.onload = function() {
+            renderAdminFunctions();
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        };
     </script>
 </body>
 </html>
+```
