@@ -1615,5 +1615,10 @@
             }
         });
     </script>
+<script>
+window.onerror = function(message, source, lineno, colno, error) {
+    alert("Ошибка: " + message + " в " + source + ":" + lineno);
+};
+</script>
 </body>
 </html>
