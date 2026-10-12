@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v9.1 - Pro Edition</title>
+    <title>Pulse Workspace v9.5 - Pro Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -277,7 +277,7 @@
                         <div class="space-y-1.5 pt-2">
                             <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">ЖУРНАЛ АУДИТА</h4>
                             <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
-                                <div>[Система] Защита XSS, SHA-256 и Firestore Realtime активны...</div>
+                                <div>[Система] Иерархия ролей (Owner, Admin, VIP, User) активна...</div>
                             </div>
                         </div>
                     </div>
@@ -454,6 +454,7 @@
             try {
                 const isCreator = key === window.CREATOR_KEY;
                 const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
+                const role = isCreator ? 'owner' : (isAdmin ? 'admin' : 'user');
                 const code = '#' + username + '_' + Math.floor(1000 + Math.random() * 9000);
                 const hashedPassword = await hashPassword(password);
                 
@@ -461,11 +462,9 @@
                     name: username, 
                     code, 
                     password: hashedPassword, 
-                    isCreator, 
-                    isAdmin,
+                    role, // 'owner' | 'admin' | 'vip' | 'user'
                     isBanned: false,
                     isMuted: false,
-                    isVerified: false,
                     status: 'В сети в Pulse'
                 };
                 
@@ -480,10 +479,14 @@
             
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('mainAppContainer').classList.remove('hidden');
-            document.getElementById('settingsUserName').innerText = escapeHTML(user.name);
+            
+            const vipBadge = (user.role === 'vip') ? ' ✅' : '';
+            document.getElementById('settingsUserName').innerHTML = escapeHTML(user.name) + vipBadge;
             document.getElementById('settingsUserCode').innerText = escapeHTML(user.code || '#usr');
             document.getElementById('settingsUserAvatar').innerText = escapeHTML(user.name.charAt(0).toUpperCase());
-            document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
+            
+            const hasAdminRights = user.role === 'owner' || user.role === 'admin' || user.isAdmin || user.isCreator;
+            document.getElementById('adminPanelBox').classList.toggle('hidden', !hasAdminRights);
             
             const statusInput = document.getElementById('userStatusInput');
             if(statusInput) statusInput.value = user.status || '';
@@ -507,7 +510,7 @@
 
             if (section === 'feed') { document.getElementById('sectionFeed').classList.remove('hidden'); document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; }
             else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; loadUserChats(); }
-            else if (section === 'settings') { document.getElementById('sectionSettings').classList.remove('hidden'); document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; if (window.currentUser?.isAdmin || window.currentUser?.isCreator) loadAdminUsers(); }
+            else if (section === 'settings') { document.getElementById('sectionSettings').classList.remove('hidden'); document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; if (window.currentUser?.role === 'owner' || window.currentUser?.role === 'admin' || window.currentUser?.isAdmin || window.currentUser?.isCreator) loadAdminUsers(); }
         };
 
         window.toggleMobileSidebar = function() { document.getElementById('sidebarChats').classList.toggle('-translate-x-full'); };
@@ -564,6 +567,7 @@
             if (!text && !window.currentPostImageBase64) return;
             await db.collection('posts').add({ 
                 author: window.currentUser.name, 
+                role: window.currentUser.role || 'user',
                 text, 
                 image: window.currentPostImageBase64 || null,
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
@@ -581,6 +585,7 @@
                 snapshot.forEach(doc => {
                     const p = doc.data();
                     const firstLetter = escapeHTML(p.author ? p.author.charAt(0).toUpperCase() : 'U');
+                    const badge = (p.role === 'vip') ? ' ✅' : '';
                     const card = document.createElement('div');
                     card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-3 shadow-xl';
                     
@@ -590,7 +595,7 @@
                         <div class="flex items-center space-x-3">
                             <div class="w-9 h-9 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs shadow-inner">${firstLetter}</div>
                             <div>
-                                <h4 class="font-bold text-xs text-white">${escapeHTML(p.author)}</h4>
+                                <h4 class="font-bold text-xs text-white">${escapeHTML(p.author)}${badge}</h4>
                                 <span class="text-[10px] text-slate-500">${escapeHTML(p.time||'')}</span>
                             </div>
                         </div>
@@ -607,7 +612,7 @@
         window.submitStory = async function() {
             const text = document.getElementById('storyTextInput').value.trim();
             if (!text) return;
-            await db.collection('stories').add({ author: window.currentUser.name, text, timestamp: Date.now() });
+            await db.collection('stories').add({ author: window.currentUser.name, role: window.currentUser.role || 'user', text, timestamp: Date.now() });
             document.getElementById('storyTextInput').value = ''; 
             closeCreateStoryModal();
         };
@@ -890,7 +895,7 @@
             }
         };
 
-        // АДМИН ПАНЕЛЬ
+        // АДМИН ПАНЕЛЬ И УПРАВЛЕНИЕ РОЛЯМИ
         window.loadAdminUsers = async function() {
             const container = document.getElementById('adminUsersCardsList');
             const countEl = document.getElementById('adminTotalUsersCount');
@@ -912,26 +917,48 @@
 
             allUsersMap.forEach((user) => {
                 const firstLetter = escapeHTML(user.name.charAt(0).toUpperCase());
-                const roleName = user.isCreator ? 'Creator' : (user.isAdmin ? 'Admin' : 'User');
-                const roleBg = user.isCreator ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' : (user.isAdmin ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-slate-700/30 text-slate-300 border-slate-600/30');
+                let role = user.role || (user.isCreator ? 'owner' : (user.isAdmin ? 'admin' : 'user'));
                 
+                let roleDisplay = 'User';
+                let roleBg = 'bg-slate-700/30 text-slate-300 border-slate-600/30';
+                if (role === 'owner') { roleDisplay = 'Owner'; roleBg = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'; }
+                else if (role === 'admin') { roleDisplay = 'Admin'; roleBg = 'bg-amber-500/20 text-amber-300 border-amber-500/30'; }
+                else if (role === 'vip') { roleDisplay = 'VIP ✅'; roleBg = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'; }
+
                 const card = document.createElement('div');
-                card.className = 'bg-darkBg border border-darkBorder rounded-xl p-3 flex items-center justify-between';
+                card.className = 'bg-darkBg border border-darkBorder rounded-xl p-3 flex flex-col space-y-2.5';
                 card.innerHTML = `
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <div class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center shrink-0">${firstLetter}</div>
-                        <div class="overflow-hidden">
-                            <h4 class="font-bold text-xs text-white truncate">${escapeHTML(user.name)} ${user.isBanned ? '<span class="text-rose-500">[BAN]</span>':''}</h4>
-                            <p class="text-[10px] text-slate-400 font-mono truncate">${escapeHTML(user.code||'')}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5 overflow-hidden">
+                            <div class="w-8 h-8 rounded-lg bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center shrink-0">${firstLetter}</div>
+                            <div class="overflow-hidden">
+                                <h4 class="font-bold text-xs text-white truncate">${escapeHTML(user.name)} ${user.isBanned ? '<span class="text-rose-500">[BAN]</span>':''}</h4>
+                                <p class="text-[9px] text-slate-400 font-mono truncate">${escapeHTML(user.code||'')}</p>
+                            </div>
                         </div>
+                        <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${roleBg}">${roleDisplay}</span>
                     </div>
-                    <div class="flex items-center space-x-2 shrink-0">
-                        <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${roleBg}">${roleName}</span>
-                        <button onclick="adminDeleteUser('${user.id}')" class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-user-minus"></i></button>
+                    <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-darkBorder text-[10px]">
+                        <button onclick="changeUserRole('${user.id}', 'owner')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-indigo-300 hover:border-primaryAccent">Owner</button>
+                        <button onclick="changeUserRole('${user.id}', 'admin')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-amber-300 hover:border-primaryAccent">Admin</button>
+                        <button onclick="changeUserRole('${user.id}', 'vip')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-emerald-300 hover:border-primaryAccent">VIP</button>
+                        <button onclick="changeUserRole('${user.id}', 'user')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-slate-300 hover:border-primaryAccent">User</button>
+                        <button onclick="adminDeleteUser('${user.id}')" class="px-2 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg ml-auto"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
             });
+        };
+
+        window.changeUserRole = async function(username, newRole) {
+            if (!confirm(`Изменить роль пользователя ${username} на ${newRole.toUpperCase()}?`)) return;
+            try {
+                await db.collection('users').doc(username).update({ role: newRole });
+                logAdminAction(`Роль ${username} изменена на ${newRole}`);
+                loadAdminUsers();
+            } catch(e) {
+                alert('Ошибка при изменении роли');
+            }
         };
 
         function logAdminAction(text) {
@@ -942,7 +969,7 @@
             container.prepend(div);
         }
 
-        window.f1_broadcast = async () => { const msg = prompt('Текст рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); } };
+        window.f1_broadcast = async () => { const msg = prompt('Текст рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', role: 'owner', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); } };
         window.f2_clearFeed = async () => { if(confirm('Очистить ленту?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента очищена'); } };
         window.f3_exportDb = async () => { const snap = await db.collection('users').get(); let u=[]; snap.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_backup.json'; a.click(); logAdminAction('Дамп БД скачан'); };
         window.f4_toggleLock = () => { logAdminAction('Режим ЧП переключен'); alert('Режим ЧП переключен'); };
