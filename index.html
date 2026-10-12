@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v9.0 - Pro Edition</title>
+    <title>Pulse Workspace v9.1 - Pro Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -653,20 +653,33 @@
                 const item = document.createElement('div');
                 item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center justify-between bg-darkBg/60 border border-darkBorder hover:border-primaryAccent text-white text-xs font-semibold shadow-sm group';
                 
-                let innerContent = `
-                    <div class="flex items-center space-x-2.5 overflow-hidden" onclick="window.selectChat('${c.id}'); if(window.innerWidth < 768) document.getElementById('sidebarChats').classList.add('-translate-x-full');">
-                        <div class="w-7 h-7 rounded-lg bg-darkCard border border-darkBorder flex items-center justify-center shrink-0">
-                            <i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'} text-[10px]"></i>
-                        </div>
-                        <span class="truncate">${escapeHTML(c.name)}</span>
+                const leftPart = document.createElement('div');
+                leftPart.className = 'flex items-center space-x-2.5 overflow-hidden flex-1';
+                leftPart.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-darkCard border border-darkBorder flex items-center justify-center shrink-0">
+                        <i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'} text-[10px]"></i>
                     </div>
+                    <span class="truncate">${escapeHTML(c.name)}</span>
                 `;
+                leftPart.onclick = () => {
+                    window.selectChat(c.id);
+                    if (window.innerWidth < 768) {
+                        document.getElementById('sidebarChats').classList.add('-translate-x-full');
+                    }
+                };
+                item.appendChild(leftPart);
 
                 if (c.id !== 'pulse_global') {
-                    innerContent += `<button onclick="event.stopPropagation(); deleteChat('${c.id}')" class="text-slate-500 hover:text-rose-400 px-1.5 py-1 transition"><i class="fa-solid fa-xmark"></i></button>`;
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'text-slate-500 hover:text-rose-400 px-1.5 py-1 transition shrink-0';
+                    delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    delBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        deleteChat(c.id);
+                    };
+                    item.appendChild(delBtn);
                 }
 
-                item.innerHTML = innerContent;
                 list.appendChild(item);
             });
         };
