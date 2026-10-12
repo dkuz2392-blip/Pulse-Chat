@@ -153,7 +153,16 @@
                 </div>
 
                 <div class="relative flex-1 flex flex-col overflow-hidden">
-                    <div id="typingIndicator" class="hidden px-4 py-1 text-[11px] text-indigo-400 italic bg-[#131c2e]/30 border-b border-[#1e293b]/40">Собеседник печатает...</div>
+                    <!-- ИНДИКАТОР ПЕЧАТАНИЯ В РЕАЛЬНОМ ВРЕМЕНИ -->
+                    <div id="typingIndicator" class="hidden px-4 py-1.5 text-[11px] text-indigo-400 italic bg-[#131c2e]/40 border-b border-[#1e293b]/40 flex items-center gap-2">
+                        <span class="flex space-x-1">
+                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></span>
+                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                        </span>
+                        <span id="typingIndicatorText">Собеседник печатает...</span>
+                    </div>
+
                     <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
                     <button id="scrollDownBtn" onclick="scrollToBottom()" class="hidden absolute bottom-4 right-6 w-9 h-9 bg-slate-800 hover:bg-slate-700 text-indigo-400 border border-[#1e293b] rounded-full shadow-xl flex items-center justify-center transition cursor-pointer z-20">
                         <i class="fa-solid fa-arrow-down text-xs"></i>
@@ -196,7 +205,7 @@
             </div>
         </div>
 
-        <!-- 3. SETTINGS & ADMIN SECTION (ДОСТУПНО ВСЕМ ПОЛЬЗОВАТЕЛЯМ) -->
+        <!-- 3. SETTINGS & ADMIN SECTION -->
         <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 hidden max-w-4xl mx-auto w-full space-y-6">
             <div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
                 <div class="flex items-center space-x-3.5">
@@ -214,7 +223,7 @@
                 <button onclick="logout()" class="px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Выйти</button>
             </div>
 
-            <!-- Profile Settings (Для всех пользователей) -->
+            <!-- Profile Settings -->
             <div class="bg-[#131c2e] border border-[#1e293b] rounded-2xl p-5 space-y-4 shadow-xl">
                 <h3 class="font-semibold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-user-gear text-indigo-400"></i> Настройки профиля</h3>
                 <form onsubmit="saveUserSettings(event)" class="space-y-3.5">
@@ -237,9 +246,8 @@
                 </form>
             </div>
 
-            <!-- УДОБНАЯ И МОДЕРНИЗИРОВАННАЯ ПАНЕЛЬ АДМИНИСТРАТОРА -->
+            <!-- ADMIN PANEL -->
             <div id="adminPanelBox" class="hidden bg-[#131c2e] border border-amber-500/30 rounded-2xl p-5 space-y-6 shadow-2xl">
-                <!-- Шапка панели управления -->
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#1e293b] pb-4 gap-3">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -256,7 +264,6 @@
                     </div>
                 </div>
 
-                <!-- Блок входящих жалоб с улучшенным оформлением -->
                 <div class="space-y-3 bg-[#090d16]/60 p-4 rounded-xl border border-[#1e293b]">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-semibold text-rose-400 flex items-center gap-2">
@@ -268,7 +275,6 @@
                     <div id="reportsContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Таблица пользователей с удобным интерфейсом -->
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
@@ -293,11 +299,9 @@
                     </div>
                 </div>
 
-                <!-- Быстрые системные инструменты (25 шт) -->
+                <!-- 25 ADMIN TOOLS -->
                 <div class="space-y-3 pt-2 border-t border-[#1e293b]">
-                    <h4 class="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-                        <i class="fa-solid fa-toolbox"></i> Системные инструменты сервера (25 шт):
-                    </h4>
+                    <h4 class="text-xs font-semibold text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-toolbox"></i> Системные инструменты сервера (25 шт):</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
                         <button onclick="adminTool('cache')" class="p-3 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-2"><i class="fa-solid fa-broom"></i> 1. Очистка кэша</button>
                         <button onclick="adminTool('resetChats')" class="p-3 bg-[#090d16] hover:bg-slate-800 text-rose-400 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-2"><i class="fa-solid fa-rotate-left"></i> 2. Сброс чатов</button>
@@ -317,7 +321,6 @@
                         <button onclick="window.showToast('OLED активен', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-2"><i class="fa-solid fa-circle-half-stroke"></i> 16. OLED тема</button>
                         <button onclick="window.showToast('Язык сброшен', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800 text-indigo-400 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-2"><i class="fa-solid fa-language"></i> 17. Сброс языка</button>
                         <button onclick="window.showToast('Запрос паролей отправлен', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800 text-amber-400 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-2"><i class="fa-solid fa-key"></i> 18. Сброс паролей</button>
-                        
                         <!-- CREATOR EXCLUSIVES -->
                         <button onclick="creatorTool('unbanAll')" class="p-3 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-2"><i class="fa-solid fa-unlock"></i> 19. [Creator] Снять баны</button>
                         <button onclick="creatorTool('superAdmin')" class="p-3 bg-purple-950/30 hover:bg-purple-900/40 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-2"><i class="fa-solid fa-crown"></i> 20. [Creator] Права 67</button>
@@ -331,7 +334,7 @@
             </div>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR (3 BUTTONS) -->
+        <!-- BOTTOM NAVIGATION BAR -->
         <div class="h-16 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-around px-2 shrink-0 z-40 shadow-2xl">
             <button onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer">
                 <i class="fa-solid fa-newspaper text-base mb-0.5"></i>
@@ -348,7 +351,7 @@
         </div>
     </div>
 
-    <!-- MODAL: CREATE POST -->
+    <!-- MODALS -->
     <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-[#1e293b] pb-3">
@@ -364,7 +367,6 @@
         </div>
     </div>
 
-    <!-- MODALS: ADD FRIEND, GROUP & FORWARD -->
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Добавить в ЛС</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
@@ -429,6 +431,7 @@
 
         let authenticatedUser = null;
         let unsubscribeMessages = null;
+        let unsubscribeTyping = null;
 
         window.CREATOR_KEY = "67";      
         window.MASTER_ADMIN_KEY = "1488"; 
@@ -450,7 +453,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Pulse Бот', text: 'Привет! Я официальный ИИ-ассистент Pulse v4.5. Задавай мне любые вопросы или пиши код!', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Pulse Бот', text: 'Привет! Я официальный ИИ-ассистент Pulse v4.5. Задавай мне любые вопросы или пиши код!', time: '12:00', timestamp: Date.now() - 10000, reactions: {} }
                 ] 
             },
             { 
@@ -460,7 +463,7 @@
                 avatar: '📌', 
                 code: '#saved_notes', 
                 messages: [
-                    { id: 2, sender: 'Система', text: 'Добро пожаловать в личные заметки!', time: '12:01', timestamp: Date.now() - 5000 }
+                    { id: 2, sender: 'Система', text: 'Добро пожаловать в личные заметки!', time: '12:01', timestamp: Date.now() - 5000, reactions: {} }
                 ] 
             }
         ];
@@ -572,7 +575,7 @@
             });
         }
 
-        // CHATS & MESSAGING SYNC WITH FIXED SORTING & AI BOT
+        // CHATS & MESSAGING SYNC
         function getPairChatCode(a, b) { return [a.toLowerCase(), b.toLowerCase()].sort().join('_'); }
 
         function subscribeToPublicMessages() {
@@ -580,7 +583,7 @@
             if (unsubscribeMessages) unsubscribeMessages();
             unsubscribeMessages = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
+                    if (change.type === "added" || change.type === "modified") {
                         const data = change.doc.data();
                         if (data && data.message) handleCloudIncomingMessage(data);
                     }
@@ -598,13 +601,17 @@
             }
             if (chat) {
                 if (!chat.messages) chat.messages = [];
-                if (!chat.messages.some(m => m.id === data.message.id)) {
+                const existingIdx = chat.messages.findIndex(m => m.id === data.message.id);
+                if (existingIdx !== -1) {
+                    // Update reactions or edits
+                    chat.messages[existingIdx] = data.message;
+                } else {
                     chat.messages.push(data.message);
-                    chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-                    localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-                    window.renderChats();
-                    if (window.activeChatId === chat.id) window.renderMessages();
                 }
+                chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+                window.renderChats();
+                if (window.activeChatId === chat.id) window.renderMessages();
             }
         }
 
@@ -627,10 +634,10 @@
                 const newMessage = {
                     id: nowTimestamp, sender: window.currentUser.name, text: text, file: window.selectedAttachment,
                     replyTo: window.replyingToMsg ? { sender: window.replyingToMsg.sender, text: window.replyingToMsg.text } : null,
+                    reactions: {},
                     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTimestamp
                 };
                 chat.messages.push(newMessage);
-                
                 chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
                 if (chat.id === 'pulse_bot') {
@@ -665,7 +672,7 @@
 
             const botTs = Date.now();
             botChat.messages.push({
-                id: botTs, sender: 'Pulse Бот', text: replyText,
+                id: botTs, sender: 'Pulse Бот', text: replyText, reactions: {},
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: botTs
             });
             botChat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
@@ -673,6 +680,40 @@
             if (window.activeChatId === 'pulse_bot') window.renderMessages();
             window.renderChats();
         }
+
+        // РЕАКЦИИ НА СООБЩЕНИЯ
+        window.toggleReaction = function(msgId, emoji) {
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || !chat.messages) return;
+            const msg = chat.messages.find(m => m.id === msgId);
+            if (!msg) return;
+
+            if (!msg.reactions) msg.reactions = {};
+            // Если уже ставил эту реакцию — убираем, иначе ставим
+            if (msg.reactions[emoji] && msg.reactions[emoji].includes(window.currentUser.name)) {
+                msg.reactions[emoji] = msg.reactions[emoji].filter(name => name !== window.currentUser.name);
+                if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
+            } else {
+                // Убираем старую реакцию пользователя, если была другая
+                Object.keys(msg.reactions).forEach(e => {
+                    msg.reactions[e] = msg.reactions[e].filter(name => name !== window.currentUser.name);
+                    if (msg.reactions[e].length === 0) delete msg.reactions[e];
+                });
+                if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
+                msg.reactions[emoji].push(window.currentUser.name);
+            }
+
+            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
+            window.renderMessages();
+
+            // Синхронизация в облако
+            if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
+                addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), {
+                    pairCode: getPairChatCode(window.currentUser.code, chat.code), receiverCode: chat.code,
+                    senderCode: window.currentUser.code, senderName: window.currentUser.name, message: msg, timestamp: Date.now()
+                });
+            }
+        };
 
         window.renderMessages = function() {
             const container = document.getElementById('messagesContainer');
@@ -688,23 +729,46 @@
             chat.messages.forEach(msg => {
                 const isMe = msg.sender === window.currentUser?.name;
                 const div = document.createElement('div');
-                div.className = `msg-group group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
+                div.className = `msg-group group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1 relative`;
+
+                // Рендер активных реакций под сообщением
+                let reactionsHtml = '';
+                if (msg.reactions && Object.keys(msg.reactions).length > 0) {
+                    reactionsHtml = '<div class="flex flex-wrap gap-1 mt-1">';
+                    for (const [emoji, users] of Object.entries(msg.reactions)) {
+                        const hasMyReaction = users.includes(window.currentUser.name);
+                        reactionsHtml += `<button onclick="toggleReaction(${msg.id}, '${emoji}')" class="px-1.5 py-0.5 rounded-full text-[10px] flex items-center gap-1 border transition ${hasMyReaction ? 'bg-indigo-600/30 border-indigo-500/50 text-indigo-300' : 'bg-slate-800/80 border-slate-700 text-slate-300'}"><span>${emoji}</span><span>${users.length}</span></button>`;
+                    }
+                    reactionsHtml += '</div>';
+                }
+
                 div.innerHTML = `
                     <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
                         <div class="max-w-[80%] px-3.5 py-2 rounded-2xl text-xs ${isMe ? 'bg-indigo-600 text-white rounded-br-none shadow' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-[#1e293b]'}">
                             ${msg.replyTo ? `<div class="mb-1 p-1.5 bg-[#090d16]/60 border-l-2 border-indigo-400 rounded text-[10px] text-slate-300"><b>${escapeHtml(msg.replyTo.sender)}</b>:${escapeHtml(msg.replyTo.text)}</div>` : ''}
                             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>` : ''}
                             ${msg.file ? `<div class="mt-1 cursor-pointer" onclick="openLightbox('${msg.file.data}')"><img src="${msg.file.data}" class="max-h-40 rounded-xl"></div>` : ''}
+                            ${reactionsHtml}
                             <div class="flex items-center justify-end space-x-1 mt-1 text-[9px] opacity-75">
                                 ${msg.edited ? '<span>(ред.)</span>' : ''}
                                 <span>${msg.time}</span>
                             </div>
                         </div>
-                        <div class="msg-actions opacity-0 group-hover:opacity-100 flex items-center space-x-1 text-xs">
-                            <button onclick="replyToMessage(${msg.id})" title="Ответить" class="text-slate-400 hover:text-indigo-400"><i class="fa-solid fa-reply"></i></button>
-                            ${isMe ? `<button onclick="editMessage(${msg.id})" title="Изменить" class="text-slate-400 hover:text-indigo-400"><i class="fa-solid fa-pen"></i></button>` : ''}
-                            <button onclick="openForwardModal(${msg.id})" title="Переслать" class="text-slate-400 hover:text-indigo-400"><i class="fa-solid fa-share"></i></button>
-                            <button onclick="sendReport('${escapeHtml(msg.text)}', '${msg.sender}')" title="Пожаловаться" class="text-slate-400 hover:text-rose-400"><i class="fa-solid fa-flag"></i></button>
+                        <div class="msg-actions opacity-0 group-hover:opacity-100 flex items-center space-x-1 text-xs bg-[#131c2e] border border-[#1e293b] px-2 py-1 rounded-xl shadow-lg">
+                            <div class="relative group/react inline-block">
+                                <button title="Реакция" class="text-slate-400 hover:text-amber-400 px-1"><i class="fa-solid fa-face-smile"></i></button>
+                                <div class="absolute bottom-full mb-1 left-0 hidden group-hover/react:flex bg-[#090d16] border border-[#1e293b] p-1.5 rounded-xl shadow-2xl gap-1.5 z-30">
+                                    <button onclick="toggleReaction(${msg.id}, '❤️')" class="hover:scale-125 transition">❤️</button>
+                                    <button onclick="toggleReaction(${msg.id}, '🔥')" class="hover:scale-125 transition">🔥</button>
+                                    <button onclick="toggleReaction(${msg.id}, '👍')" class="hover:scale-125 transition">👍</button>
+                                    <button onclick="toggleReaction(${msg.id}, '😂')" class="hover:scale-125 transition">😂</button>
+                                    <button onclick="toggleReaction(${msg.id}, '😢')" class="hover:scale-125 transition">😢</button>
+                                </div>
+                            </div>
+                            <button onclick="replyToMessage(${msg.id})" title="Ответить" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-reply"></i></button>
+                            ${isMe ? `<button onclick="editMessage(${msg.id})" title="Изменить" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-pen"></i></button>` : ''}
+                            <button onclick="openForwardModal(${msg.id})" title="Переслать" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-share"></i></button>
+                            <button onclick="sendReport('${escapeHtml(msg.text)}', '${msg.sender}')" title="Пожаловаться" class="text-slate-400 hover:text-rose-400 px-1"><i class="fa-solid fa-flag"></i></button>
                         </div>
                     </div>
                 `;
@@ -766,12 +830,53 @@
             targetChat.messages.push({
                 id: nowTs, sender: window.currentUser.name,
                 text: `[Переслано от ${forwardingMsg.sender}]: ${forwardingMsg.text || ''}`,
-                file: forwardingMsg.file || null, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTs
+                file: forwardingMsg.file || null, reactions: {}, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTs
             });
             targetChat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
             window.closeForwardModal(); window.showToast('Сообщение переслано', 'success');
         };
+
+        // REAL-TIME TYPING INDICATOR
+        let typingTimeout = null;
+        window.handleTypingInput = function() {
+            if (!window.currentUser || window.activeChatId === 'pulse_bot') return;
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || !chat.code) return;
+
+            // Send typing signal to Firebase
+            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'typing', getPairChatCode(window.currentUser.code, chat.code)), {
+                user: window.currentUser.name, code: window.currentUser.code, timestamp: Date.now()
+            }, { merge: true });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'typing', getPairChatCode(window.currentUser.code, chat.code)), {
+                    user: '', code: '', timestamp: 0
+                }, { merge: true });
+            }, 2000);
+        };
+
+        function subscribeToTyping() {
+            if (unsubscribeTyping) unsubscribeTyping();
+            const chat = window.chats.find(c => c.id === window.activeChatId);
+            if (!chat || !chat.code || chat.code === '#saved_notes') {
+                document.getElementById('typingIndicator').classList.add('hidden');
+                return;
+            }
+
+            unsubscribeTyping = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'typing', getPairChatCode(window.currentUser.code, chat.code)), (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const isTyping = data.user && data.user !== window.currentUser.name && (Date.now() - data.timestamp < 3500);
+                    const indicator = document.getElementById('typingIndicator');
+                    indicator.classList.toggle('hidden', !isTyping);
+                    if (isTyping) {
+                        document.getElementById('typingIndicatorText').innerText = `${data.user} печатает...`;
+                    }
+                }
+            });
+        }
 
         // REPORTS & ADMIN TOOLS
         window.sendReport = async function(text, sender) {
@@ -1009,6 +1114,7 @@
             document.getElementById('chatTitle').innerText = chat.name;
             document.getElementById('chatAvatar').innerText = chat.avatar;
             updateChatHeaderOnlineStatus();
+            subscribeToTyping();
             window.renderMessages(); window.renderChats();
 
             if (window.innerWidth < 768) {
