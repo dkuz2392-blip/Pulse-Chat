@@ -401,7 +401,6 @@
         };
 
         function initSession(user) {
-            // Защита глобального объекта от модификаций в DevTools
             window.currentUser = Object.freeze(user);
             localStorage.setItem('pulse_session', JSON.stringify(user));
             
@@ -411,7 +410,7 @@
             document.getElementById('settingsUserCode').innerText = escapeHTML(user.code || '#usr');
             document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
             
-            window.renderChats();
+            loadUserChats();
             window.selectChat(window.activeChatId);
             subscribeToFeed();
             subscribeToStories();
@@ -429,7 +428,7 @@
             ['navBtnFeed', 'navBtnMessages', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
 
             if (section === 'feed') { document.getElementById('sectionFeed').classList.remove('hidden'); document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; }
-            else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; window.renderChats(); }
+            else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; loadUserChats(); }
             else if (section === 'settings') { document.getElementById('sectionSettings').classList.remove('hidden'); document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; if (window.currentUser?.isAdmin || window.currentUser?.isCreator) loadAdminUsers(); }
         };
 
@@ -494,6 +493,21 @@
             });
         }
 
+        // ЗАГРУЗКА И ОТОБРАЖЕНИЕ ЧАТОВ
+        async function loadUserChats() {
+            window.chats = [{ id: 'pulse_global', name: 'Общий чат', type: 'group' }];
+            try {
+                const snap = await db.collection('chats').get();
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    if (doc.id !== 'pulse_global' && data.members && data.members.includes(window.currentUser.name)) {
+                        window.chats.push({ id: doc.id, name: data.name || doc.id, type: data.type || 'friend' });
+                    }
+                });
+            } catch(e) {}
+            window.renderChats();
+        }
+
         window.renderChats = function() {
             const list = document.getElementById('chatList');
             if (!list) return;
@@ -504,7 +518,6 @@
                 item.innerText = c.name;
                 item.onclick = () => { 
                     window.selectChat(c.id); 
-                    // Исправление: автоматическое закрытие сайдбара на мобильных
                     if(window.innerWidth < 768) {
                         document.getElementById('sidebarChats').classList.add('-translate-x-full');
                     }
@@ -513,25 +526,31 @@
             });
         };
 
-        // REALTIME ЧАТЫ ИЗ FIRESTORE
+        // REALTIME ЧАТЫ (БЕЗ ТРЕБОВАНИЯ ИНДЕКСОВ)
         window.selectChat = function(id) {
             window.activeChatId = id;
             const chat = window.chats.find(c => c.id === id);
             if (!chat) return;
             document.getElementById('chatTitle').innerText = chat.name;
 
-            // Отписываемся от прошлого чата
             if (window.activeChatListener) window.activeChatListener();
 
-            // Подписываемся на подколлекцию сообщений в Firestore
+            // Читаем сообщения без orderBy, сортируем на клиенте (работает всегда без индексов)
             window.activeChatListener = db.collection('chats').doc(id).collection('messages')
-                .orderBy('timestamp', 'asc').limit(100)
                 .onSnapshot(snapshot => {
                     const container = document.getElementById('messagesContainer');
                     if (!container) return;
                     container.innerHTML = '';
+                    
+                    let messages = [];
                     snapshot.forEach(doc => {
-                        const m = doc.data();
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Сортировка по времени создания
+                    messages.sort((a, b) => (a.timestamp?.toMillis() || a.timeLocal || 0) - (b.timestamp?.toMillis() || b.timeLocal || 0));
+
+                    messages.forEach(m => {
                         const isMe = m.sender === window.currentUser?.name;
                         const div = document.createElement('div');
                         div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
@@ -553,26 +572,45 @@
             }
 
             input.value = '';
-            await db.collection('chats').doc(window.activeChatId).collection('messages').add({
+            
+            // Убедимся, что документ чата существует в Firestore
+            const chatRef = db.collection('chats').doc(window.activeChatId);
+            const chatDoc = await chatRef.get();
+            if (!chatDoc.exists) {
+                await chatRef.set({
+                    name: window.activeChatId === 'pulse_global' ? 'Общий чат' : window.activeChatId,
+                    type: 'friend',
+                    members: [window.currentUser.name]
+                });
+            }
+
+            await chatRef.collection('messages').add({
                 sender: window.currentUser.name,
                 text: text,
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                timeLocal: Date.now(),
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         };
 
         window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
         window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
-        window.handleAddFriend = function() {
+        
+        window.handleAddFriend = async function() {
             const name = document.getElementById('friendCodeInput').value.trim().toLowerCase();
             if (!name) return;
             const chatId = [window.currentUser.name, name].sort().join('_');
-            if (!window.chats.some(c => c.id === chatId)) {
-                window.chats.push({ id: chatId, name: 'ЛС: ' + name, type: 'friend' });
-            }
-            window.renderChats(); 
-            window.selectChat(chatId);
+            
+            // Сохраняем ЛС чат в облако с участниками
+            await db.collection('chats').doc(chatId).set({
+                name: 'ЛС: ' + name,
+                type: 'friend',
+                members: [window.currentUser.name, name]
+            }, { merge: true });
+
             closeAddFriendModal();
+            loadUserChats();
+            window.selectChat(chatId);
         };
 
         // АДМИН ПАНЕЛЬ
@@ -627,7 +665,6 @@
             container.prepend(div);
         }
 
-        // РЕАЛЬНЫЕ АДМИН-ФУНКЦИИ С СИНХРОНИЗАЦИЕЙ В FIRESTORE
         window.f1_broadcast = async () => { const msg = prompt('Текст рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); } };
         window.f2_clearFeed = async () => { if(confirm('Очистить ленту?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента очищена'); } };
         window.f3_exportDb = async () => { const snap = await db.collection('users').get(); let u=[]; snap.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_backup.json'; a.click(); logAdminAction('Дамп БД скачан'); };
@@ -637,7 +674,6 @@
         window.f7_unbanUser = async () => { const u=prompt('Ник для разбана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: false }); logAdminAction('Разбанен: ' + u); loadAdminUsers(); } };
         window.f8_muteUser = async () => { const u=prompt('Ник для мута:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isMuted: true }); logAdminAction('Выдан мут: ' + u); } };
         window.f16_cleanStorage = () => { 
-            // Точечная очистка кэша без сброса сессии
             const session = localStorage.getItem('pulse_session');
             const theme = localStorage.getItem('pulse_theme');
             localStorage.clear();
@@ -659,4 +695,3 @@
     </script>
 </body>
 </html>
-
