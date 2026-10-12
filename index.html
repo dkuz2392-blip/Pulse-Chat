@@ -62,7 +62,7 @@
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
 
     <!-- AUTH SCREEN -->
-    <div id="authScreen" class="fixed inset-0 z-[100] bg-darkBg flex items-center justify-center p-4 overflow-y-auto">
+    <div id="authScreen" class="fixed inset-0 z-[200] bg-darkBg flex items-center justify-center p-4 overflow-y-auto">
         <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col space-y-5 my-auto relative">
             <div class="flex items-center justify-between">
                 <div class="w-12 h-12 rounded-2xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-xl font-bold">
@@ -126,9 +126,9 @@
                 <span id="widgetWeather">☀️ Екб, +20°C</span>
             </div>
             <div class="flex items-center gap-3">
-                <button type="button" onclick="toggleFullscreen()" class="hover:text-white cursor-pointer" title="Полноэкранный режим"><i class="fa-solid fa-expand"></i></button>
-                <button type="button" onclick="toggleDndMode()" id="dndBtn" class="hover:text-white cursor-pointer" title="Не беспокоить"><i class="fa-solid fa-bell"></i></button>
-                <button type="button" onclick="togglePrivacyBlur()" class="hover:text-white cursor-pointer" title="Приватность"><i class="fa-solid fa-eye-slash"></i></button>
+                <button type="button" id="toggleFullscreenBtn" class="hover:text-white cursor-pointer" title="Полноэкранный режим"><i class="fa-solid fa-expand"></i></button>
+                <button type="button" id="dndBtn" class="hover:text-white cursor-pointer" title="Не беспокоить"><i class="fa-solid fa-bell"></i></button>
+                <button type="button" id="togglePrivacyBtn" class="hover:text-white cursor-pointer" title="Приватность"><i class="fa-solid fa-eye-slash"></i></button>
             </div>
         </div>
 
@@ -145,10 +145,10 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button type="button" onclick="openCreateStoryModal()" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5">
+                        <button type="button" id="openStoryModalBtn" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-plus text-primaryAccent"></i> История
                         </button>
-                        <button type="button" onclick="openCreatePostModal()" class="px-4 py-2 bg-primaryAccent hover:opacity-90 text-white rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-md">
+                        <button type="button" id="openPostModalBtn" class="px-4 py-2 bg-primaryAccent hover:opacity-90 text-white rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-plus text-[10px]"></i> Запись
                         </button>
                     </div>
@@ -156,7 +156,7 @@
 
                 <div class="bg-darkCard/30 border-b border-darkBorder px-6 py-3.5 shrink-0">
                     <div id="storiesTray" class="flex items-center space-x-4 overflow-x-auto pb-1">
-                        <div onclick="openCreateStoryModal()" class="flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group">
+                        <div id="trayAddStoryBtn" class="flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group">
                             <div class="w-14 h-14 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/50 flex items-center justify-center text-primaryAccent group-hover:border-primaryAccent"><i class="fa-solid fa-plus"></i></div>
                             <span class="text-[11px] font-medium text-slate-400">Ваша история</span>
                         </div>
@@ -173,18 +173,18 @@
                         <div class="flex items-center gap-2">
                             <div class="relative flex-1">
                                 <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
-                                <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
+                                <input type="text" id="chatSearchInput" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
                             </div>
-                            <button type="button" onclick="toggleChatDensity()" class="w-9 h-9 bg-darkBg border border-darkBorder rounded-xl text-slate-400 hover:text-white flex items-center justify-center text-xs cursor-pointer" title="Плотность списка"><i class="fa-solid fa-bars-staggered"></i></button>
+                            <button type="button" id="toggleDensityBtn" class="w-9 h-9 bg-darkBg border border-darkBorder rounded-xl text-slate-400 hover:text-white flex items-center justify-center text-xs cursor-pointer" title="Плотность списка"><i class="fa-solid fa-bars-staggered"></i></button>
                         </div>
                         <div class="flex gap-2">
-                            <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
+                            <button type="button" id="openAddFriendModalBtn" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
                                 <i class="fa-solid fa-user-plus text-primaryAccent text-xs"></i> <span>ЛС</span>
                             </button>
-                            <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
+                            <button type="button" id="openCreateGroupModalBtn" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
                                 <i class="fa-solid fa-users text-primaryAccent text-xs"></i> <span>Группа</span>
                             </button>
-                            <button type="button" onclick="openCreatePollModal()" title="Создать опрос" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center cursor-pointer">
+                            <button type="button" id="openCreatePollBtn" title="Создать опрос" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center cursor-pointer">
                                 <i class="fa-solid fa-square-poll-vertical text-primaryAccent"></i>
                             </button>
                         </div>
@@ -195,7 +195,7 @@
                 <div id="chatPane" class="flex-1 flex flex-col h-full bg-darkBg overflow-hidden relative z-10">
                     <div class="h-16 border-b border-darkBorder px-6 flex items-center justify-between bg-darkCard/60 backdrop-blur-xl shrink-0">
                         <div class="flex items-center space-x-3.5 overflow-hidden">
-                            <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button type="button" id="toggleMobileSidebarBtn" class="md:hidden w-9 h-9 rounded-xl bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
                             
                             <div class="relative shrink-0">
                                 <div id="chatAvatar" class="w-10 h-10 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-white text-sm overflow-hidden">💬</div>
@@ -208,9 +208,9 @@
                             </div>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <button type="button" onclick="exportCurrentChat()" title="Экспорт" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-download"></i></button>
-                            <button type="button" onclick="startAudioCall()" title="Звонок" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-phone"></i></button>
-                            <button type="button" onclick="deleteCurrentChat()" title="Удалить" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                            <button type="button" id="exportChatBtn" title="Экспорт" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-download"></i></button>
+                            <button type="button" id="startCallBtn" title="Звонок" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-phone"></i></button>
+                            <button type="button" id="deleteChatBtn" title="Удалить" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
 
@@ -219,7 +219,7 @@
                             <i class="fa-solid fa-thumbtack text-primaryAccent"></i>
                             <span id="pinnedMessageText" class="truncate font-medium">Закрепленное сообщение...</span>
                         </div>
-                        <button type="button" onclick="unpinMessage()" class="text-slate-500 hover:text-rose-400 text-xs ml-2 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                        <button type="button" id="unpinMessageBtn" class="text-slate-500 hover:text-rose-400 text-xs ml-2 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                     </div>
 
                     <div class="relative flex-1 flex flex-col overflow-hidden">
@@ -232,20 +232,20 @@
 
                     <div id="activeActionBanner" class="hidden px-4 py-2 bg-darkCard/90 border-t border-darkBorder flex items-center justify-between text-xs text-slate-300">
                         <span id="activeActionText" class="truncate font-medium">Режим редактирования</span>
-                        <button type="button" onclick="cancelActiveAction()" class="text-slate-500 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                        <button type="button" id="cancelActionBtn" class="text-slate-500 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                     </div>
 
                     <div class="p-3.5 border-t border-darkBorder bg-darkCard/85 backdrop-blur-xl shrink-0 z-20">
                         <div class="flex items-center space-x-2.5">
                             <label class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0">
                                 <i class="fa-solid fa-paperclip text-xs"></i>
-                                <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)" class="hidden">
+                                <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" class="hidden">
                             </label>
-                            <button type="button" onclick="simulateVoiceRecord()" class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0" title="Голосовое">
+                            <button type="button" id="voiceRecordBtn" class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0" title="Голосовое">
                                 <i class="fa-solid fa-microphone text-xs"></i>
                             </button>
-                            <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none max-h-24"></textarea>
-                            <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-2xl bg-primaryAccent hover:opacity-90 text-white flex items-center justify-center cursor-pointer shrink-0 shadow-lg shadow-primaryAccent/25"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                            <textarea id="messageInput" rows="1" placeholder="Введите сообщение..." class="flex-1 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none max-h-24"></textarea>
+                            <button type="button" id="sendMessageBtn" class="w-10 h-10 rounded-2xl bg-primaryAccent hover:opacity-90 text-white flex items-center justify-center cursor-pointer shrink-0 shadow-lg shadow-primaryAccent/25"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -262,28 +262,28 @@
                                 <span id="settingsCreatorBadge" class="hidden px-2 py-0.5 bg-primaryAccent/20 text-primaryAccent text-[10px] rounded-lg font-bold border border-primaryAccent/30">Creator</span>
                                 <span id="settingsAdminBadge" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] rounded-lg font-bold border border-amber-500/30">Admin</span>
                             </div>
-                            <button type="button" onclick="copyMyCode()" id="settingsUserCode" class="text-xs text-primaryAccent hover:underline font-mono cursor-pointer">#id</button>
+                            <button type="button" id="copyCodeBtn" class="text-xs text-primaryAccent hover:underline font-mono cursor-pointer">#id</button>
                         </div>
                     </div>
-                    <button type="button" onclick="logout()" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 cursor-pointer">Выйти</button>
+                    <button type="button" id="logoutBtn" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 cursor-pointer">Выйти</button>
                 </div>
 
                 <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
                     <h3 class="font-bold text-xs text-white uppercase tracking-wider">Кастомизация темы и бренда</h3>
                     <div class="grid grid-cols-3 gap-3">
-                        <button type="button" onclick="setTheme('linear')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="button" id="setThemeLinearBtn" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
                             <span class="w-3 h-3 rounded-full bg-indigo-500"></span> Linear
                         </button>
-                        <button type="button" onclick="setTheme('oled')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="button" id="setThemeOledBtn" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
                             <span class="w-3 h-3 rounded-full bg-blue-500"></span> OLED
                         </button>
-                        <button type="button" onclick="setTheme('cyber')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="button" id="setThemeCyberBtn" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
                             <span class="w-3 h-3 rounded-full bg-purple-500"></span> Cyber
                         </button>
                     </div>
                     <div class="flex items-center justify-between pt-2">
                         <span class="text-xs text-slate-400">Цветовой акцент:</span>
-                        <input type="color" id="accentColorPicker" value="#4f46e5" onchange="changeCustomAccent(this.value)" class="w-10 h-8 bg-transparent cursor-pointer rounded">
+                        <input type="color" id="accentColorPicker" value="#4f46e5" class="w-10 h-8 bg-transparent cursor-pointer rounded">
                     </div>
                 </div>
 
@@ -304,13 +304,13 @@
                                 <input type="text" id="setAvatar" maxlength="2" placeholder="😎" class="w-16 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent">
                                 <label class="flex-1 px-4 py-3 bg-darkBg hover:bg-slate-800 border border-darkBorder text-slate-300 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer">
                                     <i class="fa-solid fa-upload text-xs"></i> Загрузить файл
-                                    <input type="file" id="setAvatarFileInput" accept="image/*" onchange="handleAvatarUpload(event)" class="hidden">
+                                    <input type="file" id="setAvatarFileInput" accept="image/*" class="hidden">
                                 </label>
                             </div>
                         </div>
                         <div class="pt-2 flex justify-between items-center">
-                            <button type="button" onclick="exportAccountData()" class="px-4 py-2.5 bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 rounded-2xl text-xs font-semibold cursor-pointer">Бэкап профиля</button>
-                            <button type="button" onclick="saveUserSettings()" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
+                            <button type="button" id="backupProfileBtn" class="px-4 py-2.5 bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 rounded-2xl text-xs font-semibold cursor-pointer">Бэкап профиля</button>
+                            <button type="button" id="saveSettingsBtn" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
                         </div>
                     </div>
                 </div>
@@ -322,7 +322,7 @@
                                 <i class="fa-solid fa-shield-halved"></i> Панель администратора (26 функций)
                             </h3>
                             <div class="flex items-center gap-3">
-                                <button type="button" onclick="clearGlobalFeed()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold cursor-pointer"><i class="fa-solid fa-trash-can mr-1"></i> Очистить ленту</button>
+                                <button type="button" id="clearGlobalFeedBtn" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold cursor-pointer"><i class="fa-solid fa-trash-can mr-1"></i> Очистить ленту</button>
                                 <span class="text-xs text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                             </div>
                         </div>
@@ -365,9 +365,9 @@
 
         <!-- FIXED BOTTOM NAVIGATION BAR -->
         <div class="fixed bottom-3 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md h-16 bg-darkCard/95 border border-darkBorder rounded-2xl flex items-center justify-around px-2 z-[90] shadow-2xl backdrop-blur-xl">
-            <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent cursor-pointer"><i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
-            <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
-            <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
+            <button type="button" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent cursor-pointer"><i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
+            <button type="button" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
+            <button type="button" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
         </div>
     </div>
 
@@ -376,13 +376,13 @@
         <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
                 <h3 class="font-bold text-sm text-white">Новая публикация</h3>
-                <button type="button" onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" id="closePostModalBtn" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <textarea id="postTextInput" rows="3" placeholder="Что нового?..." class="w-full p-4 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none"></textarea>
             <div>
                 <input type="file" id="postImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-darkBg file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
             </div>
-            <button type="button" onclick="submitPost()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать</button>
+            <button type="button" id="submitPostBtn" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать</button>
         </div>
     </div>
 
@@ -390,13 +390,13 @@
         <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
                 <h3 class="font-bold text-sm text-white">Добавить историю</h3>
-                <button type="button" onclick="closeCreateStoryModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" id="closeStoryModalBtn" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <input type="text" id="storyTextInput" placeholder="Текст истории..." class="w-full px-4 py-3.5 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent">
             <div>
                 <input type="file" id="storyImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-darkBg file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
             </div>
-            <button type="button" onclick="submitStory()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать историю</button>
+            <button type="button" id="submitStoryBtn" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать историю</button>
         </div>
     </div>
 
@@ -409,7 +409,7 @@
                 <h3 id="callUserName" class="font-bold text-base text-white">Имя собеседника</h3>
                 <p id="callStatusText" class="text-xs text-slate-400">Соединение...</p>
             </div>
-            <button type="button" onclick="endAudioCall()" class="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg shadow-xl cursor-pointer">
+            <button type="button" id="endCallBtn" class="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg shadow-xl cursor-pointer">
                 <i class="fa-solid fa-phone-slash"></i>
             </button>
         </div>
@@ -417,27 +417,27 @@
 
     <div id="addFriendModal" class="hidden fixed inset-0 z-[110] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Добавить чат</h3><button type="button" onclick="closeAddFriendModal()" class="text-slate-400 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Добавить чат</h3><button type="button" id="closeAddFriendBtn" class="text-slate-400 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></div>
             <div class="space-y-4">
                 <input type="text" id="friendCodeInput" placeholder="#username_1234" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
-                <button type="button" onclick="handleAddFriend()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold cursor-pointer shadow">Подключиться</button>
+                <button type="button" id="submitAddFriendBtn" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold cursor-pointer shadow">Подключиться</button>
             </div>
         </div>
     </div>
 
     <div id="createGroupModal" class="hidden fixed inset-0 z-[110] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Создать группу</h3><button type="button" onclick="closeCreateGroupModal()" class="text-slate-400 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Создать группу</h3><button type="button" id="closeCreateGroupBtn" class="text-slate-400 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></div>
             <div class="space-y-4">
                 <input type="text" id="groupNameInput" placeholder="Название группы" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
-                <button type="button" onclick="handleCreateGroup()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold cursor-pointer shadow">Создать</button>
+                <button type="button" id="submitCreateGroupBtn" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold cursor-pointer shadow">Создать</button>
             </div>
         </div>
     </div>
 
-    <div id="lightboxModal" class="hidden fixed inset-0 z-[130] bg-black/95 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
-        <div class="relative max-w-5xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
-            <button type="button" onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-2xl hover:text-primaryAccent cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+    <div id="lightboxModal" class="hidden fixed inset-0 z-[130] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative max-w-5xl w-full flex flex-col items-center" id="lightboxInner">
+            <button type="button" id="closeLightboxBtn" class="absolute -top-12 right-0 text-white text-2xl hover:text-primaryAccent cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-3xl shadow-2xl border border-darkBorder object-contain">
         </div>
     </div>
@@ -513,7 +513,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Интерактивные элементы исправлены.', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Полный комплекс администрирования готов.', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
@@ -701,8 +701,9 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'stories'), (snapshot) => {
                 const tray = document.getElementById('storiesTray');
                 if (!tray) return;
-                let addBtnHtml = tray.firstElementChild.outerHTML;
+                let addBtnHtml = document.getElementById('trayAddStoryBtn').outerHTML;
                 tray.innerHTML = addBtnHtml;
+                document.getElementById('trayAddStoryBtn').addEventListener('click', openCreateStoryModal);
                 
                 let stories = [];
                 snapshot.forEach(d => stories.push({ id: d.id, ...d.data() }));
@@ -1514,24 +1515,82 @@
         }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-        // Жесткая привязка через JS для абсолютной гарантии кликов по кнопкам входа
+        // Безопасная инициализация слушателей событий для гарантированного клика
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('loginSubmitBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                window.handleLogin();
-            });
+            const bindClick = (id, fn) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('click', (e) => { e.preventDefault(); fn(e); });
+            };
 
-            document.getElementById('regSubmitBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                window.handleRegister();
-            });
+            bindClick('loginSubmitBtn', () => window.handleLogin());
+            bindClick('regSubmitBtn', () => window.handleRegister());
+            bindClick('tabLoginBtn', () => window.switchAuthTab('login'));
+            bindClick('tabRegisterBtn', () => window.switchAuthTab('register'));
 
-            document.getElementById('tabLoginBtn').addEventListener('click', () => window.switchAuthTab('login'));
-            document.getElementById('tabRegisterBtn').addEventListener('click', () => window.switchAuthTab('register'));
+            bindClick('themeLinearBtn', () => window.setTheme('linear'));
+            bindClick('themeOledBtn', () => window.setTheme('oled'));
+            bindClick('themeCyberBtn', () => window.setTheme('cyber'));
 
-            document.getElementById('themeLinearBtn').addEventListener('click', () => window.setTheme('linear'));
-            document.getElementById('themeOledBtn').addEventListener('click', () => window.setTheme('oled'));
-            document.getElementById('themeCyberBtn').addEventListener('click', () => window.setTheme('cyber'));
+            bindClick('setThemeLinearBtn', () => window.setTheme('linear'));
+            bindClick('setThemeOledBtn', () => window.setTheme('oled'));
+            bindClick('setThemeCyberBtn', () => window.setTheme('cyber'));
+
+            bindClick('navBtnFeed', () => window.switchSection('feed'));
+            bindClick('navBtnMessages', () => window.switchSection('messages'));
+            bindClick('navBtnSettings', () => window.switchSection('settings'));
+
+            bindClick('openStoryModalBtn', () => window.openCreateStoryModal());
+            bindClick('trayAddStoryBtn', () => window.openCreateStoryModal());
+            bindClick('openPostModalBtn', () => window.openCreatePostModal());
+            bindClick('closePostModalBtn', () => window.closeCreatePostModal());
+            bindClick('submitPostBtn', () => window.submitPost());
+            bindClick('closeStoryModalBtn', () => window.closeCreateStoryModal());
+            bindClick('submitStoryBtn', () => window.submitStory());
+
+            bindClick('openAddFriendModalBtn', () => window.openAddFriendModal());
+            bindClick('closeAddFriendBtn', () => window.closeAddFriendModal());
+            bindClick('submitAddFriendBtn', () => window.handleAddFriend());
+
+            bindClick('openCreateGroupModalBtn', () => window.openCreateGroupModal());
+            bindClick('closeCreateGroupBtn', () => window.closeCreateGroupModal());
+            bindClick('submitCreateGroupBtn', () => window.handleCreateGroup());
+            bindClick('openCreatePollBtn', () => window.openCreatePollModal());
+
+            bindClick('toggleMobileSidebarBtn', () => window.toggleMobileSidebar());
+            bindClick('toggleDensityBtn', () => window.toggleChatDensity());
+            bindClick('exportChatBtn', () => window.exportCurrentChat());
+            bindClick('startCallBtn', () => window.startAudioCall());
+            bindClick('deleteChatBtn', () => window.deleteCurrentChat());
+            bindClick('unpinMessageBtn', () => window.unpinMessage());
+            bindClick('cancelActionBtn', () => window.cancelActiveAction());
+            bindClick('sendMessageBtn', () => window.sendMessage());
+            bindClick('voiceRecordBtn', () => window.simulateVoiceRecord());
+
+            bindClick('copyCodeBtn', () => window.copyMyCode());
+            bindClick('logoutBtn', () => window.logout());
+            bindClick('backupProfileBtn', () => window.exportAccountData());
+            bindClick('saveSettingsBtn', () => window.saveUserSettings());
+            bindClick('clearGlobalFeedBtn', () => window.clearGlobalFeed());
+
+            bindClick('toggleFullscreenBtn', () => window.toggleFullscreen());
+            bindClick('dndBtn', () => window.toggleDndMode());
+            bindClick('togglePrivacyBtn', () => window.togglePrivacyBlur());
+
+            bindClick('endCallBtn', () => window.endAudioCall());
+            bindClick('closeLightboxBtn', () => window.closeLightbox());
+            bindClick('lightboxModal', () => window.closeLightbox());
+
+            const msgInput = document.getElementById('messageInput');
+            if (msgInput) msgInput.addEventListener('keydown', window.handleKeyDown);
+
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) fileInput.addEventListener('change', window.handleFileSelect);
+
+            const avatarFile = document.getElementById('setAvatarFileInput');
+            if (avatarFile) avatarFile.addEventListener('change', window.handleAvatarUpload);
+
+            const colorPicker = document.getElementById('accentColorPicker');
+            if (colorPicker) colorPicker.addEventListener('change', (e) => window.changeCustomAccent(e.target.value));
 
             const session = localStorage.getItem('pulse_session');
             if (session) {
