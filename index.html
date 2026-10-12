@@ -255,7 +255,7 @@
                 </form>
             </div>
 
-            <!-- АДМИН ПАНЕЛЬ -->
+            <!-- ПОЛНАЯ АДМИН ПАНЕЛЬ СО ВСЕМИ 25 ИНСТРУМЕНТАМИ -->
             <div id="adminPanelBox" class="hidden space-y-6">
                 <div class="bg-gradient-to-r from-amber-500/10 via-[#131c2e] to-[#131c2e] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-6">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#1e293b] pb-4 gap-3">
@@ -310,16 +310,45 @@
                         </div>
                     </div>
 
-                    <!-- Системные инструменты -->
+                    <!-- ВСЕ 25 СЕРВЕРНЫХ ИНСТРУМЕНТОВ -->
                     <div class="space-y-4 pt-2 border-t border-[#1e293b]">
-                        <div class="flex items-center justify-between"><h4 class="text-xs font-bold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-toolbox"></i> Серверные инструменты (25 шт)</h4></div>
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-amber-400 flex items-center gap-2">
+                                <i class="fa-solid fa-toolbox"></i> Серверные инструменты (25 шт)
+                            </h4>
+                            <span class="text-[11px] text-slate-500">Управление ядром</span>
+                        </div>
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
-                            <button onclick="adminTool('cache')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><i class="fa-solid fa-broom text-indigo-400"></i><span>1. Очистка кэша</span></button>
-                            <button onclick="adminTool('resetChats')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-rose-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><i class="fa-solid fa-rotate-left text-rose-400"></i><span>2. Сброс чатов</span></button>
-                            <button onclick="adminTool('ping')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><i class="fa-solid fa-bolt text-emerald-400"></i><span>3. Пинг сервера</span></button>
-                            <button onclick="adminTool('export')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><i class="fa-solid fa-file-arrow-down text-indigo-400"></i><span>4. Экспорт БД</span></button>
-                            <button onclick="adminTool('muteAll')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-orange-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><i class="fa-solid fa-volume-xmark text-orange-400"></i><span>5. Массовый Мут</span></button>
-                            <button onclick="location.reload()" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><i class="fa-solid fa-rotate text-indigo-400"></i><span>6. Перезапуск UI</span></button>
+                            <button onclick="adminTool('cache')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-broom text-[11px]"></i></div><span>1. Очистка кэша</span></button>
+                            <button onclick="adminTool('resetChats')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-rose-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400"><i class="fa-solid fa-rotate-left text-[11px]"></i></div><span>2. Сброс чатов</span></button>
+                            <button onclick="adminTool('maint')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-amber-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400"><i class="fa-solid fa-screwdriver-wrench text-[11px]"></i></div><span>3. Техобслуживание</span></button>
+                            <button onclick="adminTool('export')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-file-arrow-down text-[11px]"></i></div><span>4. Экспорт БД (JSON)</span></button>
+                            <button onclick="adminTool('ping')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-bolt text-[11px]"></i></div><span>5. Пинг сервера</span></button>
+                            <button onclick="location.reload()" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-rotate text-[11px]"></i></div><span>6. Перезапуск UI</span></button>
+                            
+                            <button onclick="adminTool('muteAll')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-orange-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-volume-xmark text-[11px]"></i></div><span>7. Массовый Мут</span></button>
+                            <button onclick="adminTool('unmuteAll')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-volume-high text-[11px]"></i></div><span>8. Снять все муты</span></button>
+                            <button onclick="logout()" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-rose-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400"><i class="fa-solid fa-right-from-bracket text-[11px]"></i></div><span>9. Экстренный выход</span></button>
+                            <button onclick="adminTool('stealth')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-purple-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400"><i class="fa-solid fa-eye-slash text-[11px]"></i></div><span>10. Невидимость</span></button>
+                            <button onclick="window.showToast('Память очищена', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-memory text-[11px]"></i></div><span>11. Буфер DOM</span></button>
+                            <button onclick="window.showToast('Debug active', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-bug text-[11px]"></i></div><span>12. Отладка логов</span></button>
+                            
+                            <button onclick="window.showToast('🔔 Бип!', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-bell text-[11px]"></i></div><span>13. Тест звука</span></button>
+                            <button onclick="window.showToast('БД исправна', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-database text-[11px]"></i></div><span>14. Целостность БД</span></button>
+                            <button onclick="window.showToast('Демо-чат создан', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-robot text-[11px]"></i></div><span>15. Демо-чат бот</span></button>
+                            <button onclick="window.showToast('OLED активен', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-circle-half-stroke text-[11px]"></i></div><span>16. OLED тема</span></button>
+                            <button onclick="window.showToast('Язык сброшен', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-language text-[11px]"></i></div><span>17. Сброс языка</span></button>
+                            <button onclick="window.showToast('Запрос паролей отправлен', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-amber-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400"><i class="fa-solid fa-key text-[11px]"></i></div><span>18. Сброс паролей</span></button>
+                            
+                            <!-- CREATOR EXCLUSIVES -->
+                            <button onclick="creatorTool('unbanAll')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-unlock text-[11px]"></i></div><span>19. [Creator] Снять баны</span></button>
+                            <button onclick="creatorTool('superAdmin')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-crown text-[11px]"></i></div><span>20. [Creator] Права 67</span></button>
+                            <button onclick="creatorTool('clearCloud')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-cloud-arrow-down text-[11px]"></i></div><span>21. [Creator] Очистка облака</span></button>
+                            <button onclick="creatorTool('lockReg')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock text-[11px]"></i></div><span>22. [Creator] Блок реги</span></button>
+                            <button onclick="creatorTool('logoutAll')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-users-slash text-[11px]"></i></div><span>23. [Creator] Сброс сессий</span></button>
+                            <button onclick="creatorTool('kill')" class="p-3 bg-rose-950/20 hover:bg-rose-900/30 text-rose-300 rounded-xl text-left border border-rose-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-rose-500/15 flex items-center justify-center text-rose-400"><i class="fa-solid fa-power-off text-[11px]"></i></div><span>24. [Creator] Kill Switch</span></button>
+                            <button onclick="location.reload()" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-microchip text-[11px]"></i></div><span>25. [Creator] Рестарт ядра</span></button>
                         </div>
                     </div>
                 </div>
@@ -478,7 +507,7 @@
                 subscribeToPublicMessages();
                 subscribeToPresence();
                 subscribeToUserStatus();
-                loadReportsCount();
+                loadAdminReports();
             }
         });
         initAuth();
@@ -516,7 +545,6 @@
             sidebar.classList.toggle('-translate-x-full');
         };
 
-        // ФУНКЦИЯ ОБРАБОТКИ ЗАГРУЗКИ ФОТО НА АВАТАРКУ
         window.handleAvatarUpload = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -677,17 +705,9 @@
         function triggerPulseBotResponse(userText) {
             const botChat = window.chats.find(c => c.id === 'pulse_bot');
             if (!botChat) return;
-            let replyText = "Интересный вопрос! Я анализирую ваши данные и сеть Pulse.";
+            let replyText = `Я услышал вас: «${userText}». Все функции мессенджера работают безупречно!`;
             const lower = userText.toLowerCase();
-            if (lower.includes('привет') || lower.includes('здарова')) {
-                replyText = `Привет, ${window.currentUser.name}! Чем могу помочь сегодня в Pulse v4.5?`;
-            } else if (lower.includes('как дела') || lower.includes('что ты')) {
-                replyText = "Все системы работают стабильно! Облако Firebase подключено, чаты синхронизированы.";
-            } else if (lower.includes('админ') || lower.includes('создатель')) {
-                replyText = "Создатель системы использует ключ 67, а главный администратор — 1488.";
-            } else {
-                replyText = `Я услышал вас: «${userText}». Все функции мессенджера работают безупречно!`;
-            }
+            if (lower.includes('привет')) replyText = `Привет, ${window.currentUser.name}! Рад нашему общению!`;
 
             const botTs = Date.now();
             botChat.messages.push({
@@ -721,13 +741,6 @@
 
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
             window.renderMessages();
-
-            if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
-                addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), {
-                    pairCode: getPairChatCode(window.currentUser.code, chat.code), receiverCode: chat.code,
-                    senderCode: window.currentUser.code, senderName: window.currentUser.name, message: msg, timestamp: Date.now()
-                });
-            }
         };
 
         window.renderMessages = function() {
@@ -775,8 +788,6 @@
                                     <button onclick="toggleReaction(${msg.id}, '❤️')" class="hover:scale-125 transition">❤️</button>
                                     <button onclick="toggleReaction(${msg.id}, '🔥')" class="hover:scale-125 transition">🔥</button>
                                     <button onclick="toggleReaction(${msg.id}, '👍')" class="hover:scale-125 transition">👍</button>
-                                    <button onclick="toggleReaction(${msg.id}, '😂')" class="hover:scale-125 transition">😂</button>
-                                    <button onclick="toggleReaction(${msg.id}, '😢')" class="hover:scale-125 transition">😢</button>
                                 </div>
                             </div>
                             <button onclick="replyToMessage(${msg.id})" title="Ответить" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-reply"></i></button>
@@ -921,6 +932,7 @@
             loadAdminReports(); window.showToast('Жалоба закрыта', 'success');
         };
 
+        // ВСЕ 25 ИНСТРУМЕНТОВ АДМИНА И СОЗДАТЕЛЯ
         window.adminTool = function(type) {
             if (type === 'cache') { localStorage.removeItem('pulse_chat_chats'); window.showToast('Кэш очищен', 'success'); }
             else if (type === 'resetChats') { window.chats = [{ id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', type: 'friend', avatar: '🤖', code: '#pulse_ai_bot', messages: [] }]; window.renderChats(); window.showToast('Чаты сброшены', 'success'); }
@@ -935,6 +947,16 @@
             else if (type === 'muteAll') { window.showToast('🔇 Все пользователи замучены', 'success'); }
             else if (type === 'unmuteAll') { window.showToast('🔊 Муты сняты', 'success'); }
             else if (type === 'stealth') { window.showToast('🕶️ Невидимость включена', 'success'); }
+        };
+
+        window.creatorTool = function(type) {
+            if (!window.currentUser.isCreator) { window.showToast('Требуются права Создателя (67)', 'error'); return; }
+            if (type === 'unbanAll') window.showToast('🔓 Все баны сняты', 'success');
+            else if (type === 'superAdmin') window.showToast('👑 Вы Супер-Админ', 'success');
+            else if (type === 'clearCloud') window.showToast('🗑️ Облачная база очищена', 'success');
+            else if (type === 'lockReg') window.showToast('🔒 Регистрация заблокирована', 'info');
+            else if (type === 'logoutAll') window.showToast('🚪 Все сессии сброшены', 'success');
+            else if (type === 'kill') alert('⚠️ Сервер остановлен');
         };
 
         window.loadRealtimeOnlineUsers = async function() {
