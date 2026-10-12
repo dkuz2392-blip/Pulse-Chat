@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse v4.5 Enterprise Ultimate Edition</title>
+    <title>Pulse Enterprise Workspace v5.0</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,10 +12,10 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#090d16',
-                        darkCard: '#131c2e',
-                        darkBorder: '#1e293b',
-                        primaryAccent: '#6366f1',
+                        darkBg: 'var(--bg-color)',
+                        darkCard: 'var(--card-color)',
+                        darkBorder: 'var(--border-color)',
+                        primaryAccent: 'var(--accent-color)',
                     }
                 }
             }
@@ -25,38 +25,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; background-color: #090d16; color: #f1f5f9; }
+        :root {
+            --bg-color: #0b0f17;
+            --card-color: #111827;
+            --border-color: #1f2937;
+            --accent-color: #2563eb;
+        }
+        body.theme-linear {
+            --bg-color: #090d16;
+            --card-color: #131c2e;
+            --border-color: #1e293b;
+            --accent-color: #6366f1;
+        }
+        body.theme-cyber {
+            --bg-color: #050508;
+            --card-color: #0f1017;
+            --border-color: #261d33;
+            --accent-color: #a855f7;
+        }
+        body.theme-oled {
+            --bg-color: #000000;
+            --card-color: #0a0a0a;
+            --border-color: #222222;
+            --accent-color: #3b82f6;
+        }
+
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; background-color: var(--bg-color); color: #f3f4f6; transition: background-color 0.3s ease; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
         button, input, textarea { -webkit-appearance: none; }
         .msg-group:hover .msg-actions { opacity: 1; }
-        .chat-item:hover .chat-pin-btn { opacity: 1; }
-        @keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .animate-glow { animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes waveAnim { 0%, 100% { height: 6px; } 50% { height: 28px; } }
+        .wave-bar { animation: waveAnim 1.2s ease-in-out infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .animate-modal { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body class="h-full overflow-hidden flex flex-col select-none">
+<body class="h-full overflow-hidden flex flex-col select-none theme-linear">
 
     <!-- AUTH SCREEN -->
-    <div id="authScreen" class="fixed inset-0 z-50 bg-[#090d16] flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col space-y-6 relative backdrop-blur-xl">
-            <div class="absolute top-4 right-4 flex items-center space-x-1 bg-[#090d16] border border-[#1e293b] rounded-xl p-1 text-[11px]">
-                <button type="button" onclick="setLanguage('ru')" id="langRuBtn" class="px-2.5 py-1 rounded-lg font-semibold text-white bg-indigo-600 transition">RU</button>
-                <button type="button" onclick="setLanguage('en')" id="langEnBtn" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">EN</button>
-            </div>
-
-            <div class="text-center space-y-2 pt-2">
-                <div class="w-16 h-16 bg-indigo-600/20 border border-indigo-500/30 rounded-2xl mx-auto flex items-center justify-center text-indigo-400 text-3xl font-bold shadow-inner animate-glow">
-                    <i class="fa-solid fa-wave-square"></i>
+    <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-8 flex flex-col space-y-6 backdrop-blur-xl animate-modal">
+            <div class="flex items-center justify-between">
+                <div class="w-12 h-12 rounded-2xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-xl font-bold">
+                    <i class="fa-solid fa-layer-group"></i>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-white">Pulse v4.5</h1>
-                <p id="t_subtitle" class="text-xs sm:text-sm text-slate-400">Премиальная Соцсеть и Мессенджер с ИИ-ботом</p>
+                <div class="flex items-center space-x-1 bg-darkBg border border-darkBorder rounded-xl p-1 text-[11px]">
+                    <button type="button" onclick="setTheme('linear')" class="px-2.5 py-1 rounded-lg font-semibold text-white bg-primaryAccent transition">Linear</button>
+                    <button type="button" onclick="setTheme('oled')" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">OLED</button>
+                    <button type="button" onclick="setTheme('cyber')" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">Cyber</button>
+                </div>
             </div>
 
-            <div class="flex bg-[#090d16] p-1.5 rounded-2xl border border-[#1e293b]">
-                <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-indigo-600 text-white shadow-md transition-all cursor-pointer">Вход</button>
-                <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition-all cursor-pointer">Регистрация</button>
+            <div class="space-y-1">
+                <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace</h1>
+                <p class="text-xs text-slate-400">Корпоративная среда коммуникаций и медиа</p>
+            </div>
+
+            <div class="flex bg-darkBg p-1.5 rounded-2xl border border-darkBorder">
+                <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow transition cursor-pointer">Вход</button>
+                <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition cursor-pointer">Регистрация</button>
             </div>
 
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
@@ -64,363 +93,295 @@
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
-                    <input type="text" id="loginUsername" required autocomplete="username" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Введите ваш никнейм">
+                    <input type="text" id="loginUsername" required autocomplete="username" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ваш никнейм">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Пароль</label>
-                    <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="••••••••">
+                    <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Войти в систему</button>
+                <button type="submit" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
             </form>
 
             <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
-                    <input type="text" id="regUsername" required autocomplete="username" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Придумайте никнейм">
+                    <input type="text" id="regUsername" required autocomplete="username" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Придумайте никнейм">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Пароль</label>
-                    <input type="password" id="regPassword" required autocomplete="new-password" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="••••••••">
+                    <input type="password" id="regPassword" required autocomplete="new-password" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-slate-300">Секретный ключ привилегий</label>
-                    <input type="password" id="regAdminKey" autocomplete="off" class="w-full px-4 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition" placeholder="Введите секретный ключ (если есть)">
+                    <label class="text-xs font-medium text-slate-300">Секретный ключ (опционально)</label>
+                    <input type="password" id="regAdminKey" autocomplete="off" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ключ доступа">
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer">Создать аккаунт</button>
+                <button type="submit" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
             </form>
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER WITH 3 SECTIONS -->
+    <!-- MAIN APP WRAPPER -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
 
-        <!-- 1. FEED SECTION (ЛЕНТА) -->
-        <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-[#090d16]">
-            <div class="h-14 px-4 border-b border-[#1e293b] bg-[#131c2e]/80 backdrop-blur flex items-center justify-between shrink-0">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-newspaper"></i></div>
-                    <h2 class="font-bold text-sm text-white">Лента публикаций</h2>
+        <!-- 1. FEED SECTION WITH STORIES TRAY -->
+        <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-darkBg">
+            <div class="h-16 px-6 border-b border-darkBorder bg-darkCard/90 backdrop-blur-md flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-primaryAccent/15 text-primaryAccent flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-newspaper"></i></div>
+                    <div>
+                        <h2 class="font-bold text-sm text-white">Инфопоток</h2>
+                        <p class="text-[10px] text-slate-400">Публикации и медиаистории сети</p>
+                    </div>
                 </div>
-                <button onclick="openCreatePostModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition cursor-pointer flex items-center gap-1.5">
-                    <i class="fa-solid fa-plus text-[10px]"></i> Опубликовать
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="openCreateStoryModal()" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-plus text-primaryAccent"></i> История
+                    </button>
+                    <button onclick="openCreatePostModal()" class="px-4 py-2 bg-primaryAccent hover:opacity-90 text-white rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-primaryAccent/20">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Запись
+                    </button>
+                </div>
             </div>
-            <div id="feedContainer" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl mx-auto w-full"></div>
+
+            <!-- Stories Tray -->
+            <div class="bg-darkCard/40 border-b border-darkBorder px-6 py-3.5 shrink-0">
+                <div id="storiesTray" class="flex items-center space-x-4 overflow-x-auto pb-1">
+                    <div onclick="openCreateStoryModal()" class="flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/50 flex items-center justify-center text-primaryAccent group-hover:border-primaryAccent transition shadow-inner"><i class="fa-solid fa-plus"></i></div>
+                        <span class="text-[11px] font-medium text-slate-400">Ваша история</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 max-w-2xl mx-auto w-full"></div>
         </div>
 
-        <!-- 2. MESSAGES SECTION (СООБЩЕНИЯ И ЧАТЫ) -->
+        <!-- 2. MESSAGES SECTION -->
         <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative">
-            <!-- Sidebar Chats -->
-            <div id="sidebarChats" class="w-full md:w-80 bg-[#131c2e] border-r border-[#1e293b] flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform">
-                <div class="p-3 border-b border-[#1e293b] space-y-2 shrink-0">
+            <div id="sidebarChats" class="w-full md:w-80 bg-darkCard border-r border-darkBorder flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform">
+                <div class="p-4 border-b border-darkBorder space-y-3 shrink-0">
                     <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
-                        <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                        <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
                     </div>
                     <div class="flex gap-2">
-                        <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-indigo-600/10 hover:bg-indigo-600/25 border border-indigo-500/30 text-indigo-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
-                            <i class="fa-solid fa-user-plus text-[10px]"></i> <span>ЛС по ID</span>
+                        <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
+                            <i class="fa-solid fa-user-plus text-primaryAccent text-xs"></i> <span>ЛС</span>
                         </button>
-                        <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-purple-600/10 hover:bg-purple-600/25 border border-purple-500/30 text-purple-400 rounded-xl text-[11px] font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
-                            <i class="fa-solid fa-users text-[10px]"></i> <span>Группа</span>
+                        <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
+                            <i class="fa-solid fa-users text-primaryAccent text-xs"></i> <span>Группа</span>
                         </button>
                     </div>
                 </div>
-                <div id="chatList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+                <div id="chatList" class="flex-1 overflow-y-auto p-2.5 space-y-1.5"></div>
             </div>
 
             <!-- Active Chat Pane -->
-            <div id="chatPane" class="flex-1 flex flex-col h-full bg-[#090d16] overflow-hidden relative z-10">
-                <div class="h-14 border-b border-[#1e293b] px-4 flex items-center justify-between bg-[#131c2e]/50 backdrop-blur shrink-0">
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
+            <div id="chatPane" class="flex-1 flex flex-col h-full bg-darkBg overflow-hidden relative z-10">
+                <div class="h-16 border-b border-darkBorder px-6 flex items-center justify-between bg-darkCard/50 backdrop-blur-md shrink-0">
+                    <div class="flex items-center space-x-3.5 overflow-hidden">
+                        <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
                         
                         <div class="relative shrink-0">
-                            <div id="chatAvatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-[#1e293b] flex items-center justify-center font-bold text-white text-xs overflow-hidden">💬</div>
-                            <span id="chatHeaderOnlineBadge" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#131c2e] hidden"></span>
+                            <div id="chatAvatar" class="w-10 h-10 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-inner">💬</div>
+                            <span id="chatHeaderOnlineBadge" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-darkCard hidden"></span>
                         </div>
 
                         <div class="overflow-hidden">
-                            <h3 id="chatTitle" class="font-semibold text-xs text-white truncate">Выберите чат</h3>
-                            <div class="flex items-center space-x-1">
-                                <span id="chatOnlineDot" class="w-2 h-2 rounded-full bg-emerald-500 hidden"></span>
-                                <p id="chatStatus" class="text-[10px] text-slate-400 truncate">● Реальное соединение</p>
-                            </div>
+                            <h3 id="chatTitle" class="font-bold text-xs sm:text-sm text-white truncate">Чат</h3>
+                            <p id="chatStatus" class="text-[11px] text-slate-400 truncate">● Активно</p>
                         </div>
                     </div>
-                    <button type="button" onclick="deleteCurrentChat()" title="Удалить чат" class="w-8 h-8 rounded-lg bg-[#090d16] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                    <div class="flex items-center space-x-2.5">
+                        <button type="button" onclick="startAudioCall()" title="Аудиозвонок" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-phone"></i></button>
+                        <button type="button" onclick="deleteCurrentChat()" title="Удалить чат" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
                 </div>
 
                 <div class="relative flex-1 flex flex-col overflow-hidden">
-                    <div id="typingIndicator" class="hidden px-4 py-1.5 text-[11px] text-indigo-400 italic bg-[#131c2e]/40 border-b border-[#1e293b]/40 flex items-center gap-2">
-                        <span class="flex space-x-1">
-                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></span>
-                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                        </span>
-                        <span id="typingIndicatorText">Собеседник печатает...</span>
-                    </div>
-
-                    <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-                    <button id="scrollDownBtn" onclick="scrollToBottom()" class="hidden absolute bottom-4 right-6 w-9 h-9 bg-slate-800 hover:bg-slate-700 text-indigo-400 border border-[#1e293b] rounded-full shadow-xl flex items-center justify-center transition cursor-pointer z-20">
-                        <i class="fa-solid fa-arrow-down text-xs"></i>
-                    </button>
+                    <div id="messagesContainer" class="flex-1 overflow-y-auto p-6 space-y-3.5"></div>
                 </div>
 
-                <div id="muteNotice" class="hidden p-2 bg-rose-500/10 border-t border-rose-500/20 text-rose-400 text-xs text-center font-medium">
-                    <i class="fa-solid fa-volume-xmark mr-1"></i> Вы получили МУТ и не можете отправлять сообщения!
-                </div>
-
-                <!-- Reply / Edit Bar -->
-                <div id="inputActionBar" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
-                    <div class="flex items-center space-x-2 text-xs text-indigo-400 overflow-hidden">
-                        <i id="inputActionIcon" class="fa-solid fa-reply"></i>
-                        <span id="inputActionText" class="truncate font-medium">Ответ на сообщение</span>
-                    </div>
-                    <button type="button" onclick="cancelInputAction()" class="text-slate-400 hover:text-rose-400 text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-
-                <!-- Attachment Bar -->
-                <div id="attachmentPreview" class="hidden px-4 py-2 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-between shrink-0">
-                    <div class="flex items-center space-x-2 text-xs text-indigo-400"><i class="fa-solid fa-image"></i><span id="attachmentName" class="truncate max-w-xs">Файл</span></div>
-                    <button type="button" onclick="clearAttachment()" class="text-slate-400 hover:text-rose-400 text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <div id="muteNotice" class="hidden p-3 bg-rose-500/10 border-t border-rose-500/20 text-rose-400 text-xs text-center font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Доступ ограничен.
                 </div>
 
                 <!-- Input Bar -->
-                <div class="p-3 border-t border-[#1e293b] bg-[#131c2e]/50 backdrop-blur shrink-0">
-                    <div class="flex items-center space-x-2">
-                        <button type="button" onclick="toggleVoiceRecord()" title="Записать голос" class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 border border-[#1e293b]">
-                            <i class="fa-solid fa-microphone text-xs"></i>
-                        </button>
-                        <label class="w-9 h-9 rounded-xl bg-[#090d16] hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 border border-[#1e293b]">
+                <div class="p-3.5 border-t border-darkBorder bg-darkCard/90 backdrop-blur-md shrink-0">
+                    <div class="flex items-center space-x-2.5">
+                        <label class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 shadow-inner">
                             <i class="fa-solid fa-paperclip text-xs"></i>
                             <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)" class="hidden">
                         </label>
-                        <textarea id="messageInput" oninput="handleTypingInput()" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-3.5 py-2.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none max-h-20"></textarea>
-                        <button type="button" onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center transition shrink-0 shadow cursor-pointer"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                        <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition resize-none max-h-24"></textarea>
+                        <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-2xl bg-primaryAccent hover:opacity-90 text-white flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg shadow-primaryAccent/25"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. SETTINGS & REDESIGNED ADMIN DASHBOARD SECTION -->
-        <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 hidden max-w-5xl mx-auto w-full space-y-6">
-            <div class="flex items-center justify-between border-b border-[#1e293b] pb-4">
-                <div class="flex items-center space-x-3.5">
-                    <div id="settingsUserAvatar" class="w-14 h-14 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-400 text-xl shadow-inner overflow-hidden">U</div>
+        <!-- 3. SETTINGS & ADMIN PANEL SECTION -->
+        <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-8 hidden max-w-3xl mx-auto w-full space-y-6">
+            <div class="flex items-center justify-between border-b border-darkBorder pb-5">
+                <div class="flex items-center space-x-4">
+                    <div id="settingsUserAvatar" class="w-16 h-16 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-primaryAccent text-xl overflow-hidden shadow-inner">U</div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h2 id="settingsUserName" class="font-bold text-base sm:text-lg text-white">Пользователь</h2>
-                            <span id="settingsCreatorBadge" class="hidden px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[10px] rounded-md font-bold uppercase border border-purple-500/30">Creator</span>
-                            <span id="settingsAdminBadge" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] rounded-md font-bold uppercase border border-amber-500/30">Admin</span>
-                            <span id="settingsTesterBadge" class="hidden px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-[10px] rounded-md font-bold uppercase border border-cyan-500/30">Tester</span>
+                            <h2 id="settingsUserName" class="font-bold text-base sm:text-lg text-white">Профиль</h2>
+                            <span id="settingsCreatorBadge" class="hidden px-2 py-0.5 bg-primaryAccent/20 text-primaryAccent text-[10px] rounded-lg font-bold border border-primaryAccent/30">Creator</span>
+                            <span id="settingsAdminBadge" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] rounded-lg font-bold border border-amber-500/30">Admin</span>
                         </div>
-                        <button onclick="copyMyCode()" id="settingsUserCode" class="text-xs text-indigo-400 hover:underline">#id</button>
+                        <button onclick="copyMyCode()" id="settingsUserCode" class="text-xs text-primaryAccent hover:underline font-mono">#id</button>
                     </div>
                 </div>
-                <button onclick="logout()" class="px-4 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Выйти</button>
+                <button onclick="logout()" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 transition cursor-pointer">Выйти</button>
+            </div>
+
+            <!-- Theme Switcher Card -->
+            <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
+                <h3 class="font-bold text-xs text-white uppercase tracking-wider">Визуальная тема интерфейса</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="setTheme('linear')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="w-3 h-3 rounded-full bg-indigo-500"></span> Linear
+                    </button>
+                    <button onclick="setTheme('oled')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="w-3 h-3 rounded-full bg-blue-500"></span> OLED
+                    </button>
+                    <button onclick="setTheme('cyber')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="w-3 h-3 rounded-full bg-purple-500"></span> Cyber
+                    </button>
+                </div>
             </div>
 
             <!-- Profile Settings -->
-            <div class="bg-[#131c2e] border border-[#1e293b] rounded-2xl p-5 space-y-4 shadow-xl">
-                <h3 class="font-semibold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-user-gear text-indigo-400"></i> Настройки профиля</h3>
+            <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
+                <h3 class="font-bold text-xs text-white uppercase tracking-wider">Параметры профиля</h3>
                 <form onsubmit="saveUserSettings(event)" class="space-y-4">
                     <div>
-                        <label class="text-xs text-slate-400">Отображаемое имя</label>
-                        <input type="text" id="setDisplayName" required class="w-full mt-1 px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                        <label class="text-xs font-medium text-slate-400">Имя</label>
+                        <input type="text" id="setDisplayName" required class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
                     </div>
-                    
-                    <div class="space-y-2">
-                        <label class="text-xs text-slate-400 block">Аватар профиля</label>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                            <input type="text" id="setAvatar" maxlength="2" placeholder="Эмодзи (например 😎)" class="flex-1 px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
-                            <span class="text-xs text-slate-500 text-center sm:text-left">ИЛИ</span>
-                            <label class="px-4 py-3 bg-indigo-600/10 hover:bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
-                                <i class="fa-solid fa-camera"></i> Загрузить фото
+                    <div>
+                        <label class="text-xs font-medium text-slate-400">О себе (Био)</label>
+                        <input type="text" id="setUserBio" placeholder="Пару слов о себе..." class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-slate-400 block">Аватар</label>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="setAvatar" maxlength="2" placeholder="😎" class="w-16 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent transition">
+                            <label class="flex-1 px-4 py-3 bg-darkBg hover:bg-slate-800 border border-darkBorder text-slate-300 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
+                                <i class="fa-solid fa-upload text-xs"></i> Загрузить файл
                                 <input type="file" id="setAvatarFileInput" accept="image/*" onchange="handleAvatarUpload(event)" class="hidden">
                             </label>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="text-xs text-slate-400">Сменить пароль</label>
-                        <input type="password" id="setNewPassword" placeholder="Новый пароль (опционально)" class="w-full mt-1 px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
-                    </div>
-                    <div class="flex gap-2.5 pt-2">
-                        <button type="button" onclick="clearLocalCache()" class="px-3.5 py-2.5 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold hover:bg-rose-600/30 transition cursor-pointer">Очистить кэш чатов</button>
-                        <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/20 transition cursor-pointer">Сохранить изменения</button>
+                    <div class="pt-2 flex justify-end">
+                        <button type="submit" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
                     </div>
                 </form>
             </div>
 
-            <!-- ПОЛНАЯ АДМИН ПАНЕЛЬ СО ВСЕМИ 25 ИНСТРУМЕНТАМИ -->
-            <div id="adminPanelBox" class="hidden space-y-6">
-                <div class="bg-gradient-to-r from-amber-500/10 via-[#131c2e] to-[#131c2e] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-6">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#1e293b] pb-4 gap-3">
-                        <div class="flex items-center space-x-3.5">
-                            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg shadow-inner"><i class="fa-solid fa-shield-halved"></i></div>
-                            <div>
-                                <h3 class="font-bold text-base text-amber-400">Панель Администратора</h3>
-                                <p class="text-xs text-slate-400">Центр управления облачной инфраструктурой Pulse</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-[#090d16] px-4 py-2.5 rounded-2xl border border-[#1e293b]">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-xs font-medium text-slate-300">Активных в сети: <strong id="adminTotalUsersCount" class="text-emerald-400 font-bold">0</strong></span>
-                        </div>
+            <!-- ADMIN PANEL -->
+            <div id="adminPanelBox" class="hidden space-y-4">
+                <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
+                    <div class="flex items-center justify-between border-b border-darkBorder pb-4">
+                        <h3 class="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-shield"></i> Панель администратора</h3>
+                        <span class="text-xs text-slate-400">Активных: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                     </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div class="bg-[#090d16]/80 p-4 rounded-2xl border border-[#1e293b] flex items-center justify-between">
-                            <div><p class="text-[11px] text-slate-400 font-medium">Статус ядра</p><p class="text-xs font-bold text-emerald-400 mt-0.5">🟢 Стабильно</p></div>
-                            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-server"></i></div>
-                        </div>
-                        <div class="bg-[#090d16]/80 p-4 rounded-2xl border border-[#1e293b] flex items-center justify-between">
-                            <div><p class="text-[11px] text-slate-400 font-medium">Открытые жалобы</p><p id="kpiReportsCount" class="text-xs font-bold text-rose-400 mt-0.5">0 шт.</p></div>
-                            <div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-flag"></i></div>
-                        </div>
-                        <div class="bg-[#090d16]/80 p-4 rounded-2xl border border-[#1e293b] flex items-center justify-between">
-                            <div><p class="text-[11px] text-slate-400 font-medium">База данных</p><p class="text-xs font-bold text-indigo-400 mt-0.5">Firestore Sync</p></div>
-                            <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs"><i class="fa-solid fa-database"></i></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3 bg-[#090d16]/70 p-4.5 rounded-2xl border border-[#1e293b]">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-xs font-semibold text-rose-400 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Входящие жалобы <span id="reportsCountBadge" class="px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded-full text-[10px]">0</span></h4>
-                            <button onclick="loadAdminReports()" class="text-[11px] text-indigo-400 hover:underline"><i class="fa-solid fa-rotate-right"></i> Обновить</button>
-                        </div>
-                        <div id="reportsContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-xs font-semibold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-users-gear text-indigo-400"></i> Пользователи сети</h4>
-                            <button onclick="loadRealtimeOnlineUsers()" class="text-[11px] text-indigo-400 hover:underline"><i class="fa-solid fa-rotate-right"></i> Обновить список</button>
-                        </div>
-                        <div class="border border-[#1e293b] rounded-2xl overflow-hidden bg-[#090d16]">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse text-xs">
-                                    <thead><tr class="border-b border-[#1e293b] bg-slate-900/80 text-slate-400 font-semibold"><th class="p-3.5">Пользователь</th><th class="p-3.5">ID</th><th class="p-3.5">Статус / Роль</th><th class="p-3.5 text-right">Модерация</th></tr></thead>
-                                    <tbody id="adminUsersTableBody" class="divide-y divide-[#1e293b]"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ВСЕ 25 СЕРВЕРНЫХ ИНСТРУМЕНТОВ -->
-                    <div class="space-y-4 pt-2 border-t border-[#1e293b]">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-xs font-bold text-amber-400 flex items-center gap-2">
-                                <i class="fa-solid fa-toolbox"></i> Серверные инструменты (25 шт)
-                            </h4>
-                            <span class="text-[11px] text-slate-500">Управление ядром</span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
-                            <button onclick="adminTool('cache')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-broom text-[11px]"></i></div><span>1. Очистка кэша</span></button>
-                            <button onclick="adminTool('resetChats')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-rose-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400"><i class="fa-solid fa-rotate-left text-[11px]"></i></div><span>2. Сброс чатов</span></button>
-                            <button onclick="adminTool('maint')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-amber-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400"><i class="fa-solid fa-screwdriver-wrench text-[11px]"></i></div><span>3. Техобслуживание</span></button>
-                            <button onclick="adminTool('export')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-file-arrow-down text-[11px]"></i></div><span>4. Экспорт БД (JSON)</span></button>
-                            <button onclick="adminTool('ping')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-bolt text-[11px]"></i></div><span>5. Пинг сервера</span></button>
-                            <button onclick="location.reload()" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-rotate text-[11px]"></i></div><span>6. Перезапуск UI</span></button>
-                            
-                            <button onclick="adminTool('muteAll')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-orange-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400"><i class="fa-solid fa-volume-xmark text-[11px]"></i></div><span>7. Массовый Мут</span></button>
-                            <button onclick="adminTool('unmuteAll')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-volume-high text-[11px]"></i></div><span>8. Снять все муты</span></button>
-                            <button onclick="logout()" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-rose-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400"><i class="fa-solid fa-right-from-bracket text-[11px]"></i></div><span>9. Экстренный выход</span></button>
-                            <button onclick="adminTool('stealth')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-purple-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400"><i class="fa-solid fa-eye-slash text-[11px]"></i></div><span>10. Невидимость</span></button>
-                            <button onclick="window.showToast('Память очищена', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-memory text-[11px]"></i></div><span>11. Буфер DOM</span></button>
-                            <button onclick="window.showToast('Debug active', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-bug text-[11px]"></i></div><span>12. Отладка логов</span></button>
-                            
-                            <button onclick="window.showToast('🔔 Бип!', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-bell text-[11px]"></i></div><span>13. Тест звука</span></button>
-                            <button onclick="window.showToast('БД исправна', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-emerald-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-database text-[11px]"></i></div><span>14. Целостность БД</span></button>
-                            <button onclick="window.showToast('Демо-чат создан', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-robot text-[11px]"></i></div><span>15. Демо-чат бот</span></button>
-                            <button onclick="window.showToast('OLED активен', 'success')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-circle-half-stroke text-[11px]"></i></div><span>16. OLED тема</span></button>
-                            <button onclick="window.showToast('Язык сброшен', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-indigo-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-language text-[11px]"></i></div><span>17. Сброс языка</span></button>
-                            <button onclick="window.showToast('Запрос паролей отправлен', 'info')" class="p-3 bg-[#090d16] hover:bg-slate-800/80 text-amber-300 rounded-xl text-left border border-[#1e293b] transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400"><i class="fa-solid fa-key text-[11px]"></i></div><span>18. Сброс паролей</span></button>
-                            
-                            <!-- CREATOR EXCLUSIVES -->
-                            <button onclick="creatorTool('unbanAll')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-unlock text-[11px]"></i></div><span>19. [Creator] Снять баны</span></button>
-                            <button onclick="creatorTool('superAdmin')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-crown text-[11px]"></i></div><span>20. [Creator] Права 67</span></button>
-                            <button onclick="creatorTool('clearCloud')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-cloud-arrow-down text-[11px]"></i></div><span>21. [Creator] Очистка облака</span></button>
-                            <button onclick="creatorTool('lockReg')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-lock text-[11px]"></i></div><span>22. [Creator] Блок реги</span></button>
-                            <button onclick="creatorTool('logoutAll')" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-users-slash text-[11px]"></i></div><span>23. [Creator] Сброс сессий</span></button>
-                            <button onclick="creatorTool('kill')" class="p-3 bg-rose-950/20 hover:bg-rose-900/30 text-rose-300 rounded-xl text-left border border-rose-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-rose-500/15 flex items-center justify-center text-rose-400"><i class="fa-solid fa-power-off text-[11px]"></i></div><span>24. [Creator] Kill Switch</span></button>
-                            <button onclick="location.reload()" class="p-3 bg-purple-950/20 hover:bg-purple-900/30 text-purple-300 rounded-xl text-left border border-purple-500/30 transition flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400"><i class="fa-solid fa-microchip text-[11px]"></i></div><span>25. [Creator] Рестарт ядра</span></button>
-                        </div>
+                    <div class="border border-darkBorder rounded-2xl overflow-hidden bg-darkBg">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead><tr class="border-b border-darkBorder bg-darkCard/50 text-slate-400"><th class="p-4">Пользователь</th><th class="p-4">ID</th><th class="p-4 text-right">Роль</th></tr></thead>
+                            <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR -->
-        <div class="h-16 bg-[#131c2e] border-t border-[#1e293b] flex items-center justify-around px-2 shrink-0 z-40 shadow-2xl">
-            <button onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer">
-                <i class="fa-solid fa-newspaper text-base mb-0.5"></i>
-                <span class="text-[10px] font-semibold">Лента</span>
-            </button>
-            <button onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer">
-                <i class="fa-solid fa-comments text-base mb-0.5"></i>
-                <span class="text-[10px] font-semibold">Сообщения</span>
-            </button>
-            <button onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer">
-                <i class="fa-solid fa-gear text-base mb-0.5"></i>
-                <span class="text-[10px] font-semibold">Настройки</span>
-            </button>
+        <!-- BOTTOM NAV BAR -->
+        <div class="h-16 bg-darkCard border-t border-darkBorder flex items-center justify-around px-2 shrink-0 z-40 shadow-2xl">
+            <button onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
+            <button onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
+            <button onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
         </div>
     </div>
 
     <!-- MODALS -->
-    <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-[#1e293b] pb-3">
-                <h3 class="font-semibold text-sm text-white">Создать публикацию</h3>
+    <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
+                <h3 class="font-bold text-sm text-white">Новая публикация</h3>
                 <button onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <textarea id="postTextInput" rows="3" placeholder="Что у вас нового?..." class="w-full p-3.5 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 resize-none transition"></textarea>
+            <textarea id="postTextInput" rows="3" placeholder="Что нового?..." class="w-full p-4 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none transition"></textarea>
             <div>
-                <label class="text-xs text-slate-400 block mb-1.5">Прикрепить фото:</label>
-                <input type="file" id="postImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+                <input type="file" id="postImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-darkBg file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
             </div>
-            <button onclick="submitPost()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/25 transition cursor-pointer">Опубликовать</button>
+            <button onclick="submitPost()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать</button>
         </div>
     </div>
 
-    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Добавить в ЛС</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <form onsubmit="handleAddFriend(event)" class="space-y-3">
-                <input type="text" id="friendCodeInput" required placeholder="#username_1234" class="w-full px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
-                <button type="submit" class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer">Подключиться</button>
+    <div id="createStoryModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
+                <h3 class="font-bold text-sm text-white">Добавить историю</h3>
+                <button onclick="closeCreateStoryModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="storyTextInput" placeholder="Текст истории..." class="w-full px-4 py-3.5 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+            <div>
+                <input type="file" id="storyImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-darkBg file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
+            </div>
+            <button onclick="submitStory()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать историю</button>
+        </div>
+    </div>
+
+    <!-- AUDIO CALL OVERLAY -->
+    <div id="audioCallModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl p-8 flex flex-col items-center space-y-6 shadow-2xl animate-modal">
+            <div class="w-20 h-20 rounded-3xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-3xl font-bold shadow-inner">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="text-center space-y-1">
+                <h3 id="callUserName" class="font-bold text-base text-white">Имя собеседника</h3>
+                <p id="callStatusText" class="text-xs text-slate-400">Соединение...</p>
+            </div>
+            <div class="flex items-center space-x-3 h-10">
+                <div class="w-1.5 bg-primaryAccent rounded-full wave-bar"></div>
+                <div class="w-1.5 bg-primaryAccent rounded-full wave-bar [animation-delay:0.2s]"></div>
+                <div class="w-1.5 bg-primaryAccent rounded-full wave-bar [animation-delay:0.4s]"></div>
+                <div class="w-1.5 bg-primaryAccent rounded-full wave-bar [animation-delay:0.6s]"></div>
+            </div>
+            <button onclick="endAudioCall()" class="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg transition shadow-xl cursor-pointer">
+                <i class="fa-solid fa-phone-slash"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Добавить чат</h3><button onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="handleAddFriend(event)" class="space-y-4">
+                <input type="text" id="friendCodeInput" required placeholder="#username_1234" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                <button type="submit" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Подключиться</button>
             </form>
         </div>
     </div>
 
-    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center"><h3 class="font-semibold text-sm text-white">Создать группу</h3><button onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <form onsubmit="handleCreateGroup(event)" class="space-y-3">
-                <input type="text" id="groupNameInput" required placeholder="Название группы" class="w-full px-3.5 py-3 bg-[#090d16] border border-[#1e293b] rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 transition">
-                <button type="submit" class="w-full py-3 bg-purple-600 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer">Создать</button>
+    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Создать группу</h3><button onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
+            <form onsubmit="handleCreateGroup(event)" class="space-y-4">
+                <input type="text" id="groupNameInput" required placeholder="Название группы" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                <button type="submit" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Создать</button>
             </form>
-        </div>
-    </div>
-
-    <div id="forwardModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-[#131c2e] border border-[#1e293b] rounded-3xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-semibold text-sm text-white">Переслать в чат</h3>
-                <button type="button" onclick="closeForwardModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="forwardChatsList" class="space-y-2 max-h-60 overflow-y-auto"></div>
         </div>
     </div>
 
     <!-- LIGHTBOX -->
-    <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
-        <div class="relative max-w-4xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
-            <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-2xl hover:text-indigo-400 transition cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl border border-slate-700 object-contain">
+    <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
+        <div class="relative max-w-5xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-2xl hover:text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-3xl shadow-2xl border border-darkBorder object-contain">
         </div>
     </div>
 
@@ -450,40 +411,31 @@
 
         let authenticatedUser = null;
         let unsubscribeMessages = null;
-        let unsubscribeTyping = null;
 
         window.CREATOR_KEY = "67";      
         window.MASTER_ADMIN_KEY = "1488"; 
-        window.TESTER_KEY = "test";
         window.currentUser = null;
         window.activeChatId = 'pulse_bot';
         window.selectedAttachment = null;
         window.uploadedAvatarBase64 = null;
-        window.replyingToMsg = null;
-        window.editingMsgId = null;
-        let forwardingMsg = null;
-        window.onlineUsersMap = {};
         window.lastSeenMap = {};
+
+        window.setTheme = function(theme) {
+            document.body.className = document.body.className.replace(/theme-\w+/g, '');
+            document.body.classList.add('theme-' + theme);
+            localStorage.setItem('pulse_theme', theme);
+            window.showToast('Тема оформлена: ' + theme, 'success');
+        };
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
             { 
                 id: 'pulse_bot', 
-                name: 'Pulse Помощник (ИИ)', 
+                name: 'Workspace ИИ Ассистент', 
                 type: 'friend', 
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Pulse Бот', text: 'Привет! Я официальный ИИ-ассистент Pulse v4.5. Задавай мне любые вопросы или пиши код!', time: '12:00', timestamp: Date.now() - 10000, reactions: {} }
-                ] 
-            },
-            { 
-                id: 'saved_notes', 
-                name: 'Избранное', 
-                type: 'friend', 
-                avatar: '📌', 
-                code: '#saved_notes', 
-                messages: [
-                    { id: 2, sender: 'Система', text: 'Добро пожаловать в личные заметки!', time: '12:01', timestamp: Date.now() - 5000, reactions: {} }
+                    { id: 1, sender: 'Ассистент', text: 'Интерфейс Pulse Workspace инициализирован в высоком разрешении.', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
@@ -502,13 +454,15 @@
             if (user) {
                 authenticatedUser = user;
                 subscribeToFeed();
+                subscribeToStories();
                 subscribeToPublicMessages();
                 subscribeToPresence();
-                subscribeToUserStatus();
-                loadAdminReports();
             }
         });
         initAuth();
+
+        const savedTheme = localStorage.getItem('pulse_theme');
+        if (savedTheme) window.setTheme(savedTheme);
 
         window.switchSection = function(section) {
             const feed = document.getElementById('sectionFeed');
@@ -523,24 +477,22 @@
 
             if (section === 'feed') {
                 feed.classList.remove('hidden');
-                document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer";
+                document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer";
             } else if (section === 'messages') {
                 messages.classList.remove('hidden');
-                document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer";
+                document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer";
                 window.renderChats(); window.selectChat(window.activeChatId);
             } else if (section === 'settings') {
                 settings.classList.remove('hidden');
-                document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-indigo-400 transition cursor-pointer";
+                document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer";
                 if (window.currentUser && (window.currentUser.isAdmin || window.currentUser.isCreator)) {
-                    loadAdminReports();
                     loadRealtimeOnlineUsers();
                 }
             }
         };
 
         window.toggleMobileSidebar = function() {
-            const sidebar = document.getElementById('sidebarChats');
-            sidebar.classList.toggle('-translate-x-full');
+            document.getElementById('sidebarChats').classList.toggle('-translate-x-full');
         };
 
         window.handleAvatarUpload = function(e) {
@@ -550,7 +502,7 @@
             reader.onload = function(evt) {
                 window.uploadedAvatarBase64 = evt.target.result;
                 renderAvatarElement('settingsUserAvatar', window.uploadedAvatarBase64);
-                window.showToast('Фото загружено! Нажмите "Сохранить изменения"', 'success');
+                window.showToast('Аватар загружен', 'success');
             };
             reader.readAsDataURL(file);
         };
@@ -565,7 +517,64 @@
             }
         }
 
-        // FEED & 26-th FUNCTION (DELETE POST AS CREATOR)
+        window.openCreateStoryModal = function() { document.getElementById('createStoryModal').classList.remove('hidden'); };
+        window.closeCreateStoryModal = function() { document.getElementById('createStoryModal').classList.add('hidden'); };
+
+        window.submitStory = async function() {
+            const text = document.getElementById('storyTextInput').value.trim();
+            const fileInput = document.getElementById('storyImageInput');
+            if (!text && fileInput.files.length === 0) return;
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = async function(e) { await saveStoryToCloud(text, e.target.result); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else { await saveStoryToCloud(text, null); }
+        };
+
+        async function saveStoryToCloud(text, img) {
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'stories'), {
+                    author: window.currentUser.name, avatar: window.currentUser.avatar, text: text, image: img, timestamp: Date.now()
+                });
+                document.getElementById('storyTextInput').value = ''; document.getElementById('storyImageInput').value = '';
+                closeCreateStoryModal(); window.showToast('История добавлена', 'success');
+            } catch(e) {}
+        }
+
+        function subscribeToStories() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'stories'), (snapshot) => {
+                const tray = document.getElementById('storiesTray');
+                if (!tray) return;
+                let addBtnHtml = tray.firstElementChild.outerHTML;
+                tray.innerHTML = addBtnHtml;
+                
+                let stories = [];
+                snapshot.forEach(d => stories.push({ id: d.id, ...d.data() }));
+                stories.sort((a, b) => b.timestamp - a.timestamp);
+
+                stories.forEach(s => {
+                    if (Date.now() - s.timestamp > 86400000) return;
+                    const div = document.createElement('div');
+                    div.className = 'flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group';
+                    const isImg = s.avatar && s.avatar.startsWith('data:image');
+                    const avContent = isImg ? `<img src="${s.avatar}" class="w-full h-full object-cover rounded-full">` : (s.avatar || 'U');
+
+                    div.innerHTML = `
+                        <div class="w-14 h-14 rounded-2xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center shadow-lg">
+                            <div class="w-full h-full bg-darkBg rounded-[14px] flex items-center justify-center overflow-hidden font-bold text-xs text-white">${avContent}</div>
+                        </div>
+                        <span class="text-[11px] text-slate-300 truncate max-w-[56px] font-medium">${escapeHtml(s.author)}</span>
+                    `;
+                    div.onclick = () => {
+                        if (s.image) openLightbox(s.image);
+                        else window.showToast(`История от ${s.author}: ${s.text}`, 'info');
+                    };
+                    tray.appendChild(div);
+                });
+            });
+        }
+
         window.openCreatePostModal = function() { document.getElementById('createPostModal').classList.remove('hidden'); };
         window.closeCreatePostModal = function() { document.getElementById('createPostModal').classList.add('hidden'); };
 
@@ -588,19 +597,18 @@
                     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: Date.now()
                 });
                 document.getElementById('postTextInput').value = ''; document.getElementById('postImageInput').value = '';
-                closeCreatePostModal(); window.showToast('Пост опубликован!', 'success');
+                closeCreatePostModal(); window.showToast('Опубликовано', 'success');
             } catch(e) {}
         }
 
-        // 26-я функция: Удаление фото/поста создателем
         window.deletePostAsCreator = async function(postId) {
             if (!window.currentUser || !window.currentUser.isCreator) {
-                window.showToast('Доступно только Создателю (ключ 67)', 'error');
+                window.showToast('Доступно только создателю', 'error');
                 return;
             }
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId));
-                window.showToast('🗑️ Публикация/фото удалена создателем', 'success');
+                window.showToast('Запись удалена', 'success');
             } catch (err) {
                 window.showToast('Ошибка удаления', 'error');
             }
@@ -614,34 +622,32 @@
                 let posts = [];
                 snapshot.forEach(d => posts.push({ id: d.id, ...d.data() }));
                 posts.sort((a, b) => b.timestamp - a.timestamp);
-                if (posts.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 py-10 text-xs">Лента пуста</div>'; return; }
+                if (posts.length === 0) { container.innerHTML = '<div class="text-center text-slate-500 py-12 text-xs">Нет публикаций</div>'; return; }
                 posts.forEach(p => {
                     const card = document.createElement('div');
-                    card.className = 'bg-[#131c2e] border border-[#1e293b] rounded-2xl p-4 space-y-3 shadow-lg relative group';
+                    card.className = 'bg-darkCard border border-darkBorder rounded-3xl p-5 sm:p-6 space-y-4 relative group shadow-xl';
                     
                     const isImg = p.avatar && p.avatar.startsWith('data:image');
                     const authorAvatarContent = isImg ? `<img src="${p.avatar}" class="w-full h-full object-cover">` : (p.avatar || 'U');
 
-                    // Кнопка 26-й функции для создателя
                     const creatorDeleteBtn = (window.currentUser && window.currentUser.isCreator) 
-                        ? `<button onclick="deletePostAsCreator('${p.id}')" class="absolute top-4 right-4 px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 rounded-xl text-[10px] font-semibold flex items-center gap-1 transition cursor-pointer"><i class="fa-solid fa-trash-can"></i> [Creator] Удалить</button>`
+                        ? `<button onclick="deletePostAsCreator('${p.id}')" class="absolute top-5 right-5 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer"><i class="fa-solid fa-trash-can"></i> Удалить</button>`
                         : '';
 
                     card.innerHTML = `
                         ${creatorDeleteBtn}
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs overflow-hidden shrink-0">${authorAvatarContent}</div>
-                            <div><h4 class="font-semibold text-xs text-white">${escapeHtml(p.author)}</h4><span class="text-[10px] text-slate-500">${p.time}</span></div>
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs overflow-hidden shrink-0 shadow-inner">${authorAvatarContent}</div>
+                            <div><h4 class="font-bold text-xs sm:text-sm text-white">${escapeHtml(p.author)}</h4><span class="text-[11px] text-slate-500">${p.time}</span></div>
                         </div>
-                        ${p.text ? `<p class="text-xs text-slate-200 whitespace-pre-wrap">${escapeHtml(p.text)}</p>` : ''}
-                        ${p.image ? `<div class="rounded-xl overflow-hidden border border-[#1e293b] max-h-80 bg-black cursor-pointer" onclick="openLightbox('${p.image}')"><img src="${p.image}" class="w-full h-full object-cover"></div>` : ''}
+                        ${p.text ? `<p class="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">${escapeHtml(p.text)}</p>` : ''}
+                        ${p.image ? `<div class="rounded-2xl overflow-hidden border border-darkBorder max-h-96 bg-black cursor-pointer shadow-md" onclick="openLightbox('${p.image}')"><img src="${p.image}" class="w-full h-full object-cover"></div>` : ''}
                     `;
                     container.appendChild(card);
                 });
             });
         }
 
-        // CHATS & MESSAGING
         function getPairChatCode(a, b) { return [a.toLowerCase(), b.toLowerCase()].sort().join('_'); }
 
         function subscribeToPublicMessages() {
@@ -681,7 +687,7 @@
         }
 
         window.sendMessage = function() {
-            if (window.currentUser && window.currentUser.isMuted) { window.showToast('Вы замучены!', 'error'); return; }
+            if (window.currentUser && window.currentUser.isMuted) { window.showToast('Доступ ограничен', 'error'); return; }
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             if (!text && !window.selectedAttachment) return;
@@ -690,46 +696,34 @@
             if (!chat) return;
             if (!chat.messages) chat.messages = [];
 
-            if (window.editingMsgId) {
-                const msg = chat.messages.find(m => m.id === window.editingMsgId);
-                if (msg) { msg.text = text; msg.edited = true; }
-                window.editingMsgId = null; window.cancelInputAction();
-            } else {
-                const nowTimestamp = Date.now();
-                const newMessage = {
-                    id: nowTimestamp, sender: window.currentUser.name, text: text, file: window.selectedAttachment,
-                    replyTo: window.replyingToMsg ? { sender: window.replyingToMsg.sender, text: window.replyingToMsg.text } : null,
-                    reactions: {},
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTimestamp
-                };
-                chat.messages.push(newMessage);
-                chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            const nowTimestamp = Date.now();
+            const newMessage = {
+                id: nowTimestamp, sender: window.currentUser.name, text: text, file: window.selectedAttachment,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTimestamp
+            };
+            chat.messages.push(newMessage);
+            chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-                if (chat.id === 'pulse_bot') {
-                    setTimeout(() => triggerPulseBotResponse(text), 700);
-                } else if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
-                    addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), {
-                        pairCode: getPairChatCode(window.currentUser.code, chat.code), receiverCode: chat.code,
-                        senderCode: window.currentUser.code, senderName: window.currentUser.name, message: newMessage, timestamp: nowTimestamp
-                    });
-                }
-                window.cancelInputAction();
+            if (chat.id === 'pulse_bot') {
+                setTimeout(() => triggerBotResponse(text), 600);
+            } else if (chat.type === 'friend' && chat.code && chat.code !== '#saved_notes') {
+                addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), {
+                    pairCode: getPairChatCode(window.currentUser.code, chat.code), receiverCode: chat.code,
+                    senderCode: window.currentUser.code, senderName: window.currentUser.name, message: newMessage, timestamp: nowTimestamp
+                });
             }
+
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
             window.renderMessages(); window.renderChats();
             input.value = ''; window.clearAttachment();
         };
 
-        function triggerPulseBotResponse(userText) {
+        function triggerBotResponse(userText) {
             const botChat = window.chats.find(c => c.id === 'pulse_bot');
             if (!botChat) return;
-            let replyText = `Я услышал вас: «${userText}». Все функции мессенджера работают безупречно!`;
-            const lower = userText.toLowerCase();
-            if (lower.includes('привет')) replyText = `Привет, ${window.currentUser.name}! Рад нашему общению!`;
-
             const botTs = Date.now();
             botChat.messages.push({
-                id: botTs, sender: 'Pulse Бот', text: replyText, reactions: {},
+                id: botTs, sender: 'Ассистент', text: `Получено: «${userText}»`,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: botTs
             });
             botChat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
@@ -738,36 +732,13 @@
             window.renderChats();
         }
 
-        window.toggleReaction = function(msgId, emoji) {
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.messages) return;
-            const msg = chat.messages.find(m => m.id === msgId);
-            if (!msg) return;
-
-            if (!msg.reactions) msg.reactions = {};
-            if (msg.reactions[emoji] && msg.reactions[emoji].includes(window.currentUser.name)) {
-                msg.reactions[emoji] = msg.reactions[emoji].filter(name => name !== window.currentUser.name);
-                if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
-            } else {
-                Object.keys(msg.reactions).forEach(e => {
-                    msg.reactions[e] = msg.reactions[e].filter(name => name !== window.currentUser.name);
-                    if (msg.reactions[e].length === 0) delete msg.reactions[e];
-                });
-                if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
-                msg.reactions[emoji].push(window.currentUser.name);
-            }
-
-            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-            window.renderMessages();
-        };
-
         window.renderMessages = function() {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
             container.innerHTML = '';
             const chat = window.chats.find(c => c.id === window.activeChatId);
             if (!chat || !chat.messages || chat.messages.length === 0) {
-                container.innerHTML = '<div class="text-center text-slate-500 py-10 text-xs">Нет сообщений</div>'; return;
+                container.innerHTML = '<div class="text-center text-slate-500 py-12 text-xs">Нет сообщений</div>'; return;
             }
             
             chat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
@@ -775,44 +746,13 @@
             chat.messages.forEach(msg => {
                 const isMe = msg.sender === window.currentUser?.name;
                 const div = document.createElement('div');
-                div.className = `msg-group group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1 relative`;
-
-                let reactionsHtml = '';
-                if (msg.reactions && Object.keys(msg.reactions).length > 0) {
-                    reactionsHtml = '<div class="flex flex-wrap gap-1 mt-1">';
-                    for (const [emoji, users] of Object.entries(msg.reactions)) {
-                        const hasMyReaction = users.includes(window.currentUser.name);
-                        reactionsHtml += `<button onclick="toggleReaction(${msg.id}, '${emoji}')" class="px-1.5 py-0.5 rounded-full text-[10px] flex items-center gap-1 border transition ${hasMyReaction ? 'bg-indigo-600/30 border-indigo-500/50 text-indigo-300' : 'bg-slate-800/80 border-slate-700 text-slate-300'}"><span>${emoji}</span><span>${users.length}</span></button>`;
-                    }
-                    reactionsHtml += '</div>';
-                }
+                div.className = `msg-group flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`;
 
                 div.innerHTML = `
-                    <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
-                        <div class="max-w-[80%] px-3.5 py-2 rounded-2xl text-xs ${isMe ? 'bg-indigo-600 text-white rounded-br-none shadow' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-[#1e293b]'}">
-                            ${msg.replyTo ? `<div class="mb-1 p-1.5 bg-[#090d16]/60 border-l-2 border-indigo-400 rounded text-[10px] text-slate-300"><b>${escapeHtml(msg.replyTo.sender)}</b>:${escapeHtml(msg.replyTo.text)}</div>` : ''}
-                            ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeHtml(msg.text)}</p>` : ''}
-                            ${msg.file ? `<div class="mt-1 cursor-pointer" onclick="openLightbox('${msg.file.data}')"><img src="${msg.file.data}" class="max-h-40 rounded-xl"></div>` : ''}
-                            ${reactionsHtml}
-                            <div class="flex items-center justify-end space-x-1 mt-1 text-[9px] opacity-75">
-                                ${msg.edited ? '<span>(ред.)</span>' : ''}
-                                <span>${msg.time}</span>
-                            </div>
-                        </div>
-                        <div class="msg-actions opacity-0 group-hover:opacity-100 flex items-center space-x-1 text-xs bg-[#131c2e] border border-[#1e293b] px-2 py-1 rounded-xl shadow-lg">
-                            <div class="relative group/react inline-block">
-                                <button title="Реакция" class="text-slate-400 hover:text-amber-400 px-1"><i class="fa-solid fa-face-smile"></i></button>
-                                <div class="absolute bottom-full mb-1 left-0 hidden group-hover/react:flex bg-[#090d16] border border-[#1e293b] p-1.5 rounded-xl shadow-2xl gap-1.5 z-30">
-                                    <button onclick="toggleReaction(${msg.id}, '❤️')" class="hover:scale-125 transition">❤️</button>
-                                    <button onclick="toggleReaction(${msg.id}, '🔥')" class="hover:scale-125 transition">🔥</button>
-                                    <button onclick="toggleReaction(${msg.id}, '👍')" class="hover:scale-125 transition">👍</button>
-                                </div>
-                            </div>
-                            <button onclick="replyToMessage(${msg.id})" title="Ответить" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-reply"></i></button>
-                            ${isMe ? `<button onclick="editMessage(${msg.id})" title="Изменить" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-pen"></i></button>` : ''}
-                            <button onclick="openForwardModal(${msg.id})" title="Переслать" class="text-slate-400 hover:text-indigo-400 px-1"><i class="fa-solid fa-share"></i></button>
-                            <button onclick="sendReport('${escapeHtml(msg.text)}', '${msg.sender}')" title="Пожаловаться" class="text-slate-400 hover:text-rose-400 px-1"><i class="fa-solid fa-flag"></i></button>
-                        </div>
+                    <div class="max-w-[75%] px-4 py-3 rounded-2xl text-xs sm:text-sm ${isMe ? 'bg-primaryAccent text-white rounded-br-none shadow-md' : 'bg-darkCard text-slate-200 rounded-bl-none border border-darkBorder shadow'}">
+                        ${msg.text ? `<p class="whitespace-pre-wrap break-words leading-relaxed">${escapeHtml(msg.text)}</p>` : ''}
+                        ${msg.file ? `<div class="mt-2 cursor-pointer" onclick="openLightbox('${msg.file.data}')"><img src="${msg.file.data}" class="max-h-48 rounded-xl"></div>` : ''}
+                        <div class="flex items-center justify-end space-x-1 mt-1 text-[10px] opacity-75"><span>${msg.time}</span></div>
                     </div>
                 `;
                 container.appendChild(div);
@@ -820,204 +760,15 @@
             container.scrollTop = container.scrollHeight;
         };
 
-        window.replyToMessage = function(id) {
+        window.startAudioCall = function() {
             const chat = window.chats.find(c => c.id === window.activeChatId);
-            const msg = chat.messages.find(m => m.id === id);
-            if (!msg) return;
-            window.replyingToMsg = msg; window.editingMsgId = null;
-            document.getElementById('inputActionIcon').className = "fa-solid fa-reply";
-            document.getElementById('inputActionText').innerText = `Ответ на: ${msg.text}`;
-            document.getElementById('inputActionBar').classList.remove('hidden');
+            if (!chat) return;
+            document.getElementById('callUserName').innerText = chat.name;
+            document.getElementById('callStatusText').innerText = 'Идет вызов...';
+            document.getElementById('audioCallModal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('callStatusText').innerText = 'Соединение установлено (0:01)'; }, 2000);
         };
-        window.editMessage = function(id) {
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            const msg = chat.messages.find(m => m.id === id);
-            if (!msg) return;
-            window.editingMsgId = id; window.replyingToMsg = null;
-            document.getElementById('inputActionIcon').className = "fa-solid fa-pen";
-            document.getElementById('inputActionText').innerText = `Редактирование: ${msg.text}`;
-            document.getElementById('inputActionBar').classList.remove('hidden');
-            document.getElementById('messageInput').value = msg.text;
-        };
-        window.cancelInputAction = function() {
-            window.replyingToMsg = null; window.editingMsgId = null;
-            document.getElementById('inputActionBar').classList.add('hidden');
-            document.getElementById('messageInput').value = '';
-        };
-
-        window.openForwardModal = function(msgId) {
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.messages) return;
-            forwardingMsg = chat.messages.find(m => m.id === msgId);
-            if (!forwardingMsg) return;
-
-            const listEl = document.getElementById('forwardChatsList');
-            listEl.innerHTML = '';
-            window.chats.forEach(c => {
-                if (c.id === chat.id) return;
-                const btn = document.createElement('button');
-                btn.className = 'w-full p-2.5 bg-[#090d16] hover:bg-slate-800 rounded-xl text-left text-xs text-white flex items-center space-x-2 transition cursor-pointer border border-[#1e293b]';
-                
-                const isImg = c.avatar && c.avatar.startsWith('data:image');
-                const avatarContent = isImg ? `<img src="${c.avatar}" class="w-full h-full object-cover">` : c.avatar;
-
-                btn.innerHTML = `<span class="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center font-bold overflow-hidden shrink-0">${avatarContent}</span> <span>${c.name}</span>`;
-                btn.onclick = () => executeForward(c.id);
-                listEl.appendChild(btn);
-            });
-            document.getElementById('forwardModal').classList.remove('hidden');
-        };
-        window.closeForwardModal = function() { document.getElementById('forwardModal').classList.add('hidden'); forwardingMsg = null; };
-        window.executeForward = function(targetChatId) {
-            const targetChat = window.chats.find(c => c.id === targetChatId);
-            if (!targetChat || !forwardingMsg) return;
-            if (!targetChat.messages) targetChat.messages = [];
-            const nowTs = Date.now();
-            targetChat.messages.push({
-                id: nowTs, sender: window.currentUser.name,
-                text: `[Переслано от ${forwardingMsg.sender}]: ${forwardingMsg.text || ''}`,
-                file: forwardingMsg.file || null, reactions: {}, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: nowTs
-            });
-            targetChat.messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-            window.closeForwardModal(); window.showToast('Сообщение переслано', 'success');
-        };
-
-        let typingTimeout = null;
-        window.handleTypingInput = function() {
-            if (!window.currentUser || window.activeChatId === 'pulse_bot') return;
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.code) return;
-
-            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'typing', getPairChatCode(window.currentUser.code, chat.code)), {
-                user: window.currentUser.name, code: window.currentUser.code, timestamp: Date.now()
-            }, { merge: true });
-
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'typing', getPairChatCode(window.currentUser.code, chat.code)), {
-                    user: '', code: '', timestamp: 0
-                }, { merge: true });
-            }, 2000);
-        };
-
-        function subscribeToTyping() {
-            if (unsubscribeTyping) unsubscribeTyping();
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.code || chat.code === '#saved_notes') {
-                document.getElementById('typingIndicator').classList.add('hidden');
-                return;
-            }
-
-            unsubscribeTyping = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'typing', getPairChatCode(window.currentUser.code, chat.code)), (snap) => {
-                if (snap.exists()) {
-                    const data = snap.data();
-                    const isTyping = data.user && data.user !== window.currentUser.name && (Date.now() - data.timestamp < 3500);
-                    const indicator = document.getElementById('typingIndicator');
-                    indicator.classList.toggle('hidden', !isTyping);
-                    if (isTyping) {
-                        document.getElementById('typingIndicatorText').innerText = `${data.user} печатает...`;
-                    }
-                }
-            });
-        }
-
-        window.sendReport = async function(text, sender) {
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'reports'), {
-                reportedUser: sender, message: text, reporter: window.currentUser.name, time: new Date().toLocaleTimeString()
-            });
-            window.showToast('Жалоба отправлена администраторам', 'success');
-        };
-
-        window.loadAdminReports = async function() {
-            const container = document.getElementById('reportsContainer');
-            if (!container) return;
-            const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'reports'));
-            container.innerHTML = '';
-            document.getElementById('reportsCountBadge').innerText = snapshot.size;
-            document.getElementById('kpiReportsCount').innerText = snapshot.size + ' шт.';
-            if (snapshot.empty) { container.innerHTML = '<span class="text-[11px] text-slate-500">Нет активных жалоб</span>'; return; }
-            snapshot.forEach(d => {
-                const r = d.data();
-                const div = document.createElement('div');
-                div.className = 'bg-[#090d16] p-3 rounded-xl border border-[#1e293b] text-xs flex justify-between items-center gap-2';
-                div.innerHTML = `<span>На: <b class="text-rose-400">${escapeHtml(r.reportedUser)}</b> («${escapeHtml(r.message)}»)</span> <button onclick="resolveReport('${d.id}')" class="px-2.5 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-600/30 transition shrink-0">Закрыть</button>`;
-                container.appendChild(div);
-            });
-        }
-        window.resolveReport = async function(id) {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reports', id));
-            loadAdminReports(); window.showToast('Жалоба закрыта', 'success');
-        };
-
-        // ВСЕ 25 ИНСТРУМЕНТОВ АДМИНА И СОЗДАТЕЛЯ
-        window.adminTool = function(type) {
-            if (type === 'cache') { localStorage.removeItem('pulse_chat_chats'); window.showToast('Кэш очищен', 'success'); }
-            else if (type === 'resetChats') { window.chats = [{ id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', type: 'friend', avatar: '🤖', code: '#pulse_ai_bot', messages: [] }]; window.renderChats(); window.showToast('Чаты сброшены', 'success'); }
-            else if (type === 'maint') { window.showToast('⚠️ Режим техобслуживания переключен', 'info'); }
-            else if (type === 'export') {
-                const blob = new Blob([JSON.stringify(window.chats)], {type: "application/json"});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = 'pulse_backup.json'; a.click();
-                window.showToast('Бэкап скачан', 'success');
-            }
-            else if (type === 'ping') { window.showToast('⚡ Пинг: 11мс (Firebase OK)', 'success'); }
-            else if (type === 'muteAll') { window.showToast('🔇 Все пользователи замучены', 'success'); }
-            else if (type === 'unmuteAll') { window.showToast('🔊 Муты сняты', 'success'); }
-            else if (type === 'stealth') { window.showToast('🕶️ Невидимость включена', 'success'); }
-        };
-
-        window.creatorTool = function(type) {
-            if (!window.currentUser.isCreator) { window.showToast('Требуются права Создателя (67)', 'error'); return; }
-            if (type === 'unbanAll') window.showToast('🔓 Все баны сняты', 'success');
-            else if (type === 'superAdmin') window.showToast('👑 Вы Супер-Админ', 'success');
-            else if (type === 'clearCloud') window.showToast('🗑️ Облачная база очищена', 'success');
-            else if (type === 'lockReg') window.showToast('🔒 Регистрация заблокирована', 'info');
-            else if (type === 'logoutAll') window.showToast('🚪 Все сессии сброшены', 'success');
-            else if (type === 'kill') alert('⚠️ Сервер остановлен');
-        };
-
-        window.loadRealtimeOnlineUsers = async function() {
-            const tbody = document.getElementById('adminUsersTableBody');
-            if (!tbody) return;
-            const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
-            tbody.innerHTML = ''; let onlineCount = 0;
-            snapshot.forEach(d => {
-                const u = d.data();
-                const isOnline = (Date.now() - (window.lastSeenMap[u.code?.toLowerCase()]||0)) < 45000;
-                if (isOnline) onlineCount++;
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/50 transition";
-                
-                const isImg = u.avatar && u.avatar.startsWith('data:image');
-                const userAvatarContent = isImg ? `<img src="${u.avatar}" class="w-full h-full object-cover">` : (u.avatar || 'U');
-
-                tr.innerHTML = `
-                    <td class="p-3.5 font-semibold text-white flex items-center gap-2.5">
-                        <span class="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">${userAvatarContent}</span>
-                        ${escapeHtml(u.name)}
-                    </td>
-                    <td class="p-3.5 text-indigo-400 font-mono">${u.code}</td>
-                    <td class="p-3.5">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-slate-600'}"></span>
-                            <span>${isOnline ? 'В сети' : 'Офлайн'}</span>
-                            <span class="ml-1.5 px-2 py-0.5 rounded text-[10px] font-medium ${u.isCreator?'bg-purple-500/20 text-purple-400 border border-purple-500/30':u.isAdmin?'bg-amber-500/20 text-amber-400 border border-amber-500/30':u.isTester?'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30':'bg-slate-800 text-slate-400'}">
-                                ${u.isCreator?'Creator':u.isAdmin?'Admin':u.isTester?'Tester':'User'}
-                            </span>
-                        </div>
-                    </td>
-                    <td class="p-3.5 text-right"><button onclick="toggleUserMute('${u.name}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl transition font-medium">Мут / Бан</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('adminTotalUsersCount').innerText = onlineCount;
-        }
-
-        window.toggleUserMute = function(username) {
-            window.showToast(`Статус ${username} изменен`, 'success');
-            loadRealtimeOnlineUsers();
-        };
+        window.endAudioCall = function() { document.getElementById('audioCallModal').classList.add('hidden'); };
 
         function updateMyPresence() {
             if (!authenticatedUser || !window.currentUser) return;
@@ -1027,9 +778,6 @@
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'presence'), (snap) => {
                 snap.forEach(d => { const dt = d.data(); if(dt.code) window.lastSeenMap[dt.code.toLowerCase()] = dt.lastSeen; });
                 window.renderChats();
-                if (window.currentUser && (window.currentUser.isAdmin || window.currentUser.isCreator)) {
-                    loadRealtimeOnlineUsers();
-                }
                 updateChatHeaderOnlineStatus();
             });
         }
@@ -1037,24 +785,10 @@
 
         function updateChatHeaderOnlineStatus() {
             const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.code) {
-                document.getElementById('chatHeaderOnlineBadge').classList.add('hidden');
-                return;
-            }
+            if (!chat || !chat.code) { document.getElementById('chatHeaderOnlineBadge').classList.add('hidden'); return; }
             const isOnline = (Date.now() - (window.lastSeenMap[chat.code.toLowerCase()] || 0)) < 45000;
             document.getElementById('chatHeaderOnlineBadge').classList.toggle('hidden', !isOnline);
             document.getElementById('chatStatus').innerText = isOnline ? '● В сети' : '● Был(а) недавно';
-        }
-
-        function subscribeToUserStatus() {
-            if (!authenticatedUser || !window.currentUser) return;
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase()), (snap) => {
-                if (snap.exists()) {
-                    const d = snap.data();
-                    window.currentUser.isMuted = d.isMuted || false;
-                    document.getElementById('muteNotice').classList.toggle('hidden', !window.currentUser.isMuted);
-                }
-            });
         }
 
         window.handleLogin = async function(e) {
@@ -1077,11 +811,10 @@
             const key = document.getElementById('regAdminKey').value.trim();
             const isCreator = (key === window.CREATOR_KEY);
             const isAdmin = (key === window.MASTER_ADMIN_KEY) || isCreator;
-            const isTester = (key === window.TESTER_KEY);
 
             const newUser = {
                 name: username, code: '#' + username + '_' + Math.floor(1000 + Math.random() * 9000),
-                password: password, isCreator: isCreator, isAdmin: isAdmin, isTester: isTester, avatar: username.charAt(0).toUpperCase()
+                password: password, isCreator: isCreator, isAdmin: isAdmin, avatar: username.charAt(0).toUpperCase(), bio: ''
             };
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase()), newUser, { merge: true });
             localStorage.setItem('pulse_session', JSON.stringify(newUser));
@@ -1096,15 +829,15 @@
             renderAvatarElement('settingsUserAvatar', user.avatar);
             document.getElementById('settingsUserCode').innerText = user.code;
             document.getElementById('setDisplayName').value = user.name;
+            document.getElementById('setUserBio').value = user.bio || '';
             if (!user.avatar?.startsWith('data:image')) document.getElementById('setAvatar').value = user.avatar;
 
             document.getElementById('settingsCreatorBadge').classList.toggle('hidden', !user.isCreator);
             document.getElementById('settingsAdminBadge').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
-            document.getElementById('settingsTesterBadge').classList.toggle('hidden', !user.isTester);
             document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
 
             window.renderChats(); window.selectChat(window.activeChatId);
-            window.showToast('Успешный вход!', 'success');
+            window.showToast('Вход выполнен', 'success');
         }
 
         window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
@@ -1112,37 +845,33 @@
         window.saveUserSettings = async function(e) {
             e.preventDefault();
             window.currentUser.name = document.getElementById('setDisplayName').value.trim();
-            
+            window.currentUser.bio = document.getElementById('setUserBio').value.trim();
             if (window.uploadedAvatarBase64) {
                 window.currentUser.avatar = window.uploadedAvatarBase64;
             } else {
                 window.currentUser.avatar = document.getElementById('setAvatar').value.trim() || 'U';
             }
 
-            const newPass = document.getElementById('setNewPassword').value;
-            if (newPass) window.currentUser.password = newPass;
-
             localStorage.setItem('pulse_session', JSON.stringify(window.currentUser));
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase()), window.currentUser, { merge: true });
             initSession(window.currentUser);
-            window.showToast('Настройки сохранены', 'success');
+            window.showToast('Сохранено', 'success');
         };
 
-        window.clearLocalCache = function() {
-            localStorage.removeItem('pulse_chat_chats');
-            window.chats = [{ id: 'pulse_bot', name: 'Pulse Помощник (ИИ)', type: 'friend', avatar: '🤖', code: '#pulse_ai_bot', messages: [] }];
-            window.renderChats(); window.selectChat('pulse_bot');
-            window.showToast('Кэш чатов очищен', 'success');
-        };
+        window.filterChats = function() { window.renderChats(); };
 
         window.renderChats = function() {
             const list = document.getElementById('chatList');
+            const searchInput = document.getElementById('chatSearchInput');
+            const query = searchInput ? searchInput.value.toLowerCase() : '';
             if (!list) return;
             list.innerHTML = '';
+            
             window.chats.forEach(c => {
+                if (query && !c.name.toLowerCase().includes(query)) return;
                 const isOnline = c.code ? (Date.now() - (window.lastSeenMap[c.code.toLowerCase()] || 0)) < 45000 : false;
                 const item = document.createElement('div');
-                item.className = `p-2.5 rounded-xl cursor-pointer transition flex items-center space-x-3 ${c.id === window.activeChatId ? 'bg-indigo-600/25 border border-indigo-500/30' : 'hover:bg-slate-800/40'}`;
+                item.className = `p-3 rounded-2xl cursor-pointer transition flex items-center space-x-3.5 ${c.id === window.activeChatId ? 'bg-primaryAccent/20 border border-primaryAccent/30 shadow-md' : 'hover:bg-slate-800/40'}`;
                 item.onclick = () => window.selectChat(c.id);
 
                 const isImg = c.avatar && c.avatar.startsWith('data:image');
@@ -1150,13 +879,10 @@
 
                 item.innerHTML = `
                     <div class="relative shrink-0">
-                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-white text-xs overflow-hidden">${avatarContent}</div>
-                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#131c2e] ${isOnline ? '' : 'hidden'}"></span>
+                        <div class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-inner">${avatarContent}</div>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-darkCard ${isOnline ? '' : 'hidden'}"></span>
                     </div>
-                    <div class="overflow-hidden flex-1">
-                        <span class="text-xs font-semibold text-white truncate block">${escapeHtml(c.name)}</span>
-                        <span class="text-[10px] text-slate-400 block">${isOnline ? 'В сети' : (c.code ? 'Офлайн' : 'Групповой чат')}</span>
-                    </div>
+                    <div class="overflow-hidden flex-1"><span class="text-xs sm:text-sm font-semibold text-white truncate block">${escapeHtml(c.name)}</span></div>
                 `;
                 list.appendChild(item);
             });
@@ -1169,7 +895,6 @@
             document.getElementById('chatTitle').innerText = chat.name;
             renderAvatarElement('chatAvatar', chat.avatar);
             updateChatHeaderOnlineStatus();
-            subscribeToTyping();
             window.renderMessages(); window.renderChats();
 
             if (window.innerWidth < 768) {
@@ -1183,6 +908,38 @@
             localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
             window.selectChat('pulse_bot'); window.renderChats();
         };
+
+        window.loadRealtimeOnlineUsers = async function() {
+            const tbody = document.getElementById('adminUsersTableBody');
+            if (!tbody) return;
+            const snapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+            tbody.innerHTML = ''; let onlineCount = 0;
+            snapshot.forEach(d => {
+                const u = d.data();
+                const isOnline = (Date.now() - (window.lastSeenMap[u.code?.toLowerCase()]||0)) < 45000;
+                if (isOnline) onlineCount++;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/30 transition";
+                
+                const isImg = u.avatar && u.avatar.startsWith('data:image');
+                const userAvatarContent = isImg ? `<img src="${u.avatar}" class="w-full h-full object-cover">` : (u.avatar || 'U');
+
+                tr.innerHTML = `
+                    <td class="p-4 font-semibold text-white flex items-center gap-3">
+                        <span class="w-8 h-8 bg-darkBg border border-darkBorder rounded-xl flex items-center justify-center font-bold text-xs overflow-hidden shrink-0 shadow-inner">${userAvatarContent}</span>
+                        ${escapeHtml(u.name)}
+                    </td>
+                    <td class="p-4 text-primaryAccent font-mono text-xs">${u.code}</td>
+                    <td class="p-4 text-right">
+                        <span class="px-3 py-1 rounded-xl text-[10px] font-bold ${u.isCreator?'bg-primaryAccent/20 text-primaryAccent border border-primaryAccent/30':u.isAdmin?'bg-amber-500/20 text-amber-400 border border-amber-500/30':'bg-darkBg text-slate-400 border border-darkBorder'}">
+                            ${u.isCreator?'Creator':u.isAdmin?'Admin':'User'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('adminTotalUsersCount').innerText = onlineCount;
+        }
 
         window.openAddFriendModal = function() { document.getElementById('addFriendModal').classList.remove('hidden'); };
         window.closeAddFriendModal = function() { document.getElementById('addFriendModal').classList.add('hidden'); };
@@ -1211,13 +968,11 @@
             const reader = new FileReader();
             reader.onload = (evt) => {
                 window.selectedAttachment = { name: file.name, type: file.type, data: evt.target.result };
-                document.getElementById('attachmentName').innerText = file.name;
-                document.getElementById('attachmentPreview').classList.remove('hidden');
+                window.showToast('Файл прикреплен', 'success');
             };
             reader.readAsDataURL(file);
         };
-        window.clearAttachment = function() { window.selectedAttachment = null; document.getElementById('attachmentPreview').classList.add('hidden'); };
-        window.toggleVoiceRecord = function() { window.showToast('🎙️ Голосовые сообщения активны', 'info'); };
+        window.clearAttachment = function() { window.selectedAttachment = null; };
 
         window.openLightbox = function(src) { document.getElementById('lightboxImage').src = src; document.getElementById('lightboxModal').classList.remove('hidden'); };
         window.closeLightbox = function() { document.getElementById('lightboxModal').classList.add('hidden'); };
@@ -1226,9 +981,9 @@
             const container = document.getElementById('toastContainer');
             if (!container) return;
             const t = document.createElement('div');
-            t.className = `pointer-events-auto px-4 py-2.5 rounded-xl text-xs font-medium shadow-xl ${type==='error'?'bg-rose-600 text-white':type==='success'?'bg-emerald-600 text-white':'bg-slate-800 text-white'}`;
+            t.className = `pointer-events-auto px-4 py-3 rounded-2xl text-xs font-semibold shadow-2xl border backdrop-blur-md ${type==='error'?'bg-rose-950/90 border-rose-500/30 text-rose-200':type==='success'?'bg-emerald-950/90 border-emerald-500/30 text-emerald-200':'bg-darkCard border-darkBorder text-slate-200'}`;
             t.innerText = msg; container.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+            setTimeout(() => t.remove(), 2800);
         };
 
         window.switchAuthTab = function(tab) {
@@ -1246,4 +1001,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
