@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v6.0 - Enterprise Pro (Double Edition)</title>
+    <title>Pulse Workspace v5.9 - Fixed Enterprise Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -63,8 +63,8 @@
             </div>
 
             <div class="space-y-1">
-                <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace v6.0 Pro</h1>
-                <p class="text-xs text-slate-400">Корпоративная среда • Двойной пакет модулей</p>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace v5.9</h1>
+                <p class="text-xs text-slate-400">Корпоративная среда • Вход и регистрация</p>
             </div>
 
             <div class="flex bg-darkBg p-1.5 rounded-2xl border border-darkBorder">
@@ -173,7 +173,7 @@
                             <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
                                 <i class="fa-solid fa-users text-primaryAccent text-xs"></i> <span>Группа</span>
                             </button>
-                            <button type="button" onclick="openCreatePollModal()" title="Создать опрос" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center cursor-pointer transition">
+                            <button type="button" onclick="openCreatePollModal()" title="Опрос" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center cursor-pointer transition">
                                 <i class="fa-solid fa-square-poll-vertical text-primaryAccent"></i>
                             </button>
                         </div>
@@ -235,19 +235,7 @@
                 </div>
             </div>
 
-            <!-- 3. NOTES & CLOUD STORAGE SECTION (NEW MODULE - DOUBLE EXTENSION) -->
-            <div id="sectionNotes" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-8 hidden max-w-4xl mx-auto w-full space-y-6 h-full">
-                <div class="flex items-center justify-between border-b border-darkBorder pb-5">
-                    <div>
-                        <h2 class="font-bold text-lg text-white">Облачный блокнот и хранилище</h2>
-                        <p class="text-xs text-slate-400">Ваши личные защищенные заметки и файлы</p>
-                    </div>
-                    <button type="button" onclick="createNewNote()" class="px-4 py-2.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer">Новая заметка</button>
-                </div>
-                <div id="notesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-            </div>
-
-            <!-- 4. SETTINGS & COMPLETE ADMIN FEATURES SECTION -->
+            <!-- 3. SETTINGS SECTION -->
             <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-8 hidden max-w-4xl mx-auto w-full space-y-6 h-full">
                 <div class="flex items-center justify-between border-b border-darkBorder pb-5">
                     <div class="flex items-center space-x-4">
@@ -264,7 +252,7 @@
                     <button type="button" onclick="logout()" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 transition cursor-pointer">Выйти</button>
                 </div>
 
-                <!-- Theme & Brand Switcher -->
+                <!-- Theme Switcher -->
                 <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
                     <h3 class="font-bold text-xs text-white uppercase tracking-wider">Кастомизация темы</h3>
                     <div class="grid grid-cols-3 gap-3">
@@ -290,10 +278,10 @@
                         </div>
                         <div>
                             <label class="text-xs font-medium text-slate-400">О себе (Био)</label>
-                            <input type="text" id="setUserBio" placeholder="Био..." class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+                            <input type="text" id="setUserBio" placeholder="Пару слов о себе..." class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
                         </div>
                         <div class="pt-2 flex justify-between items-center">
-                            <button type="button" onclick="exportAccountData()" class="px-4 py-2.5 bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 rounded-2xl text-xs font-semibold transition cursor-pointer">Бэкап</button>
+                            <button type="button" onclick="exportAccountData()" class="px-4 py-2.5 bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 rounded-2xl text-xs font-semibold transition cursor-pointer">Бэкап профиля</button>
                             <button type="button" onclick="saveUserSettings()" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
                         </div>
                     </div>
@@ -304,7 +292,7 @@
                     <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-6 shadow-xl">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-4">
                             <h3 class="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved"></i> Панель администратора (26 функций)
+                                <i class="fa-solid fa-shield-halved"></i> Панель администратора
                             </h3>
                             <span class="text-xs text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                         </div>
@@ -323,7 +311,7 @@
                         <div class="space-y-2">
                             <h4 class="font-bold text-[11px] text-slate-400 uppercase tracking-wider">Журнал аудита</h4>
                             <div id="adminLogsContainer" class="p-3 bg-darkBg border border-darkBorder rounded-2xl h-32 overflow-y-auto space-y-1 text-[11px] font-mono text-slate-400 shadow-inner">
-                                <div>[Система] Логи активны...</div>
+                                <div>[Система] Аудит активен...</div>
                             </div>
                         </div>
                     </div>
@@ -332,11 +320,10 @@
 
         </div>
 
-        <!-- FIXED BOTTOM NAVIGATION BAR (EXPANDED TO 4 ITEMS) -->
+        <!-- FIXED BOTTOM NAVIGATION BAR -->
         <div class="absolute bottom-0 inset-x-0 h-16 bg-darkCard/95 border-t border-darkBorder flex items-center justify-around px-2 z-40 shadow-2xl backdrop-blur-xl">
             <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
             <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
-            <button type="button" onclick="switchSection('notes')" id="navBtnNotes" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-cloud text-base mb-0.5"></i><span class="text-[10px] font-semibold">Облако</span></button>
             <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
         </div>
     </div>
@@ -360,8 +347,7 @@
                 <h3 class="font-bold text-sm text-white">Добавить историю</h3>
                 <button type="button" onclick="closeCreateStoryModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="storyTextInput" placeholder="Текст..." class="w-full px-4 py-3.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white">
-            <input type="file" id="storyImageInput" accept="image/*" class="text-xs text-slate-400">
+            <input type="text" id="storyTextInput" placeholder="Текст истории..." class="w-full px-4 py-3.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white">
             <button type="button" onclick="submitStory()" class="w-full py-3.5 bg-primaryAccent text-white rounded-2xl text-xs font-semibold">Опубликовать</button>
         </div>
     </div>
@@ -416,16 +402,7 @@
         window.currentUser = null;
         window.activeChatId = 'pulse_bot';
         window.selectedAttachment = null;
-        window.uploadedAvatarBase64 = null;
         window.lastSeenMap = {};
-        window.editingMessageId = null;
-        window.replyingMessage = null;
-        window.isDndActive = false;
-        window.isCompactList = false;
-
-        window.notesList = JSON.parse(localStorage.getItem('pulse_cloud_notes') || 'null') || [
-            { id: 1, title: 'Моя первая заметка', text: 'Защищенное облачное хранилище Pulse Workspace v6.0', date: '12.10.2026' }
-        ];
 
         setInterval(() => {
             const clockEl = document.getElementById('widgetClock');
@@ -440,7 +417,7 @@
         };
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'ИИ Ассистент v6.0', type: 'friend', avatar: '🤖', code: '#pulse_ai', messages: [{ id: 1, sender: 'Ассистент', text: 'Добро пожаловать в двойную версию Pro!', time: '12:00', timestamp: Date.now() }] }
+            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', avatar: '🤖', code: '#pulse_ai', messages: [{ id: 1, sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace v5.9!', time: '12:00', timestamp: Date.now() }] }
         ];
 
         async function initAuth() {
@@ -483,51 +460,17 @@
         }
 
         window.switchSection = function(section) {
-            ['sectionFeed', 'sectionMessages', 'sectionNotes', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['navBtnFeed', 'navBtnMessages', 'navBtnNotes', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
+            ['sectionFeed', 'sectionMessages', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['navBtnFeed', 'navBtnMessages', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
 
             if (section === 'feed') { document.getElementById('sectionFeed').classList.remove('hidden'); document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; }
             else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; window.renderChats(); window.selectChat(window.activeChatId); }
-            else if (section === 'notes') { document.getElementById('sectionNotes').classList.remove('hidden'); document.getElementById('navBtnNotes').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; renderNotes(); }
             else if (section === 'settings') { document.getElementById('sectionSettings').classList.remove('hidden'); document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; if (window.currentUser && (window.currentUser.isAdmin || window.currentUser.isCreator)) loadRealtimeOnlineUsers(); }
-        };
-
-        window.renderNotes = function() {
-            const container = document.getElementById('notesContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            window.notesList.forEach((n, idx) => {
-                const div = document.createElement('div');
-                div.className = "bg-darkCard border border-darkBorder rounded-3xl p-5 space-y-3 shadow-xl";
-                div.innerHTML = `
-                    <div class="flex justify-between items-center"><h3 class="font-bold text-sm text-white">${escapeHtml(n.title)}</h3><span class="text-[10px] text-slate-500">${n.date}</span></div>
-                    <p class="text-xs text-slate-300 whitespace-pre-wrap">${escapeHtml(n.text)}</p>
-                    <div class="flex justify-end gap-2 pt-2"><button onclick="deleteNote(${idx})" class="text-xs text-rose-400"><i class="fa-solid fa-trash"></i> Удалить</button></div>
-                `;
-                container.appendChild(div);
-            });
-        };
-
-        window.createNewNote = function() {
-            const title = prompt('Название заметки:');
-            if (!title) return;
-            const text = prompt('Содержимое заметки:');
-            window.notesList.push({ id: Date.now(), title, text, date: new Date().toLocaleDateString() });
-            localStorage.setItem('pulse_cloud_notes', JSON.stringify(window.notesList));
-            renderNotes();
-            window.showToast('Заметка сохранена в облаке', 'success');
-        };
-
-        window.deleteNote = function(idx) {
-            window.notesList.splice(idx, 1);
-            localStorage.setItem('pulse_cloud_notes', JSON.stringify(window.notesList));
-            renderNotes();
-            window.showToast('Заметка удалена', 'info');
         };
 
         window.toggleMobileSidebar = function() { document.getElementById('sidebarChats').classList.toggle('-translate-x-full'); };
         window.toggleFullscreen = function() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else if (document.exitFullscreen) document.exitFullscreen(); };
-        window.toggleDndMode = function() { window.isDndActive = !window.isDndActive; window.showToast(window.isDndActive ? 'Не беспокоить включен' : 'Уведомления активны', 'info'); };
+        window.toggleDndMode = function() { window.isDndActive = !window.isDndActive; window.showToast('Режим уведомлений изменен', 'info'); };
         window.togglePrivacyBlur = function() { document.body.classList.toggle('blur-privacy'); };
         window.toggleChatDensity = function() { window.isCompactList = !window.isCompactList; window.renderChats(); };
 
@@ -627,7 +570,7 @@
             if (window.currentUser?.isMuted || window.currentUser?.isBanned) return;
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            if (!text && !window.selectedAttachment) return;
+            if (!text) return;
             let chat = window.chats.find(c => c.id === window.activeChatId);
             if (!chat) return;
             const newMessage = { id: Date.now(), sender: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: Date.now() };
@@ -694,6 +637,7 @@
 
         function initSession(user) {
             window.currentUser = user;
+            localStorage.setItem('pulse_session', JSON.stringify(user));
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('settingsUserName').innerText = user.name;
             document.getElementById('settingsUserCode').innerText = user.code;
