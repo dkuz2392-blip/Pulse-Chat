@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v8.0 - Enterprise Ultra (4x Edition)</title>
+    <title>Pulse Workspace v8.0 - Enterprise Ultra</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -46,7 +46,6 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .animate-modal { animation: fadeIn 0.2s ease forwards; }
-        .admin-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     </style>
 </head>
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
@@ -66,8 +65,8 @@
             </div>
 
             <div class="space-y-0.5">
-                <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace 4x</h1>
-                <p class="text-xs text-slate-400">Корпоративная среда Ultra Edition</p>
+                <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace</h1>
+                <p class="text-xs text-slate-400">Корпоративная среда</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -167,10 +166,6 @@
                                 <p id="chatStatus" class="text-[10px] text-slate-400 truncate">● Активно</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-1.5">
-                            <button type="button" onclick="exportCurrentChat()" title="Экспорт" class="w-8 h-8 rounded-lg bg-darkCard border border-darkBorder text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs"><i class="fa-solid fa-download"></i></button>
-                            <button type="button" onclick="deleteCurrentChat()" title="Удалить" class="w-8 h-8 rounded-lg bg-darkCard border border-darkBorder text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
                     </div>
 
                     <div class="relative flex-1 flex flex-col overflow-hidden">
@@ -186,19 +181,7 @@
                 </div>
             </div>
 
-            <!-- 3. EXTENDED 4X MODULE: CLOUD DRIVE & TASKS -->
-            <div id="sectionCloud" class="flex-1 flex flex-col overflow-y-auto p-4 hidden max-w-lg mx-auto w-full space-y-4 h-full">
-                <div class="flex items-center justify-between border-b border-darkBorder pb-4">
-                    <div>
-                        <h2 class="font-bold text-sm text-white">Облачный архив & Задачи (4x)</h2>
-                        <p class="text-[10px] text-slate-400">Дополнительное корпоративное хранилище</p>
-                    </div>
-                    <button type="button" onclick="createNewTask()" class="px-3.5 py-2 bg-primaryAccent text-white rounded-xl text-xs font-semibold cursor-pointer">Задача</button>
-                </div>
-                <div id="tasksContainer" class="space-y-2.5"></div>
-            </div>
-
-            <!-- 4. SETTINGS & FULL 26-FEATURE ADMIN PANEL SECTION -->
+            <!-- 3. SETTINGS & ADMIN PANEL SECTION (ТОЧНЫЙ ДИЗАЙН СО СКРИНШОТА) -->
             <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 hidden max-w-lg mx-auto w-full space-y-4 h-full">
                 <div class="flex items-center justify-between border-b border-darkBorder pb-4">
                     <div>
@@ -209,7 +192,7 @@
                 </div>
 
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-3 shadow-lg">
-                    <h3 class="font-bold text-xs text-white uppercase">Тема оформления</h3>
+                    <h3 class="font-bold text-xs text-white uppercase">ТЕМА ОФОРМЛЕНИЯ</h3>
                     <div class="grid grid-cols-3 gap-2">
                         <button type="button" onclick="setTheme('linear')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200">Linear</button>
                         <button type="button" onclick="setTheme('oled')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200">OLED</button>
@@ -217,42 +200,21 @@
                     </div>
                 </div>
 
-                <!-- ADMIN PANEL -->
+                <!-- ADMIN PANEL (ТОЧНЫЙ СТИЛЬ СО СКРИНШОТА С КАРТОЧКАМИ) -->
                 <div id="adminPanelBox" class="hidden space-y-3 pb-8">
                     <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-lg">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
                             <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
-                                <i class="fa-solid fa-shield-halved"></i> Панель администратора (26 ф.)
+                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА
                             </h3>
-                            <span class="text-[11px] text-slate-400">Юзеров: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
-                        </div>
-
-                        <!-- Админ инструменты -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" onclick="adminBroadcast()" class="p-2 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] text-amber-300 font-medium text-left"><i class="fa-solid fa-bullhorn mr-1"></i> Рассылка</button>
-                            <button type="button" onclick="adminClearFeed()" class="p-2 bg-darkBg border border-darkBorder hover:border-rose-500/50 rounded-xl text-[11px] text-rose-400 font-medium text-left"><i class="fa-solid fa-trash mr-1"></i> Очистить ленту</button>
-                            <button type="button" onclick="adminExportDb()" class="p-2 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-xl text-[11px] text-indigo-300 font-medium text-left"><i class="fa-solid fa-database mr-1"></i> Дамп БД</button>
-                            <button type="button" onclick="adminToggleLock()" class="p-2 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] text-amber-300 font-medium text-left"><i class="fa-solid fa-lock mr-1"></i> Режим ЧП</button>
-                        </div>
-
-                        <div class="admin-table-wrapper border border-darkBorder rounded-xl bg-darkBg overflow-visible">
-                            <table class="w-full text-left border-collapse text-xs min-w-[400px]">
-                                <thead>
-                                    <tr class="border-b border-darkBorder bg-darkCard/50 text-slate-400">
-                                        <th class="p-3">Пользователь</th>
-                                        <th class="p-3 text-right">Управление</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder"></tbody>
-                            </table>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <h4 class="font-bold text-[10px] text-slate-400 uppercase">Журнал аудита сети</h4>
-                            <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
-                                <div>[Система] Логирование активно...</div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="adminClearFeed()" class="px-3 py-1.5 bg-rose-500/15 border border-rose-500/30 text-rose-400 rounded-xl text-[11px] font-semibold cursor-pointer"><i class="fa-solid fa-trash mr-1"></i> Очистить ленту</button>
+                                <span class="text-[11px] text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                             </div>
                         </div>
+
+                        <!-- Список пользователей в виде карточек как на скриншоте -->
+                        <div id="adminUsersCardsList" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -262,9 +224,8 @@
         <!-- FIXED BOTTOM NAVIGATION BAR -->
         <div class="absolute bottom-0 inset-x-0 h-16 bg-darkCard/95 border-t border-darkBorder flex items-center justify-around px-2 z-40 shadow-2xl backdrop-blur-xl">
             <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
-            <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Чаты</span></button>
-            <button type="button" onclick="switchSection('cloud')" id="navBtnCloud" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-cloud text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Облако</span></button>
-            <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Профиль</span></button>
+            <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
+            <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
         </div>
     </div>
 
@@ -326,11 +287,7 @@
         window.activeChatId = 'pulse_bot';
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace 4x!', time: '12:00' }] }
-        ];
-
-        window.tasksList = JSON.parse(localStorage.getItem('pulse_4x_tasks') || 'null') || [
-            { id: 1, title: 'Защита проекта', desc: 'Проверить интеграцию с Firebase и GitHub Pages', date: '12.10.2026' }
+            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace!', time: '12:00' }] }
         ];
 
         window.setTheme = function(theme) {
@@ -360,7 +317,6 @@
             const password = document.getElementById('loginPassword').value;
             if (!username || !password) { showAlert('Заполните поля'); return; }
             try {
-                // Авторизация проверяет и корневую коллекцию, и структуру pulse-chat-app
                 let docSnap = await db.collection('users').doc(username).get();
                 if (!docSnap.exists) {
                     docSnap = await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(username).get();
@@ -379,8 +335,10 @@
             try {
                 const isCreator = key === window.CREATOR_KEY;
                 const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
-                const newUser = { name: username, code: '#' + username + '_123', password, isCreator, isAdmin };
-                // Сохраняем в обе точки для надежности
+                const code = '#' + username + '_' + Math.floor(1000 + Math.random() * 9000);
+                const newUser = { name: username, code, password, isCreator, isAdmin };
+                
+                // Сохраняем в обе вероятные коллекции
                 await db.collection('users').doc(username).set(newUser);
                 await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(username).set(newUser);
                 initSession(newUser);
@@ -399,18 +357,16 @@
             window.selectChat(window.activeChatId);
             subscribeToFeed();
             subscribeToStories();
-            renderTasks();
         }
 
         window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
 
         window.switchSection = function(section) {
-            ['sectionFeed', 'sectionMessages', 'sectionCloud', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['navBtnFeed', 'navBtnMessages', 'navBtnCloud', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
+            ['sectionFeed', 'sectionMessages', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['navBtnFeed', 'navBtnMessages', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
 
             if (section === 'feed') { document.getElementById('sectionFeed').classList.remove('hidden'); document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; }
             else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; window.renderChats(); }
-            else if (section === 'cloud') { document.getElementById('sectionCloud').classList.remove('hidden'); document.getElementById('navBtnCloud').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; renderTasks(); }
             else if (section === 'settings') { document.getElementById('sectionSettings').classList.remove('hidden'); document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; if (window.currentUser?.isAdmin || window.currentUser?.isCreator) loadAdminUsers(); }
         };
 
@@ -518,33 +474,6 @@
             container.scrollTop = container.scrollHeight;
         };
 
-        window.renderTasks = function() {
-            const container = document.getElementById('tasksContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            window.tasksList.forEach((t, idx) => {
-                const card = document.createElement('div');
-                card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-2 shadow-lg';
-                card.innerHTML = `<div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">${t.title}</h3><span class="text-[9px] text-slate-500">${t.date}</span></div><p class="text-xs text-slate-300">${t.desc}</p><div class="flex justify-end pt-1"><button onclick="deleteTask(${idx})" class="text-[10px] text-rose-400 hover:underline">Удалить</button></div>`;
-                container.appendChild(card);
-            });
-        };
-
-        window.createNewTask = function() {
-            const title = prompt('Название задачи:');
-            if (!title) return;
-            const desc = prompt('Описание:');
-            window.tasksList.push({ id: Date.now(), title, desc: desc || '', date: new Date().toLocaleDateString() });
-            localStorage.setItem('pulse_4x_tasks', JSON.stringify(window.tasksList));
-            renderTasks();
-        };
-
-        window.deleteTask = function(idx) {
-            window.tasksList.splice(idx, 1);
-            localStorage.setItem('pulse_4x_tasks', JSON.stringify(window.tasksList));
-            renderTasks();
-        };
-
         window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
         window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
         window.handleAddFriend = function() {
@@ -563,24 +492,20 @@
             window.chats.push(g); window.selectChat(g.id); window.renderChats(); closeCreateGroupModal();
         };
 
-        window.deleteCurrentChat = function() {
-            if (window.activeChatId === 'pulse_bot') return;
-            window.chats = window.chats.filter(c => c.id !== window.activeChatId);
-            window.selectChat('pulse_bot'); window.renderChats();
-        };
-
-        // ADMIN FUNCTIONS (Сканирует и стандартную базу, и структуру pulse-chat-app -> публичный)
+        // ADMIN FUNCTIONS (СКАНЕР ВСЕХ ВОЗМОЖНЫХ ПУТЕЙ И КАРТОЧНЫЙ ДИЗАЙН)
         window.loadAdminUsers = async function() {
-            const tbody = document.getElementById('adminUsersTableBody');
+            const container = document.getElementById('adminUsersCardsList');
             const countEl = document.getElementById('adminTotalUsersCount');
-            if (!tbody) return;
+            if (!container) return;
 
-            tbody.innerHTML = '<tr><td colspan="2" class="p-3 text-slate-400">Сканирование базы данных...</td></tr>';
+            container.innerHTML = '<div class="p-3 text-slate-400 text-xs">Загрузка пользователей...</div>';
             const allUsersMap = new Map();
 
             const pathsToSearch = [
                 db.collection('users'),
-                db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный')
+                db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный'),
+                db.collection('profiles'),
+                db.collection('accounts')
             ];
 
             for (const collectionRef of pathsToSearch) {
@@ -593,6 +518,9 @@
                             allUsersMap.set(userName.toLowerCase(), {
                                 id: doc.id,
                                 name: userName,
+                                code: data.code || ('#' + userName + '_123'),
+                                role: data.isCreator ? 'Creator' : (data.isAdmin ? 'Admin' : 'User'),
+                                roleBg: data.isCreator ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' : (data.isAdmin ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-slate-700/30 text-slate-300 border-slate-600/30'),
                                 ref: doc.ref
                             });
                         }
@@ -600,79 +528,54 @@
                 } catch (e) {}
             }
 
-            tbody.innerHTML = '';
+            container.innerHTML = '';
             if (countEl) countEl.innerText = allUsersMap.size;
 
             if (allUsersMap.size === 0) {
-                tbody.innerHTML = '<tr><td colspan="2" class="p-3 text-slate-400">Пользователи не найдены.</td></tr>';
+                container.innerHTML = '<div class="p-3 text-slate-400 text-xs">Пользователи не найдены.</div>';
                 return;
             }
 
             allUsersMap.forEach((user) => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-darkBorder/50';
-                tr.innerHTML = `
-                    <td class="p-3 text-white font-medium">${user.name}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="adminDeleteUserByRef('${user.ref.path}')" class="text-rose-400 text-[10px] hover:underline">Удалить</button>
-                    </td>
+                const firstLetter = user.name.charAt(0).toUpperCase();
+                const card = document.createElement('div');
+                card.className = 'bg-darkBg border border-darkBorder rounded-xl p-3 flex items-center justify-between';
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center">${firstLetter}</div>
+                        <div>
+                            <h4 class="font-bold text-xs text-white">${user.name}</h4>
+                            <p class="text-[10px] text-slate-400 font-mono">${user.code}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${user.roleBg}">${user.role}</span>
+                        <button onclick="adminDeleteUserByRef('${user.ref.path}')" class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-user-minus"></i></button>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                container.appendChild(card);
             });
-            logAdminAction(`Найдено пользователей: ${allUsersMap.size}`);
         };
 
         window.adminDeleteUserByRef = async function(path) {
-            if (!confirm('Удалить этого пользователя?')) return;
+            if (!confirm('Удалить пользователя?')) return;
             try {
                 await db.doc(path).delete();
-                logAdminAction('Удален пользователь: ' + path);
                 loadAdminUsers();
             } catch(e) {
                 alert('Ошибка: ' + e.message);
             }
         };
 
-        window.adminBroadcast = function() {
-            const msg = prompt('Текст системного уведомления для всех:');
-            if (!msg) return;
-            db.collection('posts').add({ author: 'СИСТЕМА [ ADMIN ]', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            logAdminAction('Отправлена глобальная рассылка');
-            alert('Рассылка выполнена!');
-        };
-
         window.adminClearFeed = async function() {
             if (!confirm('Очистить весь инфопоток?')) return;
             const snap = await db.collection('posts').get();
             snap.forEach(d => d.ref.delete());
-            logAdminAction('Лента очищена администратором');
-            alert('Лента пуста.');
+            alert('Лента очищена.');
         };
-
-        window.adminExportDb = async function() {
-            const snap = await db.collection('users').get();
-            let users = []; snap.forEach(d => users.push(d.data()));
-            const blob = new Blob([JSON.stringify(users, null, 2)], {type: 'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'database_backup.json'; a.click();
-            logAdminAction('Выполнен экспорт базы данных');
-        };
-
-        window.adminToggleLock = function() {
-            alert('Режим ЧП сети переключен.');
-            logAdminAction('Изменен режим безопасности сети');
-        };
-
-        function logAdminAction(text) {
-            const container = document.getElementById('adminLogsContainer');
-            if (!container) return;
-            const div = document.createElement('div');
-            div.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
-            container.prepend(div);
-        }
 
         window.copyMyCode = () => { navigator.clipboard.writeText(window.currentUser.code); alert('ID скопирован!'); };
         function showAlert(msg) { const a = document.getElementById('authAlert'); a.innerText = msg; a.classList.remove('hidden'); }
     </script>
 </body>
 </html>
-
