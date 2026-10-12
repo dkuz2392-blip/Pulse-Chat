@@ -582,7 +582,7 @@
             });
         };
 
-        // НАДЕЖНОЕ ОТКРЫТИЕ ЛС ЧЕРЕЗ PROMPT (РАБОТАЕТ БЕЗ ГЛЮКОВ С МОДАЛКАМИ)
+        // СОЗДАНИЕ И МГНОВЕННОЕ ОТКРЫТИЕ ЛС ЧАТА
         window.openAddFriendModal = async function() {
             let targetName = prompt('Введите никнейм собеседника:');
             if (!targetName) return;
@@ -605,8 +605,15 @@
                 members: [window.currentUser.name, targetName]
             }, { merge: true });
 
-            loadUserChats();
+            await loadUserChats();
+            
+            // Автоматически переключаемся на созданный чат
+            window.activeChatId = chatId;
             window.selectChat(chatId);
+            
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebarChats').classList.add('-translate-x-full');
+            }
         };
 
         // АДМИН ПАНЕЛЬ
