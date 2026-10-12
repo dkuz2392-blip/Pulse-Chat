@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v6.0 - Enterprise Pro</title>
+    <title>Pulse Workspace v6.0 - GitHub Pages Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -279,7 +279,6 @@
     </div>
 
     <script>
-        const appId = 'pulse-workspace-v6';
         const firebaseConfig = {
             apiKey: "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE",
             authDomain: "pulse-chat-c7c98.firebaseapp.com",
@@ -328,8 +327,7 @@
             const password = document.getElementById('loginPassword').value;
             if (!username || !password) { showAlert('Заполните поля'); return; }
             try {
-                const docRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('users').doc(username);
-                const docSnap = await docRef.get();
+                const docSnap = await db.collection('users').doc(username).get();
                 if (docSnap.exists && docSnap.data().password === password) {
                     initSession(docSnap.data());
                 } else { showAlert('Неверный логин или пароль'); }
@@ -345,8 +343,7 @@
                 const isCreator = key === window.CREATOR_KEY;
                 const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
                 const newUser = { name: username, code: '#' + username + '_123', password, isCreator, isAdmin };
-                const docRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('users').doc(username);
-                await docRef.set(newUser);
+                await db.collection('users').doc(username).set(newUser);
                 initSession(newUser);
             } catch(e) { showAlert('Ошибка регистрации'); }
         };
@@ -383,12 +380,12 @@
         window.submitPost = async function() {
             const text = document.getElementById('postTextInput').value.trim();
             if (!text) return;
-            await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('posts').add({ author: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection('posts').add({ author: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             document.getElementById('postTextInput').value = ''; closeCreatePostModal();
         };
 
         function subscribeToFeed() {
-            db.collection('artifacts').doc(appId).collection('public').doc('data').collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+            db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('feedContainer');
                 if (!container) return;
                 container.innerHTML = '';
@@ -407,12 +404,12 @@
         window.submitStory = async function() {
             const text = document.getElementById('storyTextInput').value.trim();
             if (!text) return;
-            await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('stories').add({ author: window.currentUser.name, text, timestamp: Date.now() });
+            await db.collection('stories').add({ author: window.currentUser.name, text, timestamp: Date.now() });
             document.getElementById('storyTextInput').value = ''; closeCreateStoryModal();
         };
 
         function subscribeToStories() {
-            db.collection('artifacts').doc(appId).collection('public').doc('data').collection('stories').onSnapshot(snapshot => {
+            db.collection('stories').onSnapshot(snapshot => {
                 const tray = document.getElementById('storiesTray');
                 if (!tray) return;
                 let addBtn = tray.firstElementChild.outerHTML;
@@ -508,7 +505,7 @@
             const tbody = document.getElementById('adminUsersTableBody');
             const countEl = document.getElementById('adminTotalUsersCount');
             if (!tbody) return;
-            const snapshot = await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('users').get();
+            const snapshot = await db.collection('users').get();
             tbody.innerHTML = '';
             if (countEl) countEl.innerText = snapshot.size;
             snapshot.forEach(doc => {
