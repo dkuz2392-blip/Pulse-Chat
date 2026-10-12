@@ -50,12 +50,10 @@
             --accent-color: #3b82f6;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #f3f4f6; transition: background-color 0.3s ease; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #f3f4f6; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .animate-modal { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .admin-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
         .blur-privacy { filter: blur(6px); transition: filter 0.2s; }
         .blur-privacy:hover { filter: blur(0); }
@@ -64,57 +62,57 @@
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
 
     <!-- AUTH SCREEN -->
-    <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-8 flex flex-col space-y-6 animate-modal relative z-50">
+    <div id="authScreen" class="fixed inset-0 z-[100] bg-darkBg flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col space-y-5 my-auto relative">
             <div class="flex items-center justify-between">
-                <div class="w-12 h-12 rounded-2xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-xl font-bold shadow-inner">
+                <div class="w-12 h-12 rounded-2xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-xl font-bold">
                     <i class="fa-solid fa-layer-group"></i>
                 </div>
                 <div class="flex items-center space-x-1 bg-darkBg border border-darkBorder rounded-xl p-1 text-[11px]">
-                    <button type="button" onclick="setTheme('linear')" class="px-2.5 py-1 rounded-lg font-semibold text-white bg-primaryAccent transition cursor-pointer">Linear</button>
-                    <button type="button" onclick="setTheme('oled')" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition cursor-pointer">OLED</button>
-                    <button type="button" onclick="setTheme('cyber')" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition cursor-pointer">Cyber</button>
+                    <button type="button" id="themeLinearBtn" class="px-2.5 py-1 rounded-lg font-semibold text-white bg-primaryAccent cursor-pointer">Linear</button>
+                    <button type="button" id="themeOledBtn" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white cursor-pointer">OLED</button>
+                    <button type="button" id="themeCyberBtn" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white cursor-pointer">Cyber</button>
                 </div>
             </div>
 
             <div class="space-y-1">
                 <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace v6.1</h1>
-                <p class="text-xs text-slate-400">Корпоративная среда • Полный комплекс администрирования</p>
+                <p class="text-xs text-slate-400">Корпоративная среда • Администрирование</p>
             </div>
 
-            <div class="flex bg-darkBg p-1.5 rounded-2xl border border-darkBorder relative z-10">
-                <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow transition cursor-pointer">Вход</button>
-                <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition cursor-pointer">Регистрация</button>
+            <div class="flex bg-darkBg p-1.5 rounded-2xl border border-darkBorder">
+                <button type="button" id="tabLoginBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow cursor-pointer">Вход</button>
+                <button type="button" id="tabRegisterBtn" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white cursor-pointer">Регистрация</button>
             </div>
 
             <div id="authAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
 
-            <div id="loginForm" class="space-y-4 relative z-10">
+            <div id="loginForm" class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
-                    <input type="text" id="loginUsername" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ваш никнейм">
+                    <input type="text" id="loginUsername" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="Ваш никнейм">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Пароль</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="••••••••">
                 </div>
-                <button type="button" onclick="handleLogin()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
+                <button type="button" id="loginSubmitBtn" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
             </div>
 
-            <div id="registerForm" class="space-y-4 hidden relative z-10">
+            <div id="registerForm" class="space-y-4 hidden">
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Никнейм</label>
-                    <input type="text" id="regUsername" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Придумайте никнейм">
+                    <input type="text" id="regUsername" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="Придумайте никнейм">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Пароль</label>
-                    <input type="password" id="regPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
+                    <input type="password" id="regPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="••••••••">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-slate-300">Секретный ключ (опционально)</label>
-                    <input type="password" id="regAdminKey" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ключ доступа">
+                    <input type="password" id="regAdminKey" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="Ключ доступа">
                 </div>
-                <button type="button" onclick="handleRegister()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
+                <button type="button" id="regSubmitBtn" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
             </div>
         </div>
     </div>
@@ -128,29 +126,29 @@
                 <span id="widgetWeather">☀️ Екб, +20°C</span>
             </div>
             <div class="flex items-center gap-3">
-                <button type="button" onclick="toggleFullscreen()" class="hover:text-white transition cursor-pointer" title="Полноэкранный режим"><i class="fa-solid fa-expand"></i></button>
-                <button type="button" onclick="toggleDndMode()" id="dndBtn" class="hover:text-white transition cursor-pointer" title="Не беспокоить"><i class="fa-solid fa-bell"></i></button>
-                <button type="button" onclick="togglePrivacyBlur()" class="hover:text-white transition cursor-pointer" title="Приватность"><i class="fa-solid fa-eye-slash"></i></button>
+                <button type="button" onclick="toggleFullscreen()" class="hover:text-white cursor-pointer" title="Полноэкранный режим"><i class="fa-solid fa-expand"></i></button>
+                <button type="button" onclick="toggleDndMode()" id="dndBtn" class="hover:text-white cursor-pointer" title="Не беспокоить"><i class="fa-solid fa-bell"></i></button>
+                <button type="button" onclick="togglePrivacyBlur()" class="hover:text-white cursor-pointer" title="Приватность"><i class="fa-solid fa-eye-slash"></i></button>
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col overflow-hidden relative pb-20">
+        <div class="flex-1 flex flex-col overflow-hidden relative pb-24">
 
             <!-- 1. FEED SECTION -->
             <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-darkBg h-full">
                 <div class="h-16 px-6 border-b border-darkBorder bg-darkCard/80 backdrop-blur-xl flex items-center justify-between shrink-0 shadow-sm">
                     <div class="flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-xl bg-primaryAccent/15 text-primaryAccent flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-newspaper"></i></div>
+                        <div class="w-9 h-9 rounded-xl bg-primaryAccent/15 text-primaryAccent flex items-center justify-center text-sm"><i class="fa-solid fa-newspaper"></i></div>
                         <div>
                             <h2 class="font-bold text-sm text-white">Инфопоток</h2>
-                            <p class="text-[10px] text-slate-400">Публикации и медиаистории сети</p>
+                            <p class="text-[10px] text-slate-400">Публикации и истории сети</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button type="button" onclick="openCreateStoryModal()" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5">
+                        <button type="button" onclick="openCreateStoryModal()" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-plus text-primaryAccent"></i> История
                         </button>
-                        <button type="button" onclick="openCreatePostModal()" class="px-4 py-2 bg-primaryAccent hover:opacity-90 text-white rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-primaryAccent/20">
+                        <button type="button" onclick="openCreatePostModal()" class="px-4 py-2 bg-primaryAccent hover:opacity-90 text-white rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-plus text-[10px]"></i> Запись
                         </button>
                     </div>
@@ -159,7 +157,7 @@
                 <div class="bg-darkCard/30 border-b border-darkBorder px-6 py-3.5 shrink-0">
                     <div id="storiesTray" class="flex items-center space-x-4 overflow-x-auto pb-1">
                         <div onclick="openCreateStoryModal()" class="flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group">
-                            <div class="w-14 h-14 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/50 flex items-center justify-center text-primaryAccent group-hover:border-primaryAccent transition shadow-inner"><i class="fa-solid fa-plus"></i></div>
+                            <div class="w-14 h-14 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/50 flex items-center justify-center text-primaryAccent group-hover:border-primaryAccent"><i class="fa-solid fa-plus"></i></div>
                             <span class="text-[11px] font-medium text-slate-400">Ваша история</span>
                         </div>
                     </div>
@@ -175,18 +173,18 @@
                         <div class="flex items-center gap-2">
                             <div class="relative flex-1">
                                 <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
-                                <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                                <input type="text" id="chatSearchInput" oninput="filterChats()" placeholder="Поиск чатов..." class="w-full pl-9 pr-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
                             </div>
-                            <button type="button" onclick="toggleChatDensity()" class="w-9 h-9 bg-darkBg border border-darkBorder rounded-xl text-slate-400 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" title="Плотность списка"><i class="fa-solid fa-bars-staggered"></i></button>
+                            <button type="button" onclick="toggleChatDensity()" class="w-9 h-9 bg-darkBg border border-darkBorder rounded-xl text-slate-400 hover:text-white flex items-center justify-center text-xs cursor-pointer" title="Плотность списка"><i class="fa-solid fa-bars-staggered"></i></button>
                         </div>
                         <div class="flex gap-2">
-                            <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
+                            <button type="button" onclick="openAddFriendModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
                                 <i class="fa-solid fa-user-plus text-primaryAccent text-xs"></i> <span>ЛС</span>
                             </button>
-                            <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer transition">
+                            <button type="button" onclick="openCreateGroupModal()" class="flex-1 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer">
                                 <i class="fa-solid fa-users text-primaryAccent text-xs"></i> <span>Группа</span>
                             </button>
-                            <button type="button" onclick="openCreatePollModal()" title="Создать опрос" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center cursor-pointer transition">
+                            <button type="button" onclick="openCreatePollModal()" title="Создать опрос" class="px-3 py-2 bg-darkBg hover:bg-darkBorder border border-darkBorder text-slate-300 rounded-xl text-xs font-semibold flex items-center justify-center cursor-pointer">
                                 <i class="fa-solid fa-square-poll-vertical text-primaryAccent"></i>
                             </button>
                         </div>
@@ -200,7 +198,7 @@
                             <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-arrow-left"></i></button>
                             
                             <div class="relative shrink-0">
-                                <div id="chatAvatar" class="w-10 h-10 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-white text-sm overflow-hidden shadow-inner">💬</div>
+                                <div id="chatAvatar" class="w-10 h-10 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-white text-sm overflow-hidden">💬</div>
                                 <span id="chatHeaderOnlineBadge" class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-darkCard hidden"></span>
                             </div>
 
@@ -210,9 +208,9 @@
                             </div>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <button type="button" onclick="exportCurrentChat()" title="Экспорт" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-download"></i></button>
-                            <button type="button" onclick="startAudioCall()" title="Звонок" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-phone"></i></button>
-                            <button type="button" onclick="deleteCurrentChat()" title="Удалить" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs transition cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                            <button type="button" onclick="exportCurrentChat()" title="Экспорт" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-download"></i></button>
+                            <button type="button" onclick="startAudioCall()" title="Звонок" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-primaryAccent/10 text-slate-400 hover:text-primaryAccent flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-phone"></i></button>
+                            <button type="button" onclick="deleteCurrentChat()" title="Удалить" class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 flex items-center justify-center text-xs cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
 
@@ -221,7 +219,7 @@
                             <i class="fa-solid fa-thumbtack text-primaryAccent"></i>
                             <span id="pinnedMessageText" class="truncate font-medium">Закрепленное сообщение...</span>
                         </div>
-                        <button type="button" onclick="unpinMessage()" class="text-slate-500 hover:text-rose-400 text-xs ml-2"><i class="fa-solid fa-xmark"></i></button>
+                        <button type="button" onclick="unpinMessage()" class="text-slate-500 hover:text-rose-400 text-xs ml-2 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                     </div>
 
                     <div class="relative flex-1 flex flex-col overflow-hidden">
@@ -234,20 +232,20 @@
 
                     <div id="activeActionBanner" class="hidden px-4 py-2 bg-darkCard/90 border-t border-darkBorder flex items-center justify-between text-xs text-slate-300">
                         <span id="activeActionText" class="truncate font-medium">Режим редактирования</span>
-                        <button type="button" onclick="cancelActiveAction()" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        <button type="button" onclick="cancelActiveAction()" class="text-slate-500 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                     </div>
 
-                    <div class="p-3.5 border-t border-darkBorder bg-darkCard/80 backdrop-blur-xl shrink-0 z-20">
+                    <div class="p-3.5 border-t border-darkBorder bg-darkCard/85 backdrop-blur-xl shrink-0 z-20">
                         <div class="flex items-center space-x-2.5">
-                            <label class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 shadow-inner">
+                            <label class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0">
                                 <i class="fa-solid fa-paperclip text-xs"></i>
                                 <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)" class="hidden">
                             </label>
-                            <button type="button" onclick="simulateVoiceRecord()" class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer transition shrink-0 shadow-inner" title="Голосовое">
+                            <button type="button" onclick="simulateVoiceRecord()" class="w-10 h-10 rounded-2xl bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 flex items-center justify-center cursor-pointer shrink-0" title="Голосовое">
                                 <i class="fa-solid fa-microphone text-xs"></i>
                             </button>
-                            <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition resize-none max-h-24"></textarea>
-                            <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-2xl bg-primaryAccent hover:opacity-90 text-white flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg shadow-primaryAccent/25"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                            <textarea id="messageInput" onkeydown="handleKeyDown(event)" rows="1" placeholder="Введите сообщение..." class="flex-1 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none max-h-24"></textarea>
+                            <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-2xl bg-primaryAccent hover:opacity-90 text-white flex items-center justify-center cursor-pointer shrink-0 shadow-lg shadow-primaryAccent/25"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -257,29 +255,29 @@
             <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 sm:p-8 hidden max-w-4xl mx-auto w-full space-y-6 h-full pb-24">
                 <div class="flex items-center justify-between border-b border-darkBorder pb-5">
                     <div class="flex items-center space-x-4">
-                        <div id="settingsUserAvatar" class="w-16 h-16 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-primaryAccent text-xl overflow-hidden shadow-inner">U</div>
+                        <div id="settingsUserAvatar" class="w-16 h-16 rounded-2xl bg-darkCard border border-darkBorder flex items-center justify-center font-bold text-primaryAccent text-xl overflow-hidden">U</div>
                         <div>
                             <div class="flex items-center gap-2">
                                 <h2 id="settingsUserName" class="font-bold text-base sm:text-lg text-white">Профиль</h2>
                                 <span id="settingsCreatorBadge" class="hidden px-2 py-0.5 bg-primaryAccent/20 text-primaryAccent text-[10px] rounded-lg font-bold border border-primaryAccent/30">Creator</span>
                                 <span id="settingsAdminBadge" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] rounded-lg font-bold border border-amber-500/30">Admin</span>
                             </div>
-                            <button type="button" onclick="copyMyCode()" id="settingsUserCode" class="text-xs text-primaryAccent hover:underline font-mono">#id</button>
+                            <button type="button" onclick="copyMyCode()" id="settingsUserCode" class="text-xs text-primaryAccent hover:underline font-mono cursor-pointer">#id</button>
                         </div>
                     </div>
-                    <button type="button" onclick="logout()" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 transition cursor-pointer">Выйти</button>
+                    <button type="button" onclick="logout()" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 cursor-pointer">Выйти</button>
                 </div>
 
                 <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-4 shadow-xl">
                     <h3 class="font-bold text-xs text-white uppercase tracking-wider">Кастомизация темы и бренда</h3>
                     <div class="grid grid-cols-3 gap-3">
-                        <button type="button" onclick="setTheme('linear')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-inner">
+                        <button type="button" onclick="setTheme('linear')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
                             <span class="w-3 h-3 rounded-full bg-indigo-500"></span> Linear
                         </button>
-                        <button type="button" onclick="setTheme('oled')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-inner">
+                        <button type="button" onclick="setTheme('oled')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
                             <span class="w-3 h-3 rounded-full bg-blue-500"></span> OLED
                         </button>
-                        <button type="button" onclick="setTheme('cyber')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer shadow-inner">
+                        <button type="button" onclick="setTheme('cyber')" class="p-3 bg-darkBg border border-darkBorder hover:border-primaryAccent rounded-2xl text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 cursor-pointer">
                             <span class="w-3 h-3 rounded-full bg-purple-500"></span> Cyber
                         </button>
                     </div>
@@ -294,25 +292,25 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-xs font-medium text-slate-400">Имя</label>
-                            <input type="text" id="setDisplayName" class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+                            <input type="text" id="setDisplayName" class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent">
                         </div>
                         <div>
                             <label class="text-xs font-medium text-slate-400">О себе (Био)</label>
-                            <input type="text" id="setUserBio" placeholder="Пару слов о себе..." class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+                            <input type="text" id="setUserBio" placeholder="Пару слов о себе..." class="w-full mt-1.5 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-xs font-medium text-slate-400 block">Аватар</label>
                             <div class="flex items-center gap-3">
-                                <input type="text" id="setAvatar" maxlength="2" placeholder="😎" class="w-16 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent transition">
-                                <label class="flex-1 px-4 py-3 bg-darkBg hover:bg-slate-800 border border-darkBorder text-slate-300 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
+                                <input type="text" id="setAvatar" maxlength="2" placeholder="😎" class="w-16 px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent">
+                                <label class="flex-1 px-4 py-3 bg-darkBg hover:bg-slate-800 border border-darkBorder text-slate-300 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer">
                                     <i class="fa-solid fa-upload text-xs"></i> Загрузить файл
                                     <input type="file" id="setAvatarFileInput" accept="image/*" onchange="handleAvatarUpload(event)" class="hidden">
                                 </label>
                             </div>
                         </div>
                         <div class="pt-2 flex justify-between items-center">
-                            <button type="button" onclick="exportAccountData()" class="px-4 py-2.5 bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 rounded-2xl text-xs font-semibold transition cursor-pointer">Бэкап профиля</button>
-                            <button type="button" onclick="saveUserSettings()" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
+                            <button type="button" onclick="exportAccountData()" class="px-4 py-2.5 bg-darkBg border border-darkBorder hover:bg-slate-800 text-slate-300 rounded-2xl text-xs font-semibold cursor-pointer">Бэкап профиля</button>
+                            <button type="button" onclick="saveUserSettings()" class="px-6 py-3 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Сохранить</button>
                         </div>
                     </div>
                 </div>
@@ -324,20 +322,20 @@
                                 <i class="fa-solid fa-shield-halved"></i> Панель администратора (26 функций)
                             </h3>
                             <div class="flex items-center gap-3">
-                                <button type="button" onclick="clearGlobalFeed()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold transition cursor-pointer"><i class="fa-solid fa-trash-can mr-1"></i> Очистить ленту</button>
+                                <button type="button" onclick="clearGlobalFeed()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold cursor-pointer"><i class="fa-solid fa-trash-can mr-1"></i> Очистить ленту</button>
                                 <span class="text-xs text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                             </div>
                         </div>
                         
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <button onclick="execAdminGlobal(1)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-bullhorn text-amber-400"></i> Рассылка</button>
-                            <button onclick="execAdminGlobal(2)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-database text-amber-400"></i> Бэкап БД</button>
-                            <button onclick="execAdminGlobal(3)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-broom text-amber-400"></i> Очистка кэша</button>
-                            <button onclick="execAdminGlobal(4)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-lock text-amber-400"></i> Lockdown</button>
-                            <button onclick="execAdminGlobal(5)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-shield-cat text-amber-400"></i> Антиспам</button>
-                            <button onclick="execAdminGlobal(6)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-terminal text-amber-400"></i> Логи</button>
-                            <button onclick="execAdminGlobal(7)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-server text-amber-400"></i> Кластер</button>
-                            <button onclick="execAdminGlobal(8)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left transition flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-key text-amber-400"></i> Сброс токенов</button>
+                            <button type="button" onclick="execAdminGlobal(1)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-bullhorn text-amber-400"></i> Рассылка</button>
+                            <button type="button" onclick="execAdminGlobal(2)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-database text-amber-400"></i> Бэкап БД</button>
+                            <button type="button" onclick="execAdminGlobal(3)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-broom text-amber-400"></i> Очистка кэша</button>
+                            <button type="button" onclick="execAdminGlobal(4)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-lock text-amber-400"></i> Lockdown</button>
+                            <button type="button" onclick="execAdminGlobal(5)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-shield-cat text-amber-400"></i> Антиспам</button>
+                            <button type="button" onclick="execAdminGlobal(6)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-terminal text-amber-400"></i> Логи</button>
+                            <button type="button" onclick="execAdminGlobal(7)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-server text-amber-400"></i> Кластер</button>
+                            <button type="button" onclick="execAdminGlobal(8)" class="p-2.5 bg-darkBg border border-darkBorder hover:border-amber-500/50 rounded-xl text-[11px] font-medium text-slate-300 text-left flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-key text-amber-400"></i> Сброс токенов</button>
                         </div>
 
                         <div class="admin-table-wrapper border border-darkBorder rounded-2xl bg-darkBg shadow-inner overflow-visible">
@@ -366,44 +364,44 @@
         </div>
 
         <!-- FIXED BOTTOM NAVIGATION BAR -->
-        <div class="fixed bottom-3 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md h-16 bg-darkCard/95 border border-darkBorder rounded-2xl flex items-center justify-around px-2 z-50 shadow-2xl backdrop-blur-xl">
-            <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
-            <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
-            <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
+        <div class="fixed bottom-3 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md h-16 bg-darkCard/95 border border-darkBorder rounded-2xl flex items-center justify-around px-2 z-[90] shadow-2xl backdrop-blur-xl">
+            <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent cursor-pointer"><i class="fa-solid fa-newspaper text-base mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
+            <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-comments text-base mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
+            <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-gear text-base mb-0.5"></i><span class="text-[10px] font-semibold">Настройки</span></button>
         </div>
     </div>
 
     <!-- MODALS & OVERLAYS -->
-    <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4 animate-modal">
+    <div id="createPostModal" class="hidden fixed inset-0 z-[110] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
                 <h3 class="font-bold text-sm text-white">Новая публикация</h3>
                 <button type="button" onclick="closeCreatePostModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <textarea id="postTextInput" rows="3" placeholder="Что нового?..." class="w-full p-4 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none transition"></textarea>
+            <textarea id="postTextInput" rows="3" placeholder="Что нового?..." class="w-full p-4 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent resize-none"></textarea>
             <div>
                 <input type="file" id="postImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-darkBg file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
             </div>
-            <button type="button" onclick="submitPost()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать</button>
+            <button type="button" onclick="submitPost()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать</button>
         </div>
     </div>
 
-    <div id="createStoryModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4 animate-modal">
+    <div id="createStoryModal" class="hidden fixed inset-0 z-[110] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
                 <h3 class="font-bold text-sm text-white">Добавить историю</h3>
                 <button type="button" onclick="closeCreateStoryModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="storyTextInput" placeholder="Текст истории..." class="w-full px-4 py-3.5 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent transition">
+            <input type="text" id="storyTextInput" placeholder="Текст истории..." class="w-full px-4 py-3.5 bg-darkBg border border-darkBorder rounded-2xl text-xs sm:text-sm text-white focus:outline-none focus:border-primaryAccent">
             <div>
                 <input type="file" id="storyImageInput" accept="image/*" class="text-xs text-slate-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-darkBg file:text-slate-300 hover:file:bg-slate-800 cursor-pointer">
             </div>
-            <button type="button" onclick="submitStory()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать историю</button>
+            <button type="button" onclick="submitStory()" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Опубликовать историю</button>
         </div>
     </div>
 
-    <div id="audioCallModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl p-8 flex flex-col items-center space-y-6 shadow-2xl animate-modal">
+    <div id="audioCallModal" class="hidden fixed inset-0 z-[120] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl p-8 flex flex-col items-center space-y-6 shadow-2xl">
             <div class="w-20 h-20 rounded-3xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-3xl font-bold shadow-inner">
                 <i class="fa-solid fa-user"></i>
             </div>
@@ -411,40 +409,40 @@
                 <h3 id="callUserName" class="font-bold text-base text-white">Имя собеседника</h3>
                 <p id="callStatusText" class="text-xs text-slate-400">Соединение...</p>
             </div>
-            <button type="button" onclick="endAudioCall()" class="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg transition shadow-xl cursor-pointer">
+            <button type="button" onclick="endAudioCall()" class="w-14 h-14 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center text-lg shadow-xl cursor-pointer">
                 <i class="fa-solid fa-phone-slash"></i>
             </button>
         </div>
     </div>
 
-    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+    <div id="addFriendModal" class="hidden fixed inset-0 z-[110] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Добавить чат</h3><button type="button" onclick="closeAddFriendModal()" class="text-slate-400 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></div>
             <div class="space-y-4">
-                <input type="text" id="friendCodeInput" placeholder="#username_1234" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
-                <button type="button" onclick="handleAddFriend()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Подключиться</button>
+                <input type="text" id="friendCodeInput" placeholder="#username_1234" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
+                <button type="button" onclick="handleAddFriend()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold cursor-pointer shadow">Подключиться</button>
             </div>
         </div>
     </div>
 
-    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
+    <div id="createGroupModal" class="hidden fixed inset-0 z-[110] bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Создать группу</h3><button type="button" onclick="closeCreateGroupModal()" class="text-slate-400 cursor-pointer"><i class="fa-solid fa-xmark"></i></button></div>
             <div class="space-y-4">
-                <input type="text" id="groupNameInput" placeholder="Название группы" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
-                <button type="button" onclick="handleCreateGroup()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold transition cursor-pointer shadow">Создать</button>
+                <input type="text" id="groupNameInput" placeholder="Название группы" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent">
+                <button type="button" onclick="handleCreateGroup()" class="w-full py-3 bg-primaryAccent text-white rounded-2xl text-xs font-semibold cursor-pointer shadow">Создать</button>
             </div>
         </div>
     </div>
 
-    <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
+    <div id="lightboxModal" class="hidden fixed inset-0 z-[130] bg-black/95 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
         <div class="relative max-w-5xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
-            <button type="button" onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-2xl hover:text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            <button type="button" onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-2xl hover:text-primaryAccent cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             <img id="lightboxImage" src="" class="max-h-[85vh] max-w-full rounded-3xl shadow-2xl border border-darkBorder object-contain">
         </div>
     </div>
 
-    <div id="toastContainer" class="fixed bottom-24 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed bottom-24 right-5 z-[140] flex flex-col space-y-2 pointer-events-none"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -499,6 +497,7 @@
             localStorage.setItem('pulse_accent', color);
             window.showToast('Цвет акцента изменен', 'success');
         };
+
         const savedAccent = localStorage.getItem('pulse_accent');
         if (savedAccent) {
             document.documentElement.style.setProperty('--accent-color', savedAccent);
@@ -514,7 +513,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Ошибки кликов устранены.', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Интерактивные элементы исправлены.', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
@@ -574,20 +573,20 @@
             
             feed.classList.add('hidden'); messages.classList.add('hidden'); settings.classList.add('hidden');
 
-            document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer";
-            document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer";
-            document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer";
+            document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer";
+            document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer";
+            document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 cursor-pointer";
 
             if (section === 'feed') {
                 feed.classList.remove('hidden');
-                document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer";
+                document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent cursor-pointer";
             } else if (section === 'messages') {
                 messages.classList.remove('hidden');
-                document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer";
+                document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent cursor-pointer";
                 window.renderChats(); window.selectChat(window.activeChatId);
             } else if (section === 'settings') {
                 settings.classList.remove('hidden');
-                document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer";
+                document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent cursor-pointer";
                 if (window.currentUser && (window.currentUser.isAdmin || window.currentUser.isCreator)) {
                     loadRealtimeOnlineUsers();
                 }
@@ -609,7 +608,7 @@
         window.toggleDndMode = function() {
             window.isDndActive = !window.isDndActive;
             const btn = document.getElementById('dndBtn');
-            btn.className = window.isDndActive ? "text-amber-400 transition cursor-pointer" : "hover:text-white transition cursor-pointer";
+            btn.className = window.isDndActive ? "text-amber-400 cursor-pointer" : "hover:text-white cursor-pointer";
             window.showToast(window.isDndActive ? 'Режим «Не беспокоить» включен' : 'Уведомления возобновлены', 'info');
         };
 
@@ -802,7 +801,7 @@
                     const authorAvatarContent = isImg ? `<img src="${p.avatar}" class="w-full h-full object-cover">` : (p.avatar || 'U');
 
                     const creatorDeleteBtn = (window.currentUser && (window.currentUser.isCreator || window.currentUser.isAdmin)) 
-                        ? `<button type="button" onclick="deletePostAsCreator('${p.id}')" class="absolute top-5 right-5 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 transition cursor-pointer"><i class="fa-solid fa-trash-can"></i> Удалить</button>`
+                        ? `<button type="button" onclick="deletePostAsCreator('${p.id}')" class="absolute top-5 right-5 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i> Удалить</button>`
                         : '';
 
                     card.innerHTML = `
@@ -1032,11 +1031,11 @@
                         <div class="flex items-center justify-between space-x-2 mt-1 text-[10px] opacity-75">
                             <span>${msg.time} ${msg.edited ? '(ред.)' : ''}</span>
                             <div class="hidden group-hover:flex items-center gap-1.5 ml-3">
-                                <button type="button" onclick="addReaction(${msg.id}, '❤️')" title="Сердце">❤️</button>
-                                <button type="button" onclick="addReaction(${msg.id}, '👍')" title="Класс">👍</button>
-                                <button type="button" onclick="pinMessage(${msg.id})" title="Закрепить"><i class="fa-solid fa-thumbtack"></i></button>
-                                ${isMe ? `<button type="button" onclick="editMessage(${msg.id})" title="Редактировать"><i class="fa-solid fa-pen"></i></button>` : ''}
-                                <button type="button" onclick="replyMessage(${msg.id})" title="Ответить"><i class="fa-solid fa-reply"></i></button>
+                                <button type="button" onclick="addReaction(${msg.id}, '❤️')" title="Сердце" class="cursor-pointer">❤️</button>
+                                <button type="button" onclick="addReaction(${msg.id}, '👍')" title="Класс" class="cursor-pointer">👍</button>
+                                <button type="button" onclick="pinMessage(${msg.id})" title="Закрепить" class="cursor-pointer"><i class="fa-solid fa-thumbtack"></i></button>
+                                ${isMe ? `<button type="button" onclick="editMessage(${msg.id})" title="Редактировать" class="cursor-pointer"><i class="fa-solid fa-pen"></i></button>` : ''}
+                                <button type="button" onclick="replyMessage(${msg.id})" title="Ответить" class="cursor-pointer"><i class="fa-solid fa-reply"></i></button>
                             </div>
                         </div>
                     </div>
@@ -1257,21 +1256,21 @@
                     <td class="p-4 text-right">
                         ${!isSelf ? `
                             <div class="flex items-center justify-end gap-1.5 relative">
-                                <button type="button" onclick="toggleUserMute('${u.name}', ${!u.isMuted})" title="${u.isMuted?'Размутить':'Мут'}" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs transition cursor-pointer shadow-sm">
+                                <button type="button" onclick="toggleUserMute('${u.name}', ${!u.isMuted})" title="${u.isMuted?'Размутить':'Мут'}" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs cursor-pointer shadow-sm">
                                     <i class="fa-solid ${u.isMuted?'fa-microphone text-emerald-400':'fa-microphone-slash text-amber-400'}"></i>
                                 </button>
-                                <button type="button" onclick="toggleUserAdmin('${u.name}', ${!u.isAdmin})" title="${u.isAdmin?'Забрать админку':'Дать админку'}" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs transition cursor-pointer shadow-sm">
+                                <button type="button" onclick="toggleUserAdmin('${u.name}', ${!u.isAdmin})" title="${u.isAdmin?'Забрать админку':'Дать админку'}" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs cursor-pointer shadow-sm">
                                     <i class="fa-solid ${u.isAdmin?'fa-user-minus text-rose-400':'fa-user-shield text-amber-400'}"></i>
                                 </button>
-                                <button type="button" onclick="toggleUserBan('${u.name}', ${!u.isBanned})" title="${u.isBanned?'Разбан':'Бан'}" class="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-xs transition cursor-pointer shadow-sm">
+                                <button type="button" onclick="toggleUserBan('${u.name}', ${!u.isBanned})" title="${u.isBanned?'Разбан':'Бан'}" class="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-xs cursor-pointer shadow-sm">
                                     <i class="fa-solid ${u.isBanned?'fa-unlock':'fa-ban'}"></i>
                                 </button>
                                 
                                 <div class="relative inline-block text-left">
-                                    <button type="button" onclick="toggleAdminMenu('${u.name}')" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs transition cursor-pointer shadow-sm">
+                                    <button type="button" onclick="toggleAdminMenu('${u.name}')" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs cursor-pointer shadow-sm">
                                         <i class="fa-solid fa-ellipsis-vertical"></i>
                                     </button>
-                                    <div id="adminMenu_${u.name}" class="hidden absolute right-0 mt-2 w-48 rounded-2xl bg-darkCard border border-darkBorder shadow-2xl z-50 p-1.5 space-y-0.5 text-left animate-modal">
+                                    <div id="adminMenu_${u.name}" class="hidden absolute right-0 mt-2 w-48 rounded-2xl bg-darkCard border border-darkBorder shadow-2xl z-50 p-1.5 space-y-0.5 text-left">
                                         <button type="button" onclick="executeAdminActionFeature('${u.name}', 9)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2 cursor-pointer">🔑 Сбросить пароль</button>
                                         <button type="button" onclick="executeAdminActionFeature('${u.name}', 10)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2 cursor-pointer">⭐ Выдать верификацию</button>
                                         <button type="button" onclick="executeAdminActionFeature('${u.name}', 11)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2 cursor-pointer">🛡️ Сменить роль</button>
@@ -1480,10 +1479,16 @@
         };
 
         window.switchAuthTab = function(tab) {
-            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-            document.getElementById('tabLoginBtn').className = tab === 'login' ? "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow transition cursor-pointer" : "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition cursor-pointer";
-            document.getElementById('tabRegisterBtn').className = tab === 'register' ? "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow transition cursor-pointer" : "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition cursor-pointer";
+            const isLogin = tab === 'login';
+            document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+            document.getElementById('registerForm').classList.toggle('hidden', isLogin);
+            
+            document.getElementById('tabLoginBtn').className = isLogin 
+                ? "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow cursor-pointer" 
+                : "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white cursor-pointer";
+            document.getElementById('tabRegisterBtn').className = !isLogin 
+                ? "flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow cursor-pointer" 
+                : "flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white cursor-pointer";
         };
 
         window.copyMyCode = function() { navigator.clipboard.writeText(window.currentUser.code); window.showToast('ID скопирован', 'success'); };
@@ -1491,6 +1496,7 @@
         window.handleKeyDown = function(e) {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
         };
+
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
@@ -1508,7 +1514,25 @@
         }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // Жесткая привязка через JS для абсолютной гарантии кликов по кнопкам входа
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginSubmitBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.handleLogin();
+            });
+
+            document.getElementById('regSubmitBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.handleRegister();
+            });
+
+            document.getElementById('tabLoginBtn').addEventListener('click', () => window.switchAuthTab('login'));
+            document.getElementById('tabRegisterBtn').addEventListener('click', () => window.switchAuthTab('register'));
+
+            document.getElementById('themeLinearBtn').addEventListener('click', () => window.setTheme('linear'));
+            document.getElementById('themeOledBtn').addEventListener('click', () => window.setTheme('oled'));
+            document.getElementById('themeCyberBtn').addEventListener('click', () => window.setTheme('cyber'));
+
             const session = localStorage.getItem('pulse_session');
             if (session) {
                 try {
