@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v8.5 - Pro Edition</title>
+    <title>Pulse Workspace v9.0 - Pro Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -113,7 +113,7 @@
 
             <!-- 1. FEED SECTION -->
             <div id="sectionFeed" class="flex-1 flex flex-col overflow-hidden bg-darkBg h-full">
-                <div class="h-14 px-4 border-b border-darkBorder bg-darkCard/9oz backdrop-blur-xl flex items-center justify-between shrink-0 shadow-sm">
+                <div class="h-14 px-4 border-b border-darkBorder bg-darkCard/90 backdrop-blur-xl flex items-center justify-between shrink-0 shadow-sm">
                     <div class="flex items-center space-x-2.5">
                         <div class="w-8 h-8 rounded-xl bg-primaryAccent/15 text-primaryAccent flex items-center justify-center text-xs shadow-inner"><i class="fa-solid fa-compass"></i></div>
                         <div>
@@ -134,7 +134,7 @@
                 <div class="bg-darkCard/40 border-b border-darkBorder px-4 py-3 shrink-0">
                     <div id="storiesTray" class="flex items-center space-x-3 overflow-x-auto pb-1">
                         <div onclick="openCreateStoryModal()" class="flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group">
-                            <div class="w-13 h-13 w-12 h-12 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/60 flex items-center justify-center text-primaryAccent group-hover:scale-105 transition shadow-md"><i class="fa-solid fa-plus text-xs"></i></div>
+                            <div class="w-12 h-12 rounded-2xl bg-darkBg border-2 border-dashed border-primaryAccent/60 flex items-center justify-center text-primaryAccent group-hover:scale-105 transition shadow-md"><i class="fa-solid fa-plus text-xs"></i></div>
                             <span class="text-[10px] text-slate-300 font-medium">Ваша</span>
                         </div>
                     </div>
@@ -315,6 +315,7 @@
                 <button type="button" onclick="closeCreateGroupModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <input type="text" id="groupNameInput" placeholder="Название группы..." class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+            <input type="text" id="groupMembersInput" placeholder="Участники через запятую (ник1, ник2)..." class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
             <button type="button" onclick="submitCreateGroup()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition">Создать группу</button>
         </div>
     </div>
@@ -520,7 +521,7 @@
                 let updated = {...window.currentUser, status: newStatus};
                 window.currentUser = Object.freeze(updated);
                 localStorage.setItem('pulse_session', JSON.stringify(updated));
-                alert('Статус успешно обновлен!');
+                alert('Статус успешно сохранен!');
             } catch(e) {
                 alert('Ошибка сохранения статуса');
             }
@@ -650,16 +651,49 @@
             list.innerHTML = '';
             window.chats.forEach(c => {
                 const item = document.createElement('div');
-                item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center space-x-2.5 bg-darkBg/60 border border-darkBorder hover:border-primaryAccent text-white text-xs font-semibold shadow-sm';
-                item.innerHTML = `<div class="w-7 h-7 rounded-lg bg-darkCard border border-darkBorder flex items-center justify-center shrink-0"><i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'} text-[10px]"></i></div> <span class="truncate">${escapeHTML(c.name)}</span>`;
-                item.onclick = () => { 
-                    window.selectChat(c.id); 
-                    if(window.innerWidth < 768) {
-                        document.getElementById('sidebarChats').classList.add('-translate-x-full');
-                    }
-                };
+                item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center justify-between bg-darkBg/60 border border-darkBorder hover:border-primaryAccent text-white text-xs font-semibold shadow-sm group';
+                
+                let innerContent = `
+                    <div class="flex items-center space-x-2.5 overflow-hidden" onclick="window.selectChat('${c.id}'); if(window.innerWidth < 768) document.getElementById('sidebarChats').classList.add('-translate-x-full');">
+                        <div class="w-7 h-7 rounded-lg bg-darkCard border border-darkBorder flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'} text-[10px]"></i>
+                        </div>
+                        <span class="truncate">${escapeHTML(c.name)}</span>
+                    </div>
+                `;
+
+                if (c.id !== 'pulse_global') {
+                    innerContent += `<button onclick="event.stopPropagation(); deleteChat('${c.id}')" class="text-slate-500 hover:text-rose-400 px-1.5 py-1 transition"><i class="fa-solid fa-xmark"></i></button>`;
+                }
+
+                item.innerHTML = innerContent;
                 list.appendChild(item);
             });
+        };
+
+        window.deleteChat = async function(chatId) {
+            if (!confirm('Удалить этот чат из списка?')) return;
+            try {
+                const chatRef = db.collection('chats').doc(chatId);
+                const docSnap = await chatRef.get();
+                if(docSnap.exists) {
+                    const data = docSnap.data();
+                    let members = data.members || [];
+                    members = members.filter(m => m !== window.currentUser.name);
+                    
+                    if (members.length === 0 || data.type === 'friend') {
+                        await chatRef.delete();
+                    } else {
+                        await chatRef.update({ members: members });
+                    }
+                }
+                if (window.activeChatId === chatId) {
+                    window.selectChat('pulse_global');
+                }
+                loadUserChats();
+            } catch(e) {
+                alert('Ошибка при удалении чата');
+            }
         };
 
         window.selectChat = function(id) {
@@ -814,18 +848,26 @@
 
         window.submitCreateGroup = async function() {
             const groupName = document.getElementById('groupNameInput').value.trim();
+            let rawMembers = document.getElementById('groupMembersInput').value.trim();
             if (!groupName) return;
+
+            let members = [window.currentUser.name];
+            if (rawMembers) {
+                let extra = rawMembers.split(',').map(m => m.trim().toLowerCase().replace(/^#/, ''));
+                members = members.concat(extra);
+            }
 
             const groupId = 'group_' + Date.now();
             await db.collection('chats').doc(groupId).set({
                 name: groupName,
                 type: 'group',
-                members: [window.currentUser.name]
+                members: [...new Set(members)]
             });
 
             await loadUserChats();
             closeCreateGroupModal();
             document.getElementById('groupNameInput').value = '';
+            document.getElementById('groupMembersInput').value = '';
 
             window.activeChatId = groupId;
             window.selectChat(groupId);
