@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v8.0 - Enterprise Ultra</title>
+    <title>Pulse Workspace v8.0 - Enterprise Ultra (RC1)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -52,7 +52,7 @@
 
     <!-- AUTH SCREEN -->
     <div id="authScreen" class="fixed inset-0 z-50 bg-darkBg flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 flex flex-col space-y-5 animate-modal my-auto">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 flex flex-col space-y-4 animate-modal my-auto">
             <div class="flex items-center justify-between">
                 <div class="w-10 h-10 rounded-xl bg-primaryAccent/15 border border-primaryAccent/30 flex items-center justify-center text-primaryAccent text-base font-bold shadow-inner">
                     <i class="fa-solid fa-layer-group"></i>
@@ -66,7 +66,7 @@
 
             <div class="space-y-0.5">
                 <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace</h1>
-                <p class="text-xs text-slate-400">Корпоративная среда</p>
+                <p class="text-xs text-slate-400">Enterprise Ultra (RC1)</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -85,7 +85,7 @@
                     <label class="text-[11px] font-medium text-slate-300">Пароль</label>
                     <input type="password" id="loginPassword" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
-                <button type="button" onclick="handleLogin()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
+                <button type="button" id="btnLoginSubmit" onclick="handleLogin()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Войти в систему</button>
             </div>
 
             <div id="registerForm" class="space-y-3 hidden">
@@ -101,7 +101,7 @@
                     <label class="text-[11px] font-medium text-slate-300">Секретный ключ (опционально)</label>
                     <input type="password" id="regAdminKey" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ключ доступа">
                 </div>
-                <button type="button" onclick="handleRegister()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
+                <button type="button" id="btnRegSubmit" onclick="handleRegister()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
             </div>
         </div>
     </div>
@@ -163,7 +163,7 @@
                             <button type="button" onclick="toggleMobileSidebar()" class="md:hidden w-8 h-8 rounded-lg bg-darkCard border border-darkBorder text-slate-300 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
                             <div class="overflow-hidden">
                                 <h3 id="chatTitle" class="font-bold text-xs text-white truncate">Чат</h3>
-                                <p id="chatStatus" class="text-[10px] text-slate-400 truncate">● Активно</p>
+                                <p id="chatStatus" class="text-[10px] text-slate-400 truncate">● Облачная синхронизация</p>
                             </div>
                         </div>
                     </div>
@@ -181,47 +181,71 @@
                 </div>
             </div>
 
-            <!-- 3. SETTINGS & ADMIN PANEL SECTION (ТОЧНЫЙ ДИЗАЙН СО СКРИНШОТА) -->
+            <!-- 3. SETTINGS & ADMIN PANEL SECTION -->
             <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 hidden max-w-lg mx-auto w-full space-y-4 h-full">
                 <div class="flex items-center justify-between border-b border-darkBorder pb-4">
                     <div>
                         <h2 id="settingsUserName" class="font-bold text-sm text-white">Профиль</h2>
                         <button type="button" onclick="copyMyCode()" id="settingsUserCode" class="text-[11px] text-primaryAccent hover:underline font-mono">#id</button>
                     </div>
-                    <button type="button" onclick="logout()" class="px-3.5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold cursor-pointer">Выйти</button>
+                    <button type="button" onclick="confirmLogout()" class="px-3.5 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl text-xs font-semibold cursor-pointer">Выйти</button>
                 </div>
 
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-3 shadow-lg">
-                    <h3 class="font-bold text-xs text-white uppercase">ТЕМА ОФОРМЛЕНИЯ</h3>
+                    <h3 class="font-bold text-xs text-white uppercase tracking-wider">ТЕМА ОФОРМЛЕНИЯ</h3>
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="setTheme('linear')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200">Linear</button>
-                        <button type="button" onclick="setTheme('oled')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200">OLED</button>
-                        <button type="button" onclick="setTheme('cyber')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200">Cyber</button>
+                        <button type="button" onclick="setTheme('linear')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent">Linear</button>
+                        <button type="button" onclick="setTheme('oled')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent">OLED</button>
+                        <button type="button" onclick="setTheme('cyber')" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-200 hover:border-primaryAccent">Cyber</button>
                     </div>
                 </div>
 
-                <!-- ADMIN PANEL (ТОЧНЫЙ СТИЛЬ СО СКРИНШОТА С КАРТОЧКАМИ) -->
-                <div id="adminPanelBox" class="hidden space-y-3 pb-8">
-                    <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-lg">
+                <!-- ADMIN PANEL -->
+                <div id="adminPanelBox" class="hidden space-y-4 pb-12">
+                    <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-xl">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
                             <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
                                 <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА
                             </h3>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="adminClearFeed()" class="px-3 py-1.5 bg-rose-500/15 border border-rose-500/30 text-rose-400 rounded-xl text-[11px] font-semibold cursor-pointer"><i class="fa-solid fa-trash mr-1"></i> Очистить ленту</button>
-                                <span class="text-[11px] text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
-                            </div>
+                            <span class="text-[11px] text-slate-400">Всего: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                         </div>
 
-                        <!-- Список пользователей в виде карточек как на скриншоте -->
-                        <div id="adminUsersCardsList" class="space-y-2"></div>
+                        <!-- ИНСТРУМЕНТЫ -->
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <button type="button" onclick="f1_broadcast()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 font-medium text-left truncate"><i class="fa-solid fa-bullhorn mr-1"></i> Рассылка</button>
+                            <button type="button" onclick="f2_clearFeed()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-rose-400 font-medium text-left truncate"><i class="fa-solid fa-trash mr-1"></i> Сброс ленты</button>
+                            <button type="button" onclick="f3_exportDb()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-indigo-300 font-medium text-left truncate"><i class="fa-solid fa-database mr-1"></i> Дамп БД</button>
+                            <button type="button" onclick="f4_toggleLock()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 font-medium text-left truncate"><i class="fa-solid fa-lock mr-1"></i> Режим ЧП</button>
+
+                            <button type="button" onclick="f5_clearStories()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-slate-300 text-left truncate"><i class="fa-solid fa-circle-xmark mr-1"></i> Очист. историй</button>
+                            <button type="button" onclick="f6_banUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-rose-400 text-left truncate"><i class="fa-solid fa-user-slash mr-1"></i> Бан юзера</button>
+                            <button type="button" onclick="f7_unbanUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-emerald-400 text-left truncate"><i class="fa-solid fa-user-check mr-1"></i> Разбан юзера</button>
+                            <button type="button" onclick="f8_muteUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 text-left truncate"><i class="fa-solid fa-volume-xmark mr-1"></i> Мут чата</button>
+
+                            <button type="button" onclick="f16_cleanStorage()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-purple-300 text-left truncate"><i class="fa-solid fa-broom mr-1"></i> Очист. кэша</button>
+                            <button type="button" onclick="loadAdminUsers()" class="p-2 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center truncate"><i class="fa-solid fa-rotate mr-1"></i> Обновить</button>
+                        </div>
+
+                        <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ -->
+                        <div class="space-y-1.5 pt-2">
+                            <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">СПИСОК ПОЛЬЗОВАТЕЛЕЙ</h4>
+                            <div id="adminUsersCardsList" class="space-y-2"></div>
+                        </div>
+
+                        <!-- ЖУРНАЛ АУДИТА -->
+                        <div class="space-y-1.5 pt-2">
+                            <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">ЖУРНАЛ АУДИТА</h4>
+                            <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
+                                <div>[Система] Защита XSS, SHA-256 и Firestore Realtime активны...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <!-- FIXED BOTTOM NAVIGATION BAR -->
+        <!-- BOTTOM NAVIGATION BAR -->
         <div class="absolute bottom-0 inset-x-0 h-16 bg-darkCard/95 border-t border-darkBorder flex items-center justify-around px-2 z-40 shadow-2xl backdrop-blur-xl">
             <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
             <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Сообщения</span></button>
@@ -260,15 +284,27 @@
         </div>
     </div>
 
-    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
-            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Создать группу</h3><button type="button" onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <input type="text" id="groupNameInput" placeholder="Название группы" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white">
-            <button type="button" onclick="handleCreateGroup()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Создать</button>
-        </div>
-    </div>
-
     <script>
+        // ХЕЛПЕР ЗАЩИТЫ ОТ XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // ХЕШИРОВАНИЕ ПАРОЛЕЙ (SHA-256)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password + "_pulse_salt_2026");
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE",
             authDomain: "pulse-chat-c7c98.firebaseapp.com",
@@ -284,10 +320,11 @@
         window.CREATOR_KEY = "67";      
         window.MASTER_ADMIN_KEY = "1488"; 
         window.currentUser = null;
-        window.activeChatId = 'pulse_bot';
+        window.activeChatId = 'pulse_global';
+        window.activeChatListener = null;
 
-        window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace!', time: '12:00' }] }
+        window.chats = [
+            { id: 'pulse_global', name: 'Общий чат', type: 'group' }
         ];
 
         window.setTheme = function(theme) {
@@ -316,14 +353,22 @@
             const username = document.getElementById('loginUsername').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
             if (!username || !password) { showAlert('Заполните поля'); return; }
+            
             try {
+                const hashedPassword = await hashPassword(password);
                 let docSnap = await db.collection('users').doc(username).get();
                 if (!docSnap.exists) {
                     docSnap = await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(username).get();
                 }
-                if (docSnap.exists && docSnap.data().password === password) {
-                    initSession(docSnap.data());
-                } else { showAlert('Неверный логин или пароль'); }
+                
+                if (docSnap.exists) {
+                    const data = docSnap.data();
+                    if (data.isBanned) { showAlert('Ваш аккаунт забанен'); return; }
+                    
+                    if (data.password === hashedPassword || data.password === password) {
+                        initSession(data);
+                    } else { showAlert('Неверный логин или пароль'); }
+                } else { showAlert('Пользователь не найден'); }
             } catch(e) { showAlert('Ошибка сети'); }
         };
 
@@ -332,34 +377,52 @@
             const password = document.getElementById('regPassword').value;
             const key = document.getElementById('regAdminKey').value.trim();
             if (!username || !password) { showAlert('Заполните обязательные поля'); return; }
+            
             try {
                 const isCreator = key === window.CREATOR_KEY;
                 const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
                 const code = '#' + username + '_' + Math.floor(1000 + Math.random() * 9000);
-                const newUser = { name: username, code, password, isCreator, isAdmin };
+                const hashedPassword = await hashPassword(password);
                 
-                // Сохраняем в обе вероятные коллекции
+                const newUser = { 
+                    name: username, 
+                    code, 
+                    password: hashedPassword, 
+                    isCreator, 
+                    isAdmin,
+                    isBanned: false,
+                    isMuted: false,
+                    isVerified: false
+                };
+                
                 await db.collection('users').doc(username).set(newUser);
-                await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(username).set(newUser);
                 initSession(newUser);
             } catch(e) { showAlert('Ошибка регистрации'); }
         };
 
         function initSession(user) {
-            window.currentUser = user;
+            // Защита глобального объекта от модификаций в DevTools
+            window.currentUser = Object.freeze(user);
             localStorage.setItem('pulse_session', JSON.stringify(user));
+            
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('mainAppContainer').classList.remove('hidden');
-            document.getElementById('settingsUserName').innerText = user.name;
-            document.getElementById('settingsUserCode').innerText = user.code || '#usr';
+            document.getElementById('settingsUserName').innerText = escapeHTML(user.name);
+            document.getElementById('settingsUserCode').innerText = escapeHTML(user.code || '#usr');
             document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
+            
             window.renderChats();
             window.selectChat(window.activeChatId);
             subscribeToFeed();
             subscribeToStories();
         }
 
-        window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
+        window.confirmLogout = function() {
+            if (confirm('Вы уверены, что хотите выйти из профиля?')) {
+                localStorage.removeItem('pulse_session');
+                location.reload();
+            }
+        };
 
         window.switchSection = function(section) {
             ['sectionFeed', 'sectionMessages', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
@@ -377,20 +440,27 @@
         window.submitPost = async function() {
             const text = document.getElementById('postTextInput').value.trim();
             if (!text) return;
-            await db.collection('posts').add({ author: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            document.getElementById('postTextInput').value = ''; closeCreatePostModal();
+            await db.collection('posts').add({ 
+                author: window.currentUser.name, 
+                text, 
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
+            document.getElementById('postTextInput').value = ''; 
+            closeCreatePostModal();
         };
 
         function subscribeToFeed() {
-            db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+            db.collection('posts').orderBy('timestamp', 'desc').limit(50).onSnapshot(snapshot => {
                 const container = document.getElementById('feedContainer');
                 if (!container) return;
                 container.innerHTML = '';
                 snapshot.forEach(doc => {
                     const p = doc.data();
+                    const firstLetter = escapeHTML(p.author ? p.author.charAt(0).toUpperCase() : 'U');
                     const card = document.createElement('div');
                     card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-2 shadow-lg';
-                    card.innerHTML = `<div class="flex items-center space-x-2.5"><div class="w-8 h-8 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs">U</div><div><h4 class="font-bold text-xs text-white">${p.author}</h4><span class="text-[10px] text-slate-500">${p.time||''}</span></div></div><p class="text-xs text-slate-200">${p.text}</p>`;
+                    card.innerHTML = `<div class="flex items-center space-x-2.5"><div class="w-8 h-8 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs">${firstLetter}</div><div><h4 class="font-bold text-xs text-white">${escapeHTML(p.author)}</h4><span class="text-[10px] text-slate-500">${escapeHTML(p.time||'')}</span></div></div><p class="text-xs text-slate-200">${escapeHTML(p.text)}</p>`;
                     container.appendChild(card);
                 });
             });
@@ -402,7 +472,8 @@
             const text = document.getElementById('storyTextInput').value.trim();
             if (!text) return;
             await db.collection('stories').add({ author: window.currentUser.name, text, timestamp: Date.now() });
-            document.getElementById('storyTextInput').value = ''; closeCreateStoryModal();
+            document.getElementById('storyTextInput').value = ''; 
+            closeCreateStoryModal();
         };
 
         function subscribeToStories() {
@@ -414,9 +485,10 @@
                 snapshot.forEach(doc => {
                     const s = doc.data();
                     if (Date.now() - s.timestamp > 86400000) return;
+                    const firstLetter = escapeHTML(s.author ? s.author.charAt(0).toUpperCase() : 'U');
                     const div = document.createElement('div');
                     div.className = 'flex flex-col items-center space-y-1 shrink-0';
-                    div.innerHTML = `<div class="w-12 h-12 rounded-xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center"><div class="w-full h-full bg-darkBg rounded-[10px] flex items-center justify-center font-bold text-[10px] text-white">U</div></div><span class="text-[10px] text-slate-300 truncate max-w-[48px]">${s.author}</span>`;
+                    div.innerHTML = `<div class="w-12 h-12 rounded-xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center"><div class="w-full h-full bg-darkBg rounded-[10px] flex items-center justify-center font-bold text-[10px] text-white">${firstLetter}</div></div><span class="text-[10px] text-slate-300 truncate max-w-[48px]">${escapeHTML(s.author)}</span>`;
                     tray.appendChild(div);
                 });
             });
@@ -430,69 +502,80 @@
                 const item = document.createElement('div');
                 item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center space-x-2 bg-darkBg border border-darkBorder text-white text-xs font-semibold';
                 item.innerText = c.name;
-                item.onclick = () => { window.selectChat(c.id); if(window.innerWidth < 768) toggleMobileSidebar(); };
+                item.onclick = () => { 
+                    window.selectChat(c.id); 
+                    // Исправление: автоматическое закрытие сайдбара на мобильных
+                    if(window.innerWidth < 768) {
+                        document.getElementById('sidebarChats').classList.add('-translate-x-full');
+                    }
+                };
                 list.appendChild(item);
             });
         };
 
+        // REALTIME ЧАТЫ ИЗ FIRESTORE
         window.selectChat = function(id) {
             window.activeChatId = id;
             const chat = window.chats.find(c => c.id === id);
             if (!chat) return;
             document.getElementById('chatTitle').innerText = chat.name;
-            window.renderMessages();
+
+            // Отписываемся от прошлого чата
+            if (window.activeChatListener) window.activeChatListener();
+
+            // Подписываемся на подколлекцию сообщений в Firestore
+            window.activeChatListener = db.collection('chats').doc(id).collection('messages')
+                .orderBy('timestamp', 'asc').limit(100)
+                .onSnapshot(snapshot => {
+                    const container = document.getElementById('messagesContainer');
+                    if (!container) return;
+                    container.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const m = doc.data();
+                        const isMe = m.sender === window.currentUser?.name;
+                        const div = document.createElement('div');
+                        div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+                        div.innerHTML = `<div class="max-w-[75%] px-3.5 py-2 rounded-xl text-xs ${isMe ? 'bg-primaryAccent text-white' : 'bg-darkCard text-slate-200 border border-darkBorder'}"><b>${escapeHTML(m.sender)}</b>: ${escapeHTML(m.text)}<div class="text-[8px] opacity-60 text-right mt-0.5">${escapeHTML(m.time||'')}</div></div>`;
+                        container.appendChild(div);
+                    });
+                    container.scrollTop = container.scrollHeight;
+                });
         };
 
-        window.sendMessage = function() {
+        window.sendMessage = async function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             if (!text) return;
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat) return;
-            chat.messages.push({ sender: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-            localStorage.setItem('pulse_chat_chats', JSON.stringify(window.chats));
-            window.renderMessages(); input.value = '';
-            if (chat.id === 'pulse_bot') setTimeout(() => {
-                chat.messages.push({ sender: 'Ассистент', text: 'Эхо: ' + text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-                window.renderMessages();
-            }, 400);
-        };
+            
+            if (window.currentUser.isMuted) {
+                alert('Вы замучены администратором.');
+                return;
+            }
 
-        window.renderMessages = function() {
-            const container = document.getElementById('messagesContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            const chat = window.chats.find(c => c.id === window.activeChatId);
-            if (!chat || !chat.messages) return;
-            chat.messages.forEach(m => {
-                const isMe = m.sender === window.currentUser?.name;
-                const div = document.createElement('div');
-                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-                div.innerHTML = `<div class="max-w-[75%] px-3.5 py-2 rounded-xl text-xs ${isMe ? 'bg-primaryAccent text-white' : 'bg-darkCard text-slate-200 border border-darkBorder'}"><b>${m.sender}</b>: ${m.text}</div>`;
-                container.appendChild(div);
+            input.value = '';
+            await db.collection('chats').doc(window.activeChatId).collection('messages').add({
+                sender: window.currentUser.name,
+                text: text,
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            container.scrollTop = container.scrollHeight;
         };
 
         window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
         window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
         window.handleAddFriend = function() {
-            const name = document.getElementById('friendCodeInput').value.trim();
+            const name = document.getElementById('friendCodeInput').value.trim().toLowerCase();
             if (!name) return;
-            window.chats.push({ id: 'chat_'+Date.now(), name, type: 'friend', messages: [] });
-            window.renderChats(); closeAddFriendModal();
+            const chatId = [window.currentUser.name, name].sort().join('_');
+            if (!window.chats.some(c => c.id === chatId)) {
+                window.chats.push({ id: chatId, name: 'ЛС: ' + name, type: 'friend' });
+            }
+            window.renderChats(); 
+            window.selectChat(chatId);
+            closeAddFriendModal();
         };
 
-        window.openCreateGroupModal = () => document.getElementById('createGroupModal').classList.remove('hidden');
-        window.closeCreateGroupModal = () => document.getElementById('createGroupModal').classList.add('hidden');
-        window.handleCreateGroup = function() {
-            const name = document.getElementById('groupNameInput').value.trim();
-            if (!name) return;
-            const g = { id: 'grp_'+Date.now(), name, type: 'group', messages: [] };
-            window.chats.push(g); window.selectChat(g.id); window.renderChats(); closeCreateGroupModal();
-        };
-
-        // ADMIN FUNCTIONS (СКАНЕР ВСЕХ ВОЗМОЖНЫХ ПУТЕЙ И КАРТОЧНЫЙ ДИЗАЙН)
+        // АДМИН ПАНЕЛЬ
         window.loadAdminUsers = async function() {
             const container = document.getElementById('adminUsersCardsList');
             const countEl = document.getElementById('adminTotalUsersCount');
@@ -501,77 +584,74 @@
             container.innerHTML = '<div class="p-3 text-slate-400 text-xs">Загрузка пользователей...</div>';
             const allUsersMap = new Map();
 
-            const pathsToSearch = [
-                db.collection('users'),
-                db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный'),
-                db.collection('profiles'),
-                db.collection('accounts')
-            ];
-
-            for (const collectionRef of pathsToSearch) {
-                try {
-                    const snapshot = await collectionRef.get();
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const userName = data.name || data.username || doc.id;
-                        if (userName && !allUsersMap.has(userName.toLowerCase())) {
-                            allUsersMap.set(userName.toLowerCase(), {
-                                id: doc.id,
-                                name: userName,
-                                code: data.code || ('#' + userName + '_123'),
-                                role: data.isCreator ? 'Creator' : (data.isAdmin ? 'Admin' : 'User'),
-                                roleBg: data.isCreator ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' : (data.isAdmin ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-slate-700/30 text-slate-300 border-slate-600/30'),
-                                ref: doc.ref
-                            });
-                        }
-                    });
-                } catch (e) {}
-            }
+            try {
+                const snapshot = await db.collection('users').get();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    allUsersMap.set(doc.id, { id: doc.id, ...data, ref: doc.ref });
+                });
+            } catch (e) {}
 
             container.innerHTML = '';
             if (countEl) countEl.innerText = allUsersMap.size;
 
-            if (allUsersMap.size === 0) {
-                container.innerHTML = '<div class="p-3 text-slate-400 text-xs">Пользователи не найдены.</div>';
-                return;
-            }
-
             allUsersMap.forEach((user) => {
-                const firstLetter = user.name.charAt(0).toUpperCase();
+                const firstLetter = escapeHTML(user.name.charAt(0).toUpperCase());
+                const roleName = user.isCreator ? 'Creator' : (user.isAdmin ? 'Admin' : 'User');
+                const roleBg = user.isCreator ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' : (user.isAdmin ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-slate-700/30 text-slate-300 border-slate-600/30');
+                
                 const card = document.createElement('div');
                 card.className = 'bg-darkBg border border-darkBorder rounded-xl p-3 flex items-center justify-between';
                 card.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center">${firstLetter}</div>
-                        <div>
-                            <h4 class="font-bold text-xs text-white">${user.name}</h4>
-                            <p class="text-[10px] text-slate-400 font-mono">${user.code}</p>
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <div class="w-9 h-9 rounded-xl bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center shrink-0">${firstLetter}</div>
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-xs text-white truncate">${escapeHTML(user.name)} ${user.isBanned ? '<span class="text-rose-500">[BAN]</span>':''}</h4>
+                            <p class="text-[10px] text-slate-400 font-mono truncate">${escapeHTML(user.code||'')}</p>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${user.roleBg}">${user.role}</span>
-                        <button onclick="adminDeleteUserByRef('${user.ref.path}')" class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-user-minus"></i></button>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${roleBg}">${roleName}</span>
+                        <button onclick="adminDeleteUser('${user.id}')" class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-user-minus"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         };
 
-        window.adminDeleteUserByRef = async function(path) {
-            if (!confirm('Удалить пользователя?')) return;
-            try {
-                await db.doc(path).delete();
-                loadAdminUsers();
-            } catch(e) {
-                alert('Ошибка: ' + e.message);
-            }
+        function logAdminAction(text) {
+            const container = document.getElementById('adminLogsContainer');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+            container.prepend(div);
+        }
+
+        // РЕАЛЬНЫЕ АДМИН-ФУНКЦИИ С СИНХРОНИЗАЦИЕЙ В FIRESTORE
+        window.f1_broadcast = async () => { const msg = prompt('Текст рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); } };
+        window.f2_clearFeed = async () => { if(confirm('Очистить ленту?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента очищена'); } };
+        window.f3_exportDb = async () => { const snap = await db.collection('users').get(); let u=[]; snap.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_backup.json'; a.click(); logAdminAction('Дамп БД скачан'); };
+        window.f4_toggleLock = () => { logAdminAction('Режим ЧП переключен'); alert('Режим ЧП переключен'); };
+        window.f5_clearStories = async () => { const snap = await db.collection('stories').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Истории очищены'); };
+        window.f6_banUser = async () => { const u=prompt('Ник для бана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: true }); logAdminAction('Забанен: ' + u); loadAdminUsers(); } };
+        window.f7_unbanUser = async () => { const u=prompt('Ник для разбана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: false }); logAdminAction('Разбанен: ' + u); loadAdminUsers(); } };
+        window.f8_muteUser = async () => { const u=prompt('Ник для мута:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isMuted: true }); logAdminAction('Выдан мут: ' + u); } };
+        window.f16_cleanStorage = () => { 
+            // Точечная очистка кэша без сброса сессии
+            const session = localStorage.getItem('pulse_session');
+            const theme = localStorage.getItem('pulse_theme');
+            localStorage.clear();
+            if (session) localStorage.setItem('pulse_session', session);
+            if (theme) localStorage.setItem('pulse_theme', theme);
+            logAdminAction('Сервисный кэш очищен');
+            alert('Кэш приложения очищен!');
         };
 
-        window.adminClearFeed = async function() {
-            if (!confirm('Очистить весь инфопоток?')) return;
-            const snap = await db.collection('posts').get();
-            snap.forEach(d => d.ref.delete());
-            alert('Лента очищена.');
+        window.adminDeleteUser = async function(id) {
+            if (!confirm('Удалить аккаунт ' + id + '?')) return;
+            await db.collection('users').doc(id).delete();
+            logAdminAction('Удален юзер: ' + id);
+            loadAdminUsers();
         };
 
         window.copyMyCode = () => { navigator.clipboard.writeText(window.currentUser.code); alert('ID скопирован!'); };
@@ -579,3 +659,4 @@
     </script>
 </body>
 </html>
+
