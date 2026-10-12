@@ -172,8 +172,17 @@
                         <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
                     </div>
 
-                    <div class="p-3 border-t border-darkBorder bg-darkCard/80 backdrop-blur-xl shrink-0">
+                    <div class="p-3 border-t border-darkBorder bg-darkCard/80 backdrop-blur-xl shrink-0 space-y-2">
+                        <div id="imagePreviewContainer" class="hidden flex items-center gap-2 bg-darkBg p-2 rounded-xl border border-darkBorder">
+                            <img id="imagePreviewThumb" class="w-10 h-10 object-cover rounded-lg">
+                            <span class="text-xs text-slate-300 truncate flex-1">Картинка прикреплена</span>
+                            <button onclick="clearImagePreview()" class="text-rose-400 px-2 py-1 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
                         <div class="flex items-center space-x-2">
+                            <label class="w-9 h-9 rounded-xl bg-darkBg border border-darkBorder text-slate-300 flex items-center justify-center shrink-0 cursor-pointer hover:border-primaryAccent transition">
+                                <i class="fa-solid fa-image text-xs text-primaryAccent"></i>
+                                <input type="file" id="chatImageInput" accept="image/*" class="hidden" onchange="previewChatImage(this)">
+                            </label>
                             <input type="text" id="messageInput" onkeydown="if(event.key==='Enter')sendMessage()" placeholder="Сообщение..." class="flex-1 px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
                             <button type="button" onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-primaryAccent text-white flex items-center justify-center shrink-0 cursor-pointer shadow-md"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                         </div>
@@ -254,6 +263,31 @@
     </div>
 
     <!-- MODALS -->
+    <!-- 1. ADD FRIEND MODAL -->
+    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
+                <h3 class="font-bold text-xs text-white">Новый ЛС чат</h3>
+                <button type="button" onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="friendUsernameInput" placeholder="Никнейм собеседника..." class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
+            <button type="button" onclick="submitAddFriend()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Открыть чат</button>
+        </div>
+    </div>
+
+    <!-- 2. CREATE GROUP MODAL -->
+    <div id="createGroupModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
+            <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
+                <h3 class="font-bold text-xs text-white">Создать группу</h3>
+                <button type="button" onclick="closeCreateGroupModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="groupNameInput" placeholder="Название группы..." class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent">
+            <button type="button" onclick="submitCreateGroup()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Создать</button>
+        </div>
+    </div>
+
+    <!-- 3. CREATE POST MODAL -->
     <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
             <div class="flex justify-between items-center border-b border-darkBorder pb-2.5">
@@ -261,7 +295,17 @@
                 <button type="button" onclick="closeCreatePostModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <textarea id="postTextInput" rows="3" placeholder="Что нового?..." class="w-full p-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent resize-none"></textarea>
-            <button type="button" onclick="submitPost()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Опубликовать</button>
+            <div id="postImagePreviewContainer" class="hidden relative">
+                <img id="postImageThumb" class="w-full h-32 object-cover rounded-xl border border-darkBorder">
+                <button onclick="clearPostImagePreview()" class="absolute top-2 right-2 bg-black/60 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+                <label class="px-3 py-2 bg-darkBg border border-darkBorder rounded-xl text-xs text-slate-300 cursor-pointer flex items-center gap-1.5 hover:border-primaryAccent transition">
+                    <i class="fa-solid fa-image text-primaryAccent"></i> Картинка
+                    <input type="file" id="postImageInput" accept="image/*" class="hidden" onchange="previewPostImage(this)">
+                </label>
+                <button type="button" onclick="submitPost()" class="px-4 py-2 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Опубликовать</button>
+            </div>
         </div>
     </div>
 
@@ -314,6 +358,8 @@
         window.currentUser = null;
         window.activeChatId = 'pulse_global';
         window.activeChatListener = null;
+        window.currentChatImageBase64 = null;
+        window.currentPostImageBase64 = null;
 
         window.chats = [
             { id: 'pulse_global', name: 'Общий чат', type: 'group' }
@@ -417,7 +463,7 @@
 
         window.switchSection = function(section) {
             ['sectionFeed', 'sectionMessages', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['navBtnFeed', 'navBtnMessages', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
+            ['navBtnFeed', 'navBtnMessages', 'navBtnSettings'].forEach(b => b.className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
 
             if (section === 'feed') { document.getElementById('sectionFeed').classList.remove('hidden'); document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; }
             else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; loadUserChats(); }
@@ -426,14 +472,35 @@
 
         window.toggleMobileSidebar = function() { document.getElementById('sidebarChats').classList.toggle('-translate-x-full'); };
 
+        // ПОСТЫ В ЛЕНТУ С КАРТИНКАМИ
         window.openCreatePostModal = () => document.getElementById('createPostModal').classList.remove('hidden');
-        window.closeCreatePostModal = () => document.getElementById('createPostModal').classList.add('hidden');
+        window.closeCreatePostModal = () => { document.getElementById('createPostModal').classList.add('hidden'); clearPostImagePreview(); };
+        
+        window.previewPostImage = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.currentPostImageBase64 = e.target.result;
+                    document.getElementById('postImageThumb').src = e.target.result;
+                    document.getElementById('postImagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.clearPostImagePreview = function() {
+            window.currentPostImageBase64 = null;
+            document.getElementById('postImageInput').value = '';
+            document.getElementById('postImagePreviewContainer').classList.add('hidden');
+        };
+
         window.submitPost = async function() {
             const text = document.getElementById('postTextInput').value.trim();
-            if (!text) return;
+            if (!text && !window.currentPostImageBase64) return;
             await db.collection('posts').add({ 
                 author: window.currentUser.name, 
                 text, 
+                image: window.currentPostImageBase64 || null,
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
                 timestamp: firebase.firestore.FieldValue.serverTimestamp() 
             });
@@ -450,8 +517,21 @@
                     const p = doc.data();
                     const firstLetter = escapeHTML(p.author ? p.author.charAt(0).toUpperCase() : 'U');
                     const card = document.createElement('div');
-                    card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-2 shadow-lg';
-                    card.innerHTML = `<div class="flex items-center space-x-2.5"><div class="w-8 h-8 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs">${firstLetter}</div><div><h4 class="font-bold text-xs text-white">${escapeHTML(p.author)}</h4><span class="text-[10px] text-slate-500">${escapeHTML(p.time||'')}</span></div></div><p class="text-xs text-slate-200">${escapeHTML(p.text)}</p>`;
+                    card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-2.5 shadow-lg';
+                    
+                    let imageHtml = p.image ? `<img src="${p.image}" class="w-full h-48 object-cover rounded-xl border border-darkBorder">` : '';
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-darkBg border border-darkBorder text-primaryAccent font-bold flex items-center justify-center text-xs">${firstLetter}</div>
+                            <div>
+                                <h4 class="font-bold text-xs text-white">${escapeHTML(p.author)}</h4>
+                                <span class="text-[10px] text-slate-500">${escapeHTML(p.time||'')}</span>
+                            </div>
+                        </div>
+                        ${p.text ? `<p class="text-xs text-slate-200">${escapeHTML(p.text)}</p>` : ''}
+                        ${imageHtml}
+                    `;
                     container.appendChild(card);
                 });
             });
@@ -507,7 +587,7 @@
             window.chats.forEach(c => {
                 const item = document.createElement('div');
                 item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center space-x-2 bg-darkBg border border-darkBorder text-white text-xs font-semibold';
-                item.innerText = c.name;
+                item.innerHTML = `<i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'}"></i> <span class="truncate">${escapeHTML(c.name)}</span>`;
                 item.onclick = () => { 
                     window.selectChat(c.id); 
                     if(window.innerWidth < 768) {
@@ -544,31 +624,60 @@
                         const isMe = m.sender === window.currentUser?.name;
                         const div = document.createElement('div');
                         div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-                        div.innerHTML = `<div class="max-w-[75%] px-3.5 py-2 rounded-xl text-xs ${isMe ? 'bg-primaryAccent text-white' : 'bg-darkCard text-slate-200 border border-darkBorder'}"><b>${escapeHTML(m.sender)}</b>: ${escapeHTML(m.text)}<div class="text-[8px] opacity-60 text-right mt-0.5">${escapeHTML(m.time||'')}</div></div>`;
+                        
+                        let imageHtml = m.image ? `<img src="${m.image}" class="mt-2 w-48 h-auto rounded-lg border border-darkBorder">` : '';
+                        
+                        div.innerHTML = `
+                            <div class="max-w-[75%] px-3.5 py-2 rounded-xl text-xs ${isMe ? 'bg-primaryAccent text-white' : 'bg-darkCard text-slate-200 border border-darkBorder'}">
+                                <b>${escapeHTML(m.sender)}</b>: ${escapeHTML(m.text || '')}
+                                ${imageHtml}
+                                <div class="text-[8px] opacity-60 text-right mt-0.5">${escapeHTML(m.time||'')}</div>
+                            </div>
+                        `;
                         container.appendChild(div);
                     });
                     container.scrollTop = container.scrollHeight;
                 });
         };
 
+        window.previewChatImage = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.currentChatImageBase64 = e.target.result;
+                    document.getElementById('imagePreviewThumb').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.clearImagePreview = function() {
+            window.currentChatImageBase64 = null;
+            document.getElementById('chatImageInput').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+        };
+
         window.sendMessage = async function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text && !window.currentChatImageBase64) return;
             
             if (window.currentUser.isMuted) {
                 alert('Вы замучены администратором.');
                 return;
             }
 
+            const imageToSend = window.currentChatImageBase64;
             input.value = '';
+            clearImagePreview();
             
             const chatRef = db.collection('chats').doc(window.activeChatId);
             const chatDoc = await chatRef.get();
             if (!chatDoc.exists) {
                 await chatRef.set({
                     name: window.activeChatId === 'pulse_global' ? 'Общий чат' : window.activeChatId,
-                    type: 'friend',
+                    type: 'group',
                     members: [window.currentUser.name]
                 });
             }
@@ -576,19 +685,22 @@
             await chatRef.collection('messages').add({
                 sender: window.currentUser.name,
                 text: text,
+                image: imageToSend || null,
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                 timeLocal: Date.now(),
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
         };
 
-        // ОТКРЫТИЕ И СОЗДАНИЕ ЛС ЧАТА
-        window.openAddFriendModal = async function() {
-            let rawInput = prompt('Введите никнейм собеседника:');
+        // ОТКРЫТИЕ И СОЗДАНИЕ ЛС ЧАТА (МОДАЛЬНОЕ ОКНО)
+        window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
+        window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
+
+        window.submitAddFriend = async function() {
+            let rawInput = document.getElementById('friendUsernameInput').value.trim();
             if (!rawInput) return;
             
-            let targetName = rawInput.trim().toLowerCase().replace(/^#/, '');
-            
+            let targetName = rawInput.toLowerCase().replace(/^#/, '');
             if (targetName.includes('_')) {
                 targetName = targetName.split('_')[0];
             }
@@ -618,6 +730,8 @@
                 }, { merge: true });
 
                 await loadUserChats();
+                closeAddFriendModal();
+                document.getElementById('friendUsernameInput').value = '';
                 
                 window.activeChatId = chatId;
                 window.selectChat(chatId);
@@ -628,6 +742,33 @@
             } catch (error) {
                 console.error(error);
                 alert('Ошибка при создании чата: ' + error.message);
+            }
+        };
+
+        // СОЗДАНИЕ ГРУППОВЫХ ЧАТОВ
+        window.openCreateGroupModal = () => document.getElementById('createGroupModal').classList.remove('hidden');
+        window.closeCreateGroupModal = () => document.getElementById('createGroupModal').classList.add('hidden');
+
+        window.submitCreateGroup = async function() {
+            const groupName = document.getElementById('groupNameInput').value.trim();
+            if (!groupName) return;
+
+            const groupId = 'group_' + Date.now();
+            await db.collection('chats').doc(groupId).set({
+                name: groupName,
+                type: 'group',
+                members: [window.currentUser.name]
+            });
+
+            await loadUserChats();
+            closeCreateGroupModal();
+            document.getElementById('groupNameInput').value = '';
+
+            window.activeChatId = groupId;
+            window.selectChat(groupId);
+
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebarChats').classList.add('-translate-x-full');
             }
         };
 
