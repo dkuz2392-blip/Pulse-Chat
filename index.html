@@ -217,7 +217,7 @@
                     </div>
                 </div>
 
-                <!-- ADMIN PANEL (FULL 26 ENTERPRISE FUNCTIONS) -->
+                <!-- ADMIN PANEL (FULL 26 ENTERPRISE FUNCTIONS + UNIVERSAL SCANNER) -->
                 <div id="adminPanelBox" class="hidden space-y-3 pb-8">
                     <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-lg">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
@@ -326,7 +326,7 @@
         window.activeChatId = 'pulse_bot';
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace 4x!', time: '12:00' }] }
+            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace v8.0 4x!', time: '12:00' }] }
         ];
 
         window.tasksList = JSON.parse(localStorage.getItem('pulse_4x_tasks') || 'null') || [
@@ -563,21 +563,71 @@
             window.selectChat('pulse_bot'); window.renderChats();
         };
 
-        // ADMIN FUNCTIONS (26 ENTERPRISE ACTIONS)
+        // ADMIN FUNCTIONS (Универсальный сканер всех возможных коллекций пользователей)
         window.loadAdminUsers = async function() {
             const tbody = document.getElementById('adminUsersTableBody');
             const countEl = document.getElementById('adminTotalUsersCount');
             if (!tbody) return;
-            const snapshot = await db.collection('users').get();
+
+            tbody.innerHTML = '<tr><td colspan="2" class="p-3 text-slate-400">Поиск пользователей во всех базах...</td></tr>';
+            const allUsersMap = new Map();
+
+            const pathsToSearch = [
+                db.collection('users'),
+                db.collection('profiles'),
+                db.collection('accounts'),
+                db.collection('artifacts').doc('pulse-workspace-v6').collection('public').doc('data').collection('users'),
+                db.collection('artifacts').doc('pulse-workspace-v5').collection('public').doc('data').collection('users')
+            ];
+
+            for (const collectionRef of pathsToSearch) {
+                try {
+                    const snapshot = await collectionRef.get();
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const userName = data.name || data.username || doc.id;
+                        if (userName && !allUsersMap.has(userName.toLowerCase())) {
+                            allUsersMap.set(userName.toLowerCase(), {
+                                id: doc.id,
+                                name: userName,
+                                ref: doc.ref
+                            });
+                        }
+                    });
+                } catch (e) {}
+            }
+
             tbody.innerHTML = '';
-            if (countEl) countEl.innerText = snapshot.size;
-            snapshot.forEach(doc => {
-                const u = doc.data();
+            if (countEl) countEl.innerText = allUsersMap.size;
+
+            if (allUsersMap.size === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" class="p-3 text-slate-400">Пользователи не найдены.</td></tr>';
+                return;
+            }
+
+            allUsersMap.forEach((user) => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="p-3 text-white font-medium">${u.name}</td><td class="p-3 text-right"><button onclick="adminDeleteUser('${doc.id}')" class="text-rose-400 text-[10px] hover:underline">Удалить</button></td>`;
+                tr.className = 'border-b border-darkBorder/50';
+                tr.innerHTML = `
+                    <td class="p-3 text-white font-medium">${user.name}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="adminDeleteUserByRef('${user.ref.path}')" class="text-rose-400 text-[10px] hover:underline">Удалить</button>
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
-            logAdminAction('Загружен список пользователей');
+            logAdminAction(`Найдено пользователей в системе: ${allUsersMap.size}`);
+        };
+
+        window.adminDeleteUserByRef = async function(path) {
+            if (!confirm('Удалить этого пользователя?')) return;
+            try {
+                await db.doc(path).delete();
+                logAdminAction('Удален пользователь по пути: ' + path);
+                loadAdminUsers();
+            } catch(e) {
+                alert('Ошибка: ' + e.message);
+            }
         };
 
         window.adminBroadcast = function() {
@@ -609,13 +659,6 @@
             logAdminAction('Изменен режим безопасности сети');
         };
 
-        window.adminDeleteUser = async function(id) {
-            if (!confirm('Удалить пользователя?')) return;
-            await db.collection('users').doc(id).delete();
-            logAdminAction('Удален пользователь: ' + id);
-            loadAdminUsers();
-        };
-
         function logAdminAction(text) {
             const container = document.getElementById('adminLogsContainer');
             if (!container) return;
@@ -629,4 +672,3 @@
     </script>
 </body>
 </html>
-
