@@ -582,12 +582,13 @@
             });
         };
 
-        // СОЗДАНИЕ И МГНОВЕННОЕ ОТКРЫТИЕ ЛС ЧАТА
+        // ОТКРЫТИЕ И СОЗДАНИЕ ЛС ЧАТА
         window.openAddFriendModal = async function() {
-            let targetName = prompt('Введите никнейм собеседника:');
-            if (!targetName) return;
+            let rawInput = prompt('Введите никнейм собеседника:');
+            if (!rawInput) return;
             
-            targetName = targetName.trim().toLowerCase().replace(/^#/, '');
+            let targetName = rawInput.trim().toLowerCase().replace(/^#/, '');
+            
             if (targetName.includes('_')) {
                 targetName = targetName.split('_')[0];
             }
@@ -597,22 +598,36 @@
                 return;
             }
 
-            const chatId = [window.currentUser.name, targetName].sort().join('_');
-            
-            await db.collection('chats').doc(chatId).set({
-                name: 'ЛС: ' + targetName,
-                type: 'friend',
-                members: [window.currentUser.name, targetName]
-            }, { merge: true });
+            try {
+                let userDoc = await db.collection('users').doc(targetName).get();
+                if (!userDoc.exists) {
+                    userDoc = await db.collection('pulse-chat-app').doc('pulse-chat-app').collection('публичный').doc(targetName).get();
+                }
 
-            await loadUserChats();
-            
-            // Автоматически переключаемся на созданный чат
-            window.activeChatId = chatId;
-            window.selectChat(chatId);
-            
-            if(window.innerWidth < 768) {
-                document.getElementById('sidebarChats').classList.add('-translate-x-full');
+                if (!userDoc.exists) {
+                    alert('Пользователь "' + targetName + '" не найден в базе данных!');
+                    return;
+                }
+
+                const chatId = [window.currentUser.name, targetName].sort().join('_');
+                
+                await db.collection('chats').doc(chatId).set({
+                    name: 'ЛС: ' + targetName,
+                    type: 'friend',
+                    members: [window.currentUser.name, targetName]
+                }, { merge: true });
+
+                await loadUserChats();
+                
+                window.activeChatId = chatId;
+                window.selectChat(chatId);
+                
+                if(window.innerWidth < 768) {
+                    document.getElementById('sidebarChats').classList.add('-translate-x-full');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Ошибка при создании чата: ' + error.message);
             }
         };
 
