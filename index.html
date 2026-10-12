@@ -81,7 +81,6 @@
                 <p class="text-xs text-slate-400">Корпоративная среда • Полный комплекс администрирования</p>
             </div>
 
-            <!-- ИСПРАВЛЕННЫЕ КНОПКИ ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК -->
             <div class="flex bg-darkBg p-1.5 rounded-2xl border border-darkBorder">
                 <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl bg-primaryAccent text-white shadow transition cursor-pointer">Вход</button>
                 <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition cursor-pointer">Регистрация</button>
@@ -170,7 +169,7 @@
 
             <!-- 2. MESSAGES SECTION -->
             <div id="sectionMessages" class="flex-1 flex overflow-hidden hidden relative h-full">
-                <div id="sidebarChats" class="w-full md:w-80 bg-darkCard border-r border-darkBorder flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform">
+                <div id="sidebarChats" class="w-full md:w-80 bg-darkCard border-r border-darkBorder flex flex-col h-full absolute md:relative z-20 inset-y-0 left-0 transition-transform -translate-x-full md:translate-x-0">
                     <div class="p-4 border-b border-darkBorder space-y-3 shrink-0">
                         <div class="flex items-center gap-2">
                             <div class="relative flex-1">
@@ -514,7 +513,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Ошибки авторизации и переключения вкладок устранены.', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Все ошибки устранены.', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
