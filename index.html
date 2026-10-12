@@ -279,7 +279,7 @@
     <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
             <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Новый ЛС чат</h3><button type="button" onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <input type="text" id="friendCodeInput" placeholder="Имя собеседника" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white">
+            <input type="text" id="friendCodeInput" placeholder="Никнейм собеседника" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white">
             <button type="button" onclick="handleAddFriend()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Открыть чат</button>
         </div>
     </div>
@@ -535,7 +535,6 @@
 
             if (window.activeChatListener) window.activeChatListener();
 
-            // Читаем сообщения без orderBy, сортируем на клиенте (работает всегда без индексов)
             window.activeChatListener = db.collection('chats').doc(id).collection('messages')
                 .onSnapshot(snapshot => {
                     const container = document.getElementById('messagesContainer');
@@ -547,7 +546,6 @@
                         messages.push({ id: doc.id, ...doc.data() });
                     });
                     
-                    // Сортировка по времени создания
                     messages.sort((a, b) => (a.timestamp?.toMillis() || a.timeLocal || 0) - (b.timestamp?.toMillis() || b.timeLocal || 0));
 
                     messages.forEach(m => {
@@ -573,7 +571,6 @@
 
             input.value = '';
             
-            // Убедимся, что документ чата существует в Firestore
             const chatRef = db.collection('chats').doc(window.activeChatId);
             const chatDoc = await chatRef.get();
             if (!chatDoc.exists) {
@@ -596,18 +593,26 @@
         window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
         window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
         
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ: ОЧИСТКА ВВОДА ОТ ШХЕШТЕГОВ И ИСПРАВЛЕНИЕ КЛИКА
         window.handleAddFriend = async function() {
-            const name = document.getElementById('friendCodeInput').value.trim().toLowerCase();
-            if (!name) return;
-            const chatId = [window.currentUser.name, name].sort().join('_');
+            let rawInput = document.getElementById('friendCodeInput').value.trim().toLowerCase();
+            if (!rawInput) return;
+
+            // Если ввели вместе с хэштегом (например #koplop_123), очищаем до чистого никнейма
+            let targetName = rawInput.replace(/^#/, '');
+            if (targetName.includes('_')) {
+                targetName = targetName.split('_')[0];
+            }
+
+            const chatId = [window.currentUser.name, targetName].sort().join('_');
             
-            // Сохраняем ЛС чат в облако с участниками
             await db.collection('chats').doc(chatId).set({
-                name: 'ЛС: ' + name,
+                name: 'ЛС: ' + targetName,
                 type: 'friend',
-                members: [window.currentUser.name, name]
+                members: [window.currentUser.name, targetName]
             }, { merge: true });
 
+            document.getElementById('friendCodeInput').value = '';
             closeAddFriendModal();
             loadUserChats();
             window.selectChat(chatId);
