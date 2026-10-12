@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Enterprise Workspace v5.2</title>
+    <title>Pulse Enterprise Workspace v5.3</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -59,6 +59,14 @@
         .wave-bar { animation: waveAnim 1.2s ease-in-out infinite; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .animate-modal { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        /* Принудительный скролл для мобильных таблиц */
+        .admin-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body class="h-full overflow-hidden flex flex-col select-none theme-linear">
@@ -291,8 +299,8 @@
                         </div>
                     </div>
                     
-                    <!-- Scrollable wrapper for admin table with horizontal swipe support -->
-                    <div class="border border-darkBorder rounded-2xl overflow-x-auto bg-darkBg shadow-inner">
+                    <!-- Scrollable wrapper with forced mobile swipe support -->
+                    <div class="admin-table-wrapper border border-darkBorder rounded-2xl bg-darkBg shadow-inner">
                         <table class="w-full text-left border-collapse text-xs min-w-[500px]">
                             <thead><tr class="border-b border-darkBorder bg-darkCard/50 text-slate-400"><th class="p-4">Пользователь</th><th class="p-4">ID / Статус</th><th class="p-4 text-right">Управление</th></tr></thead>
                             <tbody id="adminUsersTableBody" class="divide-y divide-darkBorder"></tbody>
@@ -979,7 +987,7 @@
                 const isOnline = (Date.now() - (window.lastSeenMap[u.code?.toLowerCase()]||0)) < 45000;
                 if (isOnline) onlineCount++;
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/30 transition";
+                tr.className = "hover:bg-slate-900/35 transition";
                 
                 const isImg = u.avatar && u.avatar.startsWith('data:image');
                 const userAvatarContent = isImg ? `<img src="${u.avatar}" class="w-full h-full object-cover">` : (u.avatar || 'U');
