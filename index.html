@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v6.0 - Enterprise Pro</title>
+    <title>Pulse Workspace v8.0 - Enterprise Ultra (4x Edition)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase Classic CDN (Для стабильности на GitHub Pages и моб. устройствах) -->
+    <!-- Firebase Classic CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -66,8 +66,8 @@
             </div>
 
             <div class="space-y-0.5">
-                <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace</h1>
-                <p class="text-xs text-slate-400">Корпоративная среда v6.0</p>
+                <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace 4x</h1>
+                <p class="text-xs text-slate-400">Корпоративная среда Ultra Edition</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -186,7 +186,19 @@
                 </div>
             </div>
 
-            <!-- 3. SETTINGS & FULL 26-FEATURE ADMIN PANEL SECTION -->
+            <!-- 3. EXTENDED 4X MODULE: CLOUD DRIVE & TASKS -->
+            <div id="sectionCloud" class="flex-1 flex flex-col overflow-y-auto p-4 hidden max-w-lg mx-auto w-full space-y-4 h-full">
+                <div class="flex items-center justify-between border-b border-darkBorder pb-4">
+                    <div>
+                        <h2 class="font-bold text-sm text-white">Облачный архив & Задачи (4x)</h2>
+                        <p class="text-[10px] text-slate-400">Дополнительное корпоративное хранилище</p>
+                    </div>
+                    <button type="button" onclick="createNewTask()" class="px-3.5 py-2 bg-primaryAccent text-white rounded-xl text-xs font-semibold cursor-pointer">Задача</button>
+                </div>
+                <div id="tasksContainer" class="space-y-2.5"></div>
+            </div>
+
+            <!-- 4. SETTINGS & FULL 26-FEATURE ADMIN PANEL SECTION -->
             <div id="sectionSettings" class="flex-1 flex flex-col overflow-y-auto p-4 hidden max-w-lg mx-auto w-full space-y-4 h-full">
                 <div class="flex items-center justify-between border-b border-darkBorder pb-4">
                     <div>
@@ -247,10 +259,11 @@
 
         </div>
 
-        <!-- FIXED BOTTOM NAVIGATION BAR -->
+        <!-- FIXED BOTTOM NAVIGATION BAR (EXPANDED TO 4 ITEMS) -->
         <div class="absolute bottom-0 inset-x-0 h-16 bg-darkCard/95 border-t border-darkBorder flex items-center justify-around px-2 z-40 shadow-2xl backdrop-blur-xl">
             <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"><i class="fa-solid fa-newspaper text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Лента</span></button>
             <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-comments text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Чаты</span></button>
+            <button type="button" onclick="switchSection('cloud')" id="navBtnCloud" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-cloud text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Облако</span></button>
             <button type="button" onclick="switchSection('settings')" id="navBtnSettings" class="flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer"><i class="fa-solid fa-gear text-sm mb-0.5"></i><span class="text-[10px] font-semibold">Профиль</span></button>
         </div>
     </div>
@@ -313,7 +326,11 @@
         window.activeChatId = 'pulse_bot';
 
         window.chats = JSON.parse(localStorage.getItem('pulse_chat_chats') || 'null') || [
-            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace v6.0!', time: '12:00' }] }
+            { id: 'pulse_bot', name: 'ИИ Ассистент', type: 'friend', messages: [{ sender: 'Ассистент', text: 'Добро пожаловать в Pulse Workspace 4x!', time: '12:00' }] }
+        ];
+
+        window.tasksList = JSON.parse(localStorage.getItem('pulse_4x_tasks') || 'null') || [
+            { id: 1, title: 'Защита проекта', desc: 'Проверить интеграцию с Firebase и GitHub Pages', date: '12.10.2026' }
         ];
 
         window.setTheme = function(theme) {
@@ -376,16 +393,18 @@
             window.selectChat(window.activeChatId);
             subscribeToFeed();
             subscribeToStories();
+            renderTasks();
         }
 
         window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
 
         window.switchSection = function(section) {
-            ['sectionFeed', 'sectionMessages', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['navBtnFeed', 'navBtnMessages', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
+            ['sectionFeed', 'sectionMessages', 'sectionCloud', 'sectionSettings'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['navBtnFeed', 'navBtnMessages', 'navBtnCloud', 'navBtnSettings'].forEach(b => document.getElementById(b).className = "flex-1 flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-200 transition cursor-pointer");
 
             if (section === 'feed') { document.getElementById('sectionFeed').classList.remove('hidden'); document.getElementById('navBtnFeed').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; }
             else if (section === 'messages') { document.getElementById('sectionMessages').classList.remove('hidden'); document.getElementById('navBtnMessages').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; window.renderChats(); }
+            else if (section === 'cloud') { document.getElementById('sectionCloud').classList.remove('hidden'); document.getElementById('navBtnCloud').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; renderTasks(); }
             else if (section === 'settings') { document.getElementById('sectionSettings').classList.remove('hidden'); document.getElementById('navBtnSettings').className = "flex-1 flex flex-col items-center justify-center py-1 text-primaryAccent transition cursor-pointer"; if (window.currentUser?.isAdmin || window.currentUser?.isCreator) loadAdminUsers(); }
         };
 
@@ -493,6 +512,33 @@
             container.scrollTop = container.scrollHeight;
         };
 
+        window.renderTasks = function() {
+            const container = document.getElementById('tasksContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            window.tasksList.forEach((t, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-2 shadow-lg';
+                card.innerHTML = `<div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">${t.title}</h3><span class="text-[9px] text-slate-500">${t.date}</span></div><p class="text-xs text-slate-300">${t.desc}</p><div class="flex justify-end pt-1"><button onclick="deleteTask(${idx})" class="text-[10px] text-rose-400 hover:underline">Удалить</button></div>`;
+                container.appendChild(card);
+            });
+        };
+
+        window.createNewTask = function() {
+            const title = prompt('Название задачи:');
+            if (!title) return;
+            const desc = prompt('Описание:');
+            window.tasksList.push({ id: Date.now(), title, desc: desc || '', date: new Date().toLocaleDateString() });
+            localStorage.setItem('pulse_4x_tasks', JSON.stringify(window.tasksList));
+            renderTasks();
+        };
+
+        window.deleteTask = function(idx) {
+            window.tasksList.splice(idx, 1);
+            localStorage.setItem('pulse_4x_tasks', JSON.stringify(window.tasksList));
+            renderTasks();
+        };
+
         window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
         window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
         window.handleAddFriend = function() {
@@ -583,3 +629,4 @@
     </script>
 </body>
 </html>
+
