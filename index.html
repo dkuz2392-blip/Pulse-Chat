@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v9.8 - Pro Edition</title>
+    <title>Pulse Workspace v10.1 - Pro Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -249,7 +249,32 @@
                             <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
                                 <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА
                             </h3>
-                            <span class="text-[11px] text-slate-400">Всего: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
+                            <span class="text-[11px] text-slate-400">Всего юзеров: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
+                        </div>
+
+                        <!-- ДАШБОРД ЖИВОЙ АНАЛИТИКИ -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-darkBg p-2.5 rounded-xl border border-darkBorder text-center">
+                                <span class="text-[9px] text-slate-400 block uppercase">Постов</span>
+                                <strong id="statPostsCount" class="text-xs text-white font-bold">0</strong>
+                            </div>
+                            <div class="bg-darkBg p-2.5 rounded-xl border border-darkBorder text-center">
+                                <span class="text-[9px] text-slate-400 block uppercase">Историй</span>
+                                <strong id="statStoriesCount" class="text-xs text-white font-bold">0</strong>
+                            </div>
+                            <div class="bg-darkBg p-2.5 rounded-xl border border-darkBorder text-center">
+                                <span class="text-[9px] text-slate-400 block uppercase">Чатов</span>
+                                <strong id="statChatsCount" class="text-xs text-white font-bold">0</strong>
+                            </div>
+                        </div>
+
+                        <!-- МОНИТОРИНГ ХРАНИЛИЩА -->
+                        <div class="bg-darkBg p-3 rounded-xl border border-darkBorder flex items-center justify-between text-[11px]">
+                            <div>
+                                <span class="font-semibold text-white block"><i class="fa-solid fa-server text-indigo-400 mr-1"></i> Хранилище БД</span>
+                                <span id="storageSizeInfo" class="text-[9px] text-slate-400">Загрузка размера...</span>
+                            </div>
+                            <button type="button" onclick="f11_autoCleanOldData()" class="px-2.5 py-1.5 bg-darkCard border border-darkBorder text-amber-300 rounded-lg hover:border-primaryAccent transition">Авто-очистка</button>
                         </div>
 
                         <!-- РАСШИРЕННЫЕ ИНСТРУМЕНТЫ -->
@@ -268,20 +293,23 @@
                             <button type="button" onclick="f8_muteUser()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-amber-300 text-left truncate"><i class="fa-solid fa-volume-xmark mr-1.5"></i> Выдать мут</button>
                             <button type="button" onclick="f10_giveVipQuick()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-emerald-300 text-left truncate"><i class="fa-solid fa-circle-check mr-1.5"></i> Выдать VIP ✅</button>
 
-                            <button type="button" onclick="loadAdminUsers()" class="p-2.5 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center col-span-2 truncate"><i class="fa-solid fa-rotate mr-1.5"></i> Обновить пользователей</button>
+                            <button type="button" onclick="loadAdminUsers()" class="p-2.5 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center col-span-2 truncate"><i class="fa-solid fa-rotate mr-1.5"></i> Обновить аналитику</button>
                         </div>
 
-                        <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ -->
+                        <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ И ДОСЬЕ -->
                         <div class="space-y-1.5 pt-2">
-                            <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">СПИСОК ПОЛЬЗОВАТЕЛЕЙ</h4>
+                            <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">СПИСОК ПОЛЬЗОВАТЕЛЕЙ И ДОСЬЕ</h4>
                             <div id="adminUsersCardsList" class="space-y-2"></div>
                         </div>
 
-                        <!-- ЖУРНАЛ АУДИТА -->
+                        <!-- ЖУРНАЛ АУДИТА С ЭКСПОРТОМ -->
                         <div class="space-y-1.5 pt-2">
-                            <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">ЖУРНАЛ АУДИТА</h4>
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">ЖУРНАЛ АУДИТА</h4>
+                                <button type="button" onclick="exportAuditLogs()" class="text-[10px] text-primaryAccent hover:underline"><i class="fa-solid fa-download mr-1"></i>Экспорт логов</button>
+                            </div>
                             <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
-                                <div>[Система] Расширенная админ-панель активна...</div>
+                                <div>[Система] Аналитика, анти-спам и аудит активны...</div>
                             </div>
                         </div>
                     </div>
@@ -355,6 +383,25 @@
             </div>
             <input type="text" id="storyTextInput" placeholder="Текст или мысль истории..." class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
             <button type="button" onclick="submitStory()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold shadow-lg shadow-primaryAccent/30">Опубликовать историю</button>
+        </div>
+    </div>
+
+    <!-- 5. VIEW STORY MODAL -->
+    <div id="viewStoryModal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 flex flex-col justify-between space-y-4 animate-modal relative min-h-[300px]">
+            <div class="flex items-center justify-between border-b border-darkBorder pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <div id="viewStoryAvatar" class="w-8 h-8 rounded-full bg-primaryAccent text-white font-bold flex items-center justify-center text-xs">U</div>
+                    <h3 id="viewStoryAuthor" class="font-bold text-xs text-white">Автор</h3>
+                </div>
+                <button type="button" onclick="closeViewStoryModal()" class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-lg bg-darkBg border border-darkBorder"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 flex items-center justify-center py-6">
+                <p id="viewStoryText" class="text-sm text-slate-100 text-center leading-relaxed font-medium break-words"></p>
+            </div>
+            <div class="text-center text-[10px] text-slate-500 border-t border-darkBorder pt-3">
+                История Pulse Ecosystem
+            </div>
         </div>
     </div>
 
@@ -469,7 +516,8 @@
                     role, 
                     isBanned: false,
                     isMuted: false,
-                    status: 'В сети в Pulse'
+                    status: 'В сети в Pulse',
+                    createdAt: Date.now()
                 };
                 
                 await db.collection('users').doc(username).set(newUser);
@@ -499,6 +547,7 @@
             window.selectChat(window.activeChatId);
             subscribeToFeed();
             subscribeToStories();
+            if (hasAdminRights) loadAdminAnalytics();
         }
 
         window.confirmLogout = function() {
@@ -632,12 +681,29 @@
                     if (Date.now() - s.timestamp > 86400000) return;
                     const firstLetter = escapeHTML(s.author ? s.author.charAt(0).toUpperCase() : 'U');
                     const div = document.createElement('div');
-                    div.className = 'flex flex-col items-center space-y-1.5 shrink-0';
-                    div.innerHTML = `<div class="w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center shadow-md"><div class="w-full h-full bg-darkBg rounded-[14px] flex items-center justify-center font-bold text-xs text-white">${firstLetter}</div></div><span class="text-[10px] text-slate-300 truncate max-w-[48px]">${escapeHTML(s.author)}</span>`;
+                    div.className = 'flex flex-col items-center space-y-1.5 shrink-0 cursor-pointer group';
+                    div.innerHTML = `
+                        <div class="w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center shadow-md group-hover:scale-105 transition">
+                            <div class="w-full h-full bg-darkBg rounded-[14px] flex items-center justify-center font-bold text-xs text-white">${firstLetter}</div>
+                        </div>
+                        <span class="text-[10px] text-slate-300 truncate max-w-[48px]">${escapeHTML(s.author)}</span>
+                    `;
+                    div.onclick = () => openViewStoryModal(s.author, s.text);
                     tray.appendChild(div);
                 });
             });
         }
+
+        window.openViewStoryModal = function(author, text) {
+            document.getElementById('viewStoryAuthor').innerText = author;
+            document.getElementById('viewStoryAvatar').innerText = author.charAt(0).toUpperCase();
+            document.getElementById('viewStoryText').innerText = text;
+            document.getElementById('viewStoryModal').classList.remove('hidden');
+        };
+
+        window.closeViewStoryModal = function() {
+            document.getElementById('viewStoryModal').classList.add('hidden');
+        };
 
         // ЧАТЫ И СООБЩЕНИЯ
         async function loadUserChats() {
@@ -899,67 +965,87 @@
             }
         };
 
-        // АДМИН ПАНЕЛЬ И РАСШИРЕННЫЕ ФУНКЦИИ
+        // АДМИН ПАНЕЛЬ И АНАЛИТИКА
         window.loadAdminUsers = async function() {
+            loadAdminAnalytics();
+        };
+
+        async function loadAdminAnalytics() {
             const container = document.getElementById('adminUsersCardsList');
             const countEl = document.getElementById('adminTotalUsersCount');
+            const postsCountEl = document.getElementById('statPostsCount');
+            const storiesCountEl = document.getElementById('statStoriesCount');
+            const chatsCountEl = document.getElementById('statChatsCount');
+            const storageInfoEl = document.getElementById('storageSizeInfo');
             if (!container) return;
 
-            container.innerHTML = '<div class="p-3 text-slate-400 text-xs">Загрузка пользователей...</div>';
-            const allUsersMap = new Map();
+            container.innerHTML = '<div class="p-3 text-slate-400 text-xs">Загрузка данных и аналитики...</div>';
 
             try {
-                const snapshot = await db.collection('users').get();
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    allUsersMap.set(doc.id, { id: doc.id, ...data, ref: doc.ref });
-                });
-            } catch (e) {}
+                const [usersSnap, postsSnap, storiesSnap, chatsSnap] = await Promise.all([
+                    db.collection('users').get(),
+                    db.collection('posts').get(),
+                    db.collection('stories').get(),
+                    db.collection('chats').get()
+                ]);
 
-            container.innerHTML = '';
-            if (countEl) countEl.innerText = allUsersMap.size;
+                if (countEl) countEl.innerText = usersSnap.size;
+                if (postsCountEl) postsCountEl.innerText = postsSnap.size;
+                if (storiesCountEl) storiesCountEl.innerText = storiesSnap.size;
+                if (chatsCountEl) chatsCountEl.innerText = chatsSnap.size;
+                if (storageInfoEl) storageInfoEl.innerText = `Документов в БД: ~${usersSnap.size + postsSnap.size + storiesSnap.size + chatsSnap.size}`;
 
-            allUsersMap.forEach((user) => {
-                const firstLetter = escapeHTML(user.name.charAt(0).toUpperCase());
-                let role = user.role || (user.isCreator ? 'owner' : (user.isAdmin ? 'admin' : 'user'));
-                
-                let roleDisplay = 'User';
-                let roleBg = 'bg-slate-700/30 text-slate-300 border-slate-600/30';
-                if (role === 'owner') { roleDisplay = 'Owner'; roleBg = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'; }
-                else if (role === 'admin') { roleDisplay = 'Admin'; roleBg = 'bg-amber-500/20 text-amber-300 border-amber-500/30'; }
-                else if (role === 'vip') { roleDisplay = 'VIP ✅'; roleBg = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'; }
+                container.innerHTML = '';
+                usersSnap.forEach(doc => {
+                    const user = doc.data();
+                    const firstLetter = escapeHTML(user.name.charAt(0).toUpperCase());
+                    let role = user.role || (user.isCreator ? 'owner' : (user.isAdmin ? 'admin' : 'user'));
+                    
+                    let roleDisplay = 'User';
+                    let roleBg = 'bg-slate-700/30 text-slate-300 border-slate-600/30';
+                    if (role === 'owner') { roleDisplay = 'Owner'; roleBg = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'; }
+                    else if (role === 'admin') { roleDisplay = 'Admin'; roleBg = 'bg-amber-500/20 text-amber-300 border-amber-500/30'; }
+                    else if (role === 'vip') { roleDisplay = 'VIP ✅'; roleBg = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'; }
 
-                const card = document.createElement('div');
-                card.className = 'bg-darkBg border border-darkBorder rounded-xl p-3 flex flex-col space-y-2.5';
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2.5 overflow-hidden">
-                            <div class="w-8 h-8 rounded-lg bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center shrink-0">${firstLetter}</div>
-                            <div class="overflow-hidden">
-                                <h4 class="font-bold text-xs text-white truncate">${escapeHTML(user.name)} ${user.isBanned ? '<span class="text-rose-500">[BAN]</span>':''}</h4>
-                                <p class="text-[9px] text-slate-400 font-mono truncate">${escapeHTML(user.code||'')}</p>
+                    const isNewbie = user.createdAt && (Date.now() - user.createdAt < 86400000);
+                    const newbieBadge = isNewbie ? '<span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[9px] ml-1">Новичок</span>' : '';
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-darkBg border border-darkBorder rounded-xl p-3 flex flex-col space-y-2.5';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2.5 overflow-hidden">
+                                <div class="w-8 h-8 rounded-lg bg-darkCard border border-darkBorder font-bold text-xs text-white flex items-center justify-center shrink-0">${firstLetter}</div>
+                                <div class="overflow-hidden">
+                                    <h4 class="font-bold text-xs text-white truncate">${escapeHTML(user.name)}${newbieBadge} ${user.isBanned ? '<span class="text-rose-500">[BAN]</span>':''}</h4>
+                                    <p class="text-[9px] text-slate-400 font-mono truncate">ID: ${escapeHTML(user.code||'#usr')} | Статус: "${escapeHTML(user.status||'нет')}"</p>
+                                </div>
                             </div>
+                            <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${roleBg}">${roleDisplay}</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold ${roleBg}">${roleDisplay}</span>
-                    </div>
-                    <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-darkBorder text-[10px]">
-                        <button onclick="changeUserRole('${user.id}', 'owner')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-indigo-300 hover:border-primaryAccent">Owner</button>
-                        <button onclick="changeUserRole('${user.id}', 'admin')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-amber-300 hover:border-primaryAccent">Admin</button>
-                        <button onclick="changeUserRole('${user.id}', 'vip')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-emerald-300 hover:border-primaryAccent">VIP</button>
-                        <button onclick="changeUserRole('${user.id}', 'user')" class="px-2.5 py-1 bg-darkCard border border-darkBorder rounded-lg text-slate-300 hover:border-primaryAccent">User</button>
-                        <button onclick="adminDeleteUser('${user.id}')" class="px-2 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg ml-auto"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        };
+                        <div class="flex items-center justify-between pt-1 border-t border-darkBorder text-[10px]">
+                            <div class="flex gap-1">
+                                <button onclick="changeUserRole('${doc.id}', 'owner')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-indigo-300 hover:border-primaryAccent">Owner</button>
+                                <button onclick="changeUserRole('${doc.id}', 'admin')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-amber-300 hover:border-primaryAccent">Admin</button>
+                                <button onclick="changeUserRole('${doc.id}', 'vip')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-emerald-300 hover:border-primaryAccent">VIP</button>
+                                <button onclick="changeUserRole('${doc.id}', 'user')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-slate-300 hover:border-primaryAccent">User</button>
+                            </div>
+                            <button onclick="adminDeleteUser('${doc.id}')" class="px-2.5 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                container.innerHTML = '<div class="p-3 text-rose-400 text-xs">Ошибка загрузки аналитики</div>';
+            }
+        }
 
         window.changeUserRole = async function(username, newRole) {
             if (!confirm(`Изменить роль пользователя ${username} на ${newRole.toUpperCase()}?`)) return;
             try {
                 await db.collection('users').doc(username).update({ role: newRole });
                 logAdminAction(`Роль ${username} изменена на ${newRole}`);
-                loadAdminUsers();
+                loadAdminAnalytics();
             } catch(e) {
                 alert('Ошибка при изменении роли');
             }
@@ -973,14 +1059,25 @@
             container.prepend(div);
         }
 
-        // РАСШИРЕННЫЕ ИНСТРУМЕНТЫ АДМИНИСТРАТОРА
+        window.exportAuditLogs = function() {
+            const container = document.getElementById('adminLogsContainer');
+            if(!container) return;
+            const text = container.innerText;
+            const blob = new Blob([text], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'audit_logs_' + Date.now() + '.txt';
+            a.click();
+            logAdminAction('Журнал аудита выгружен в текстовый файл');
+        };
+
         window.f1_broadcast = async () => { const msg = prompt('Текст системной рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', role: 'owner', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена в ленту'); alert('Рассылка успешно отправлена!'); } };
-        window.f2_clearFeed = async () => { if(confirm('ВНИМАНИЕ: Очистить всю ленту публикаций?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента публикаций полностью очищена'); alert('Лента очищена!'); } };
+        window.f2_clearFeed = async () => { if(confirm('ВНИМАНИЕ: Очистить всю ленту публикаций?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента публикаций полностью очищена'); loadAdminAnalytics(); alert('Лента очищена!'); } };
         window.f3_exportDb = async () => { const snap = await db.collection('users').get(); let u=[]; snap.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_users_backup.json'; a.click(); logAdminAction('Создан и скачан дамп базы данных пользователей'); };
         window.f4_toggleLock = () => { logAdminAction('Режим ЧП переключен администратором'); alert('Режим ЧП задействован!'); };
-        window.f5_clearStories = async () => { if(confirm('Удалить все текущие истории?')){ const snap = await db.collection('stories').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Все активные истории удалены'); alert('Истории очищены!'); } };
-        window.f6_banUser = async () => { const u=prompt('Введите ник пользователя для БАНа:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: true }); logAdminAction('Забанен пользователь: ' + un); alert(`Пользователь ${un} забанен.`); loadAdminUsers(); } };
-        window.f7_unbanUser = async () => { const u=prompt('Введите ник для РАЗБАНА:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: false }); logAdminAction('Разбанен пользователь: ' + un); alert(`Пользователь ${un} разбанен.`); loadAdminUsers(); } };
+        window.f5_clearStories = async () => { if(confirm('Удалить все текущие истории?')){ const snap = await db.collection('stories').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Все активные истории удалены'); loadAdminAnalytics(); alert('Истории очищены!'); } };
+        window.f6_banUser = async () => { const u=prompt('Введите ник пользователя для БАНа:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: true }); logAdminAction('Забанен пользователь: ' + un); alert(`Пользователь ${un} забанен.`); loadAdminAnalytics(); } };
+        window.f7_unbanUser = async () => { const u=prompt('Введите ник для РАЗБАНА:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: false }); logAdminAction('Разбанен пользователь: ' + un); alert(`Пользователь ${un} разбанен.`); loadAdminAnalytics(); } };
         window.f8_muteUser = async () => { const u=prompt('Введите ник для выдачи мута:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isMuted: true }); logAdminAction('Выдан мут пользователю: ' + un); alert(`Мут выдан игроку ${un}.`); } };
         
         window.f9_clearAllChatsMessages = async () => {
@@ -1009,9 +1106,30 @@
                     await db.collection('users').doc(un).update({ role: 'vip' });
                     logAdminAction('Выдан VIP статус пользователю: ' + un);
                     alert(`Пользователь ${un} теперь VIP ✅!`);
-                    loadAdminUsers();
+                    loadAdminAnalytics();
                 } catch(e) {
                     alert('Пользователь не найден в базе данных');
+                }
+            }
+        };
+
+        window.f11_autoCleanOldData = async function() {
+            if(confirm('Удалить истории старше 24 часов и старые данные?')) {
+                try {
+                    const snap = await db.collection('stories').get();
+                    let count = 0;
+                    snap.forEach(doc => {
+                        const s = doc.data();
+                        if (Date.now() - s.timestamp > 86400000) {
+                            doc.ref.delete();
+                            count++;
+                        }
+                    });
+                    logAdminAction(`Авто-очистка хранилища: удалено устаревших историй: ${count}`);
+                    alert(`Успешно очищено устаревших объектов: ${count}`);
+                    loadAdminAnalytics();
+                } catch(e) {
+                    alert('Ошибка при авто-очистке');
                 }
             }
         };
@@ -1020,7 +1138,7 @@
             if (!confirm('Удалить аккаунт ' + id + '?')) return;
             await db.collection('users').doc(id).delete();
             logAdminAction('Удален юзер: ' + id);
-            loadAdminUsers();
+            loadAdminAnalytics();
         };
 
         window.copyMyCode = () => { navigator.clipboard.writeText(window.currentUser.code); alert('ID скопирован!'); };
