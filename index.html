@@ -110,7 +110,7 @@
                     <input type="password" id="regPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="••••••••">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-slate-300">Секретный ключ (опционально)</label>
+                    <label class="text-xs font-medium text-slate-300">Секретный ключ (67 - Создатель, 1488 - Админ)</label>
                     <input type="password" id="regAdminKey" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="Ключ доступа">
                 </div>
                 <button type="button" id="regSubmitBtn" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
@@ -263,7 +263,7 @@
                                 <span id="settingsCreatorBadge" class="hidden px-2 py-0.5 bg-primaryAccent/20 text-primaryAccent text-[10px] rounded-lg font-bold border border-primaryAccent/30">Creator</span>
                                 <span id="settingsAdminBadge" class="hidden px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] rounded-lg font-bold border border-amber-500/30">Admin</span>
                             </div>
-                            <button type="button" id="copyCodeBtn" class="text-xs text-primaryAccent hover:underline font-mono cursor-pointer">#id</button>
+                            <button type="button" id="copyCodeBtn" class="text-xs text-primaryAccent hover:underline font-mono cursor-pointer"><span id="settingsUserCode">#id</span></button>
                         </div>
                     </div>
                     <button type="button" id="logoutBtn" class="px-4 py-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl text-xs font-semibold hover:bg-rose-500/20 cursor-pointer">Выйти</button>
@@ -1516,7 +1516,7 @@
         }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-        // Жесткая универсальная привязка событий с поддержкой касаний (touch/click) для мобилок
+        // Универсальная надежная привязка с поддержкой кликов и тачей для мобильных устройств
         document.addEventListener('DOMContentLoaded', () => {
             const bindAction = (id, fn) => {
                 const el = document.getElementById(id);
@@ -1552,7 +1552,7 @@
             bindAction('submitStoryBtn', () => window.submitStory());
 
             bindAction('openAddFriendModalBtn', () => window.openAddFriendModal());
-            bindAction('closeAddFriendBtn', () => window.closeAddFriendModal());
+            bindAction('closeAddFriendBtn', () => window.openAddFriendModal());
             bindAction('submitAddFriendBtn', () => window.handleAddFriend());
 
             bindAction('openCreateGroupModalBtn', () => window.openCreateGroupModal());
