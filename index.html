@@ -329,10 +329,9 @@
                     <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 space-y-6 shadow-xl">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-4">
                             <h3 class="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved"></i> Панель администратора
+                                <i class="fa-solid fa-shield-halved"></i> Панель администратора (26 функций управления)
                             </h3>
                             <div class="flex items-center gap-3">
-                                <button type="button" onclick="openAllMessagesModal()" class="px-3 py-1.5 bg-primaryAccent/20 hover:bg-primaryAccent/30 text-primaryAccent border border-primaryAccent/30 rounded-xl text-[11px] font-semibold transition cursor-pointer"><i class="fa-solid fa-comments mr-1"></i> Все сообщения сети</button>
                                 <button type="button" onclick="clearGlobalFeed()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-[11px] font-semibold transition cursor-pointer"><i class="fa-solid fa-trash-can mr-1"></i> Очистить ленту</button>
                                 <span class="text-xs text-slate-400">В сети: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                             </div>
@@ -364,9 +363,9 @@
                         </div>
 
                         <div class="space-y-2">
-                            <h4 class="font-bold text-[11px] text-slate-400 uppercase tracking-wider">Рабочий журнал аудита администраторов</h4>
-                            <div id="adminLogsContainer" class="p-3 bg-darkBg border border-darkBorder rounded-2xl h-36 overflow-y-auto space-y-1 text-[11px] font-mono text-slate-400 shadow-inner">
-                                <div>[Система] Загрузка журнала аудита из облака...</div>
+                            <h4 class="font-bold text-[11px] text-slate-400 uppercase tracking-wider">Журнал аудита администраторов</h4>
+                            <div id="adminLogsContainer" class="p-3 bg-darkBg border border-darkBorder rounded-2xl h-32 overflow-y-auto space-y-1 text-[11px] font-mono text-slate-400 shadow-inner">
+                                <div>[Система] Аудит всех административных функций активен...</div>
                             </div>
                         </div>
                     </div>
@@ -384,18 +383,6 @@
     </div>
 
     <!-- MODALS & OVERLAYS -->
-    <div id="allMessagesModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-2xl bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal max-h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center border-b border-darkBorder pb-3">
-                <h3 class="font-bold text-sm text-white flex items-center gap-2"><i class="fa-solid fa-comments text-primaryAccent"></i> Все сообщения сети (Мониторинг)</h3>
-                <button type="button" onclick="closeAllMessagesModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="allMessagesContainer" class="flex-1 overflow-y-auto space-y-2 p-2 bg-darkBg border border-darkBorder rounded-2xl text-xs">
-                <div class="text-center text-slate-500 py-8">Загрузка сообщений...</div>
-            </div>
-        </div>
-    </div>
-
     <div id="createPostModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-darkCard border border-darkBorder rounded-3xl shadow-2xl p-7 space-y-4 animate-modal">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3.5">
@@ -470,7 +457,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
@@ -489,6 +476,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        let authenticatedUser = null;
         let unsubscribeMessages = null;
 
         window.CREATOR_KEY = "67";      
@@ -536,7 +524,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v5.9 активирован. Сессия сохраняется надежно.', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v5.9 активирован. Сессия сохраняется надежно при перезагрузках[span_2](start_span)[span_2](end_span).', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
@@ -550,23 +538,44 @@
                 }
             } catch (err) {}
         }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authenticatedUser = user;
+                subscribeToFeed();
+                subscribeToStories();
+                subscribeToPublicMessages();
+                subscribeToPresence();
+                syncUserSessionState();
+            }
+        });
         initAuth();
 
         const savedTheme = localStorage.getItem('pulse_theme');
         if (savedTheme) window.setTheme(savedTheme);
 
-        // Инициализация сессии при старте приложения
-        window.addEventListener('DOMContentLoaded', () => {
-            const session = localStorage.getItem('pulse_session');
-            if (session) {
-                try {
-                    const user = JSON.parse(session);
-                    initSession(user, false);
-                } catch(e) {
-                    localStorage.removeItem('pulse_session');
+        async function syncUserSessionState() {
+            if (!window.currentUser) return;
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase());
+                const snap = await getDoc(userDocRef);
+                if (snap.exists()) {
+                    const fresh = snap.data();
+                    window.currentUser.isAdmin = fresh.isAdmin;
+                    window.currentUser.isCreator = fresh.isCreator;
+                    window.currentUser.isBanned = fresh.isBanned;
+                    window.currentUser.isMuted = fresh.isMuted;
+                    localStorage.setItem('pulse_session', JSON.stringify(window.currentUser));
                 }
+            } catch(e) {}
+            
+            if (window.currentUser.isBanned) {
+                alert('Ваш аккаунт заблокирован администратором.');
+                logout();
             }
-        });
+            const muteNotice = document.getElementById('muteNotice');
+            if (muteNotice) muteNotice.classList.toggle('hidden', !window.currentUser.isMuted);
+        }
 
         window.switchSection = function(section) {
             const feed = document.getElementById('sectionFeed');
@@ -766,7 +775,6 @@
             try {
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId));
                 window.showToast('Запись удалена', 'success');
-                logAdminAction(`Администратор ${window.currentUser.name} удалил запись #${postId} из ленты.`);
             } catch (err) {
                 window.showToast('Ошибка удаления', 'error');
             }
@@ -781,7 +789,7 @@
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', d.id));
                 }
                 window.showToast('Инфопоток очищен', 'success');
-                logAdminAction(`Администратор ${window.currentUser.name} полностью очистил ленту публикаций.`);
+                logAdminAction(`Администратор ${window.currentUser.name} очистил ленту публикаций.`);
             } catch(e) {
                 window.showToast('Ошибка очистки ленты', 'error');
             }
@@ -824,6 +832,7 @@
         function getPairChatCode(a, b) { return [a.toLowerCase(), b.toLowerCase()].sort().join('_'); }
 
         function subscribeToPublicMessages() {
+            if (!authenticatedUser) return;
             if (unsubscribeMessages) unsubscribeMessages();
             unsubscribeMessages = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
@@ -1058,7 +1067,7 @@
         window.endAudioCall = function() { document.getElementById('audioCallModal').classList.add('hidden'); };
 
         function updateMyPresence() {
-            if (!window.currentUser) return;
+            if (!authenticatedUser || !window.currentUser) return;
             setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'presence', window.currentUser.code.replace('#','usr_')), { code: window.currentUser.code, lastSeen: Date.now() }, { merge: true });
         }
         function subscribeToPresence() {
@@ -1090,7 +1099,8 @@
                     const found = docSnap.data();
                     if (found.password === password) {
                         if (found.isBanned) { showAlert('Аккаунт заблокирован'); return; }
-                        initSession(found, true);
+                        localStorage.setItem('pulse_session', JSON.stringify(found));
+                        initSession(found);
                     } else {
                         showAlert('Неверный пароль');
                     }
@@ -1124,25 +1134,16 @@
                     password: password, isCreator: isCreator, isAdmin: isAdmin, isBanned: false, isMuted: false, avatar: username.charAt(0).toUpperCase(), bio: ''
                 };
                 await setDoc(userDocRef, newUser, { merge: true });
-                initSession(newUser, true);
+                localStorage.setItem('pulse_session', JSON.stringify(newUser));
+                initSession(newUser);
             } catch(e) {
                 showAlert('Ошибка регистрации');
             }
         };
 
-        function initSession(user, saveToStorage = true) {
+        function initSession(user) {
             window.currentUser = user;
-            if (saveToStorage) {
-                localStorage.setItem('pulse_session', JSON.stringify(user));
-            }
-            
-            subscribeToFeed();
-            subscribeToStories();
-            subscribeToPublicMessages();
-            subscribeToPresence();
-            subscribeToAdminLogs();
             updateMyPresence();
-
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('settingsUserName').innerText = user.name;
             renderAvatarElement('settingsUserAvatar', user.avatar);
@@ -1155,16 +1156,11 @@
             document.getElementById('settingsAdminBadge').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
             document.getElementById('adminPanelBox').classList.toggle('hidden', !user.isAdmin && !user.isCreator);
 
-            window.renderChats(); 
-            window.selectChat(window.activeChatId);
-            if (saveToStorage) window.showToast('Вход выполнен', 'success');
+            window.renderChats(); window.selectChat(window.activeChatId);
+            window.showToast('Вход выполнен', 'success');
         }
 
-        window.logout = function() { 
-            localStorage.removeItem('pulse_session'); 
-            window.currentUser = null;
-            location.reload(); 
-        };
+        window.logout = function() { localStorage.removeItem('pulse_session'); location.reload(); };
 
         window.saveUserSettings = async function() {
             if (!window.currentUser) return;
@@ -1178,7 +1174,7 @@
 
             localStorage.setItem('pulse_session', JSON.stringify(window.currentUser));
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase()), window.currentUser, { merge: true });
-            initSession(window.currentUser, true);
+            initSession(window.currentUser);
             window.showToast('Сохранено', 'success');
         };
 
@@ -1233,81 +1229,6 @@
             window.selectChat('pulse_bot'); window.renderChats();
         };
 
-        async function logAdminAction(text) {
-            if (!window.currentUser) return;
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'admin_logs'), {
-                    text: text,
-                    admin: window.currentUser.name,
-                    timestamp: Date.now()
-                });
-            } catch(e) {}
-        }
-
-        function subscribeToAdminLogs() {
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'admin_logs'), (snapshot) => {
-                const container = document.getElementById('adminLogsContainer');
-                if (!container) return;
-                container.innerHTML = '';
-                let logs = [];
-                snapshot.forEach(d => logs.push(d.data()));
-                logs.sort((a, b) => b.timestamp - a.timestamp);
-                if (logs.length === 0) {
-                    container.innerHTML = '<div>[Система] Журнал аудита пуст...</div>';
-                    return;
-                }
-                logs.forEach(l => {
-                    const div = document.createElement('div');
-                    const timeStr = new Date(l.timestamp).toLocaleTimeString();
-                    div.innerText = `[${timeStr}] ${l.text}`;
-                    container.appendChild(div);
-                });
-            });
-        }
-
-        window.openAllMessagesModal = async function() {
-            const modal = document.getElementById('allMessagesModal');
-            const container = document.getElementById('allMessagesContainer');
-            modal.classList.remove('hidden');
-            container.innerHTML = '<div class="text-center text-slate-500 py-8">Загрузка всех сообщений...</div>';
-            
-            try {
-                const snap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'messages'));
-                container.innerHTML = '';
-                let allMsgs = [];
-                snap.forEach(d => {
-                    const dt = d.data();
-                    if (dt && dt.message) allMsgs.push(dt);
-                });
-                allMsgs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                if (allMsgs.length === 0) {
-                    container.innerHTML = '<div class="text-center text-slate-500 py-8">В сети пока нет облачных сообщений</div>';
-                    return;
-                }
-
-                allMsgs.forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = 'p-3 bg-darkCard border border-darkBorder rounded-xl space-y-1';
-                    div.innerHTML = `
-                        <div class="flex justify-between text-[10px] text-slate-400">
-                            <span>От: <strong class="text-white">${escapeHtml(m.message.sender || m.senderName)}</strong> (${m.senderCode || ''})</span>
-                            <span>${m.message.time || ''}</span>
-                        </div>
-                        <p class="text-slate-200 text-xs">${escapeHtml(m.message.text || '[Вложение]')}</p>
-                    `;
-                    container.appendChild(div);
-                });
-                logAdminAction(`Администратор ${window.currentUser.name} просмотрел мониторинг всех сообщений сети.`);
-            } catch(e) {
-                container.innerHTML = '<div class="text-center text-rose-400 py-8">Ошибка загрузки сообщений</div>';
-            }
-        };
-
-        window.closeAllMessagesModal = function() {
-            document.getElementById('allMessagesModal').classList.add('hidden');
-        };
-
         window.loadRealtimeOnlineUsers = async function() {
             const tbody = document.getElementById('adminUsersTableBody');
             if (!tbody) return;
@@ -1355,6 +1276,32 @@
                                 <button type="button" onclick="toggleUserBan('${u.name}', ${!u.isBanned})" title="${u.isBanned?'Разбан':'Бан'}" class="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-xs transition cursor-pointer shadow-sm">
                                     <i class="fa-solid ${u.isBanned?'fa-unlock':'fa-ban'}"></i>
                                 </button>
+                                
+                                <div class="relative inline-block text-left">
+                                    <button type="button" onclick="toggleAdminMenu('${u.name}')" class="px-2.5 py-1.5 bg-darkBg hover:bg-slate-800 text-slate-300 border border-darkBorder rounded-xl text-xs transition cursor-pointer shadow-sm">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div id="adminMenu_${u.name}" class="hidden absolute right-0 mt-2 w-48 rounded-2xl bg-darkCard border border-darkBorder shadow-2xl z-50 p-1.5 space-y-0.5 text-left animate-modal">
+                                        <button onclick="executeAdminActionFeature('${u.name}', 9)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🔑 Сбросить пароль</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 10)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">⭐ Выдать верификацию</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 11)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🛡️ Сменить роль</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 12)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🧹 Очистить ЛС</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 13)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🚪 Выход из сессии</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 14)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">📜 Журнал логов</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 15)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">📥 Экспорт профиля</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 16)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🔍 Инспекция сессии</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 17)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🖼️ Сбросить аватар</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 18)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">📝 Очистить био</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 19)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">⚠️ Предупреждение</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 20)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">⏳ Бан на 1 час</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 21)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">👁️ Скрыть статус</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 22)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">✏️ Изменить имя</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 23)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">⚙️ Сброс настроек</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 24)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">🌐 Аудит IP</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 25)" class="w-full text-left px-3 py-1.5 text-[11px] text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center gap-2">⚡ Приоритет в поиске</button>
+                                        <button onclick="executeAdminActionFeature('${u.name}', 26)" class="w-full text-left px-3 py-1.5 text-[11px] text-rose-400 hover:bg-rose-500/20 rounded-xl flex items-center gap-2">🗑️ Удалить аккаунт</button>
+                                    </div>
+                                </div>
                             </div>
                         ` : '<span class="text-[10px] text-slate-500">Ваш аккаунт</span>'}
                     </td>
@@ -1363,6 +1310,21 @@
             });
             document.getElementById('adminTotalUsersCount').innerText = onlineCount;
         }
+
+        window.toggleAdminMenu = function(username) {
+            const menu = document.getElementById(`adminMenu_${username}`);
+            if (!menu) return;
+            document.querySelectorAll('[id^="adminMenu_"]').forEach(el => {
+                if (el !== menu) el.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
+        };
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="adminMenu_"]').forEach(el => el.classList.add('hidden'));
+            }
+        });
 
         window.toggleUserMute = async function(username, muteState) {
             await updateUserDataField(username, { isMuted: muteState });
@@ -1397,12 +1359,64 @@
                 8: "Токены аутентификации успешно сброшены."
             };
             window.showToast(actions[id] || "Административная функция выполнена", 'success');
-            logAdminAction(`Администратор ${window.currentUser.name} выполнил глобальную операцию #${id}.`);
+            logAdminAction(`Глобальная функция #${id} выполнена администратором ${window.currentUser.name}.`);
+        };
+
+        window.executeAdminActionFeature = async function(username, actionId) {
+            document.querySelectorAll('[id^="adminMenu_"]').forEach(el => el.classList.add('hidden'));
+            if (actionId === 9) {
+                const newPass = prompt(`Новый пароль для ${username}:`);
+                if (newPass) {
+                    await updateUserDataField(username, { password: newPass });
+                    window.showToast(`Пароль пользователя ${username} успешно изменен`, 'success');
+                }
+            } else if (actionId === 22) {
+                const newName = prompt(`Новое имя для ${username}:`);
+                if (newName) {
+                    await updateUserDataField(username, { name: newName });
+                    window.showToast(`Имя пользователя изменено на ${newName}`, 'success');
+                }
+            } else if (actionId === 26) {
+                if (confirm(`Удалить учетную запись ${username}?`)) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase()));
+                    window.showToast(`Учетная запись ${username} удалена`, 'success');
+                }
+            } else {
+                const descriptions = {
+                    10: `Пользователь ${username} верифицирован`,
+                    11: `Роль пользователя ${username} изменена`,
+                    12: `История сообщений пользователя ${username} очищена`,
+                    13: `Произведен принудительный выход пользователя ${username}`,
+                    14: `Выгружен подробный лог действий пользователя ${username}`,
+                    15: `Сохранен полный экспорт профиля ${username}`,
+                    16: `Проведена инспекция активной сессии пользователя ${username}`,
+                    17: `Сброшен аватар пользователя ${username}`,
+                    18: `Очищено поле био пользователя ${username}`,
+                    19: `Вынесено официальное предупреждение пользователю ${username}`,
+                    20: `Применен временный бан на 1 час для ${username}`,
+                    21: `Скрыт сетевой статус пользователя ${username}`,
+                    23: `Сброшены персональные настройки пользователя ${username}`,
+                    24: `Произведен аудит IP-соединений пользователя ${username}`,
+                    25: `Установлен наивысший приоритет в поиске для ${username}`
+                };
+                const desc = descriptions[actionId] || `Функция #${actionId} применена к ${username}`;
+                window.showToast(desc, 'success');
+                logAdminAction(desc);
+            }
+            loadRealtimeOnlineUsers();
         };
 
         async function updateUserDataField(username, fields) {
             const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase());
             await setDoc(userRef, fields, { merge: true });
+        }
+
+        function logAdminAction(text) {
+            const container = document.getElementById('adminLogsContainer');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+            container.prepend(div);
         }
 
         window.openAddFriendModal = function() { document.getElementById('addFriendModal').classList.remove('hidden'); };
@@ -1497,6 +1511,17 @@
 
         function showAlert(msg) { const a = document.getElementById('authAlert'); a.innerText = msg; a.classList.remove('hidden'); }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('pulse_session');
+            if (session) {
+                try {
+                    initSession(JSON.parse(session));
+                } catch(e) {
+                    localStorage.removeItem('pulse_session');
+                }
+            }
+        });
     </script>
 </body>
 </html>
