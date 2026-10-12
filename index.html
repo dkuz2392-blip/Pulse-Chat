@@ -276,14 +276,6 @@
         </div>
     </div>
 
-    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="w-full max-w-xs bg-darkCard border border-darkBorder rounded-2xl shadow-2xl p-5 space-y-3 animate-modal">
-            <div class="flex justify-between items-center"><h3 class="font-bold text-xs text-white">Новый ЛС чат</h3><button type="button" onclick="closeAddFriendModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div>
-            <input type="text" id="friendCodeInput" placeholder="Никнейм собеседника" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white">
-            <button type="button" onclick="handleAddFriend()" class="w-full py-2.5 bg-primaryAccent text-white rounded-xl text-xs font-semibold">Открыть чат</button>
-        </div>
-    </div>
-
     <script>
         // ХЕЛПЕР ЗАЩИТЫ ОТ XSS
         function escapeHTML(str) {
@@ -526,7 +518,7 @@
             });
         };
 
-        // REALTIME ЧАТЫ (БЕЗ ТРЕБОВАНИЯ ИНДЕКСОВ)
+        // REALTIME ЧАТЫ
         window.selectChat = function(id) {
             window.activeChatId = id;
             const chat = window.chats.find(c => c.id === id);
@@ -590,18 +582,19 @@
             });
         };
 
-        window.openAddFriendModal = () => document.getElementById('addFriendModal').classList.remove('hidden');
-        window.closeAddFriendModal = () => document.getElementById('addFriendModal').classList.add('hidden');
-        
-        // ИСПРАВЛЕННАЯ ФУНКЦИЯ: ОЧИСТКА ВВОДА ОТ ШХЕШТЕГОВ И ИСПРАВЛЕНИЕ КЛИКА
-        window.handleAddFriend = async function() {
-            let rawInput = document.getElementById('friendCodeInput').value.trim().toLowerCase();
-            if (!rawInput) return;
-
-            // Если ввели вместе с хэштегом (например #koplop_123), очищаем до чистого никнейма
-            let targetName = rawInput.replace(/^#/, '');
+        // НАДЕЖНОЕ ОТКРЫТИЕ ЛС ЧЕРЕЗ PROMPT (РАБОТАЕТ ВЕЗДЕ)
+        window.openAddFriendModal = async function() {
+            let targetName = prompt('Введите никнейм собеседника:');
+            if (!targetName) return;
+            
+            targetName = targetName.trim().toLowerCase().replace(/^#/, '');
             if (targetName.includes('_')) {
                 targetName = targetName.split('_')[0];
+            }
+
+            if (targetName === window.currentUser.name) {
+                alert('Нельзя создать чат с самим собой');
+                return;
             }
 
             const chatId = [window.currentUser.name, targetName].sort().join('_');
@@ -612,8 +605,6 @@
                 members: [window.currentUser.name, targetName]
             }, { merge: true });
 
-            document.getElementById('friendCodeInput').value = '';
-            closeAddFriendModal();
             loadUserChats();
             window.selectChat(chatId);
         };
