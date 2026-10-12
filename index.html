@@ -57,6 +57,7 @@
         .admin-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
         .blur-privacy { filter: blur(6px); transition: filter 0.2s; }
         .blur-privacy:hover { filter: blur(0); }
+        button, input, textarea, label { touch-action: manipulation; }
     </style>
 </head>
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
@@ -1515,70 +1516,73 @@
         }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-        // Безопасная инициализация слушателей событий для гарантированного клика
+        // Жесткая универсальная привязка событий с поддержкой касаний (touch/click) для мобилок
         document.addEventListener('DOMContentLoaded', () => {
-            const bindClick = (id, fn) => {
+            const bindAction = (id, fn) => {
                 const el = document.getElementById(id);
-                if (el) el.addEventListener('click', (e) => { e.preventDefault(); fn(e); });
+                if (el) {
+                    el.addEventListener('click', (e) => { e.preventDefault(); fn(e); });
+                    el.addEventListener('touchend', (e) => { e.preventDefault(); fn(e); }, { passive: false });
+                }
             };
 
-            bindClick('loginSubmitBtn', () => window.handleLogin());
-            bindClick('regSubmitBtn', () => window.handleRegister());
-            bindClick('tabLoginBtn', () => window.switchAuthTab('login'));
-            bindClick('tabRegisterBtn', () => window.switchAuthTab('register'));
+            bindAction('loginSubmitBtn', () => window.handleLogin());
+            bindAction('regSubmitBtn', () => window.handleRegister());
+            bindAction('tabLoginBtn', () => window.switchAuthTab('login'));
+            bindAction('tabRegisterBtn', () => window.switchAuthTab('register'));
 
-            bindClick('themeLinearBtn', () => window.setTheme('linear'));
-            bindClick('themeOledBtn', () => window.setTheme('oled'));
-            bindClick('themeCyberBtn', () => window.setTheme('cyber'));
+            bindAction('themeLinearBtn', () => window.setTheme('linear'));
+            bindAction('themeOledBtn', () => window.setTheme('oled'));
+            bindAction('themeCyberBtn', () => window.setTheme('cyber'));
 
-            bindClick('setThemeLinearBtn', () => window.setTheme('linear'));
-            bindClick('setThemeOledBtn', () => window.setTheme('oled'));
-            bindClick('setThemeCyberBtn', () => window.setTheme('cyber'));
+            bindAction('setThemeLinearBtn', () => window.setTheme('linear'));
+            bindAction('setThemeOledBtn', () => window.setTheme('oled'));
+            bindAction('setThemeCyberBtn', () => window.setTheme('cyber'));
 
-            bindClick('navBtnFeed', () => window.switchSection('feed'));
-            bindClick('navBtnMessages', () => window.switchSection('messages'));
-            bindClick('navBtnSettings', () => window.switchSection('settings'));
+            bindAction('navBtnFeed', () => window.switchSection('feed'));
+            bindAction('navBtnMessages', () => window.switchSection('messages'));
+            bindAction('navBtnSettings', () => window.switchSection('settings'));
 
-            bindClick('openStoryModalBtn', () => window.openCreateStoryModal());
-            bindClick('trayAddStoryBtn', () => window.openCreateStoryModal());
-            bindClick('openPostModalBtn', () => window.openCreatePostModal());
-            bindClick('closePostModalBtn', () => window.closeCreatePostModal());
-            bindClick('submitPostBtn', () => window.submitPost());
-            bindClick('closeStoryModalBtn', () => window.closeCreateStoryModal());
-            bindClick('submitStoryBtn', () => window.submitStory());
+            bindAction('openStoryModalBtn', () => window.openCreateStoryModal());
+            bindAction('trayAddStoryBtn', () => window.openCreateStoryModal());
+            bindAction('openPostModalBtn', () => window.openCreatePostModal());
+            bindAction('closePostModalBtn', () => window.closeCreatePostModal());
+            bindAction('submitPostBtn', () => window.submitPost());
+            bindAction('closeStoryModalBtn', () => window.closeCreateStoryModal());
+            bindAction('submitStoryBtn', () => window.submitStory());
 
-            bindClick('openAddFriendModalBtn', () => window.openAddFriendModal());
-            bindClick('closeAddFriendBtn', () => window.closeAddFriendModal());
-            bindClick('submitAddFriendBtn', () => window.handleAddFriend());
+            bindAction('openAddFriendModalBtn', () => window.openAddFriendModal());
+            bindAction('closeAddFriendBtn', () => window.closeAddFriendModal());
+            bindAction('submitAddFriendBtn', () => window.handleAddFriend());
 
-            bindClick('openCreateGroupModalBtn', () => window.openCreateGroupModal());
-            bindClick('closeCreateGroupBtn', () => window.closeCreateGroupModal());
-            bindClick('submitCreateGroupBtn', () => window.handleCreateGroup());
-            bindClick('openCreatePollBtn', () => window.openCreatePollModal());
+            bindAction('openCreateGroupModalBtn', () => window.openCreateGroupModal());
+            bindAction('closeCreateGroupBtn', () => window.closeCreateGroupModal());
+            bindAction('submitCreateGroupBtn', () => window.handleCreateGroup());
+            bindAction('openCreatePollBtn', () => window.openCreatePollModal());
 
-            bindClick('toggleMobileSidebarBtn', () => window.toggleMobileSidebar());
-            bindClick('toggleDensityBtn', () => window.toggleChatDensity());
-            bindClick('exportChatBtn', () => window.exportCurrentChat());
-            bindClick('startCallBtn', () => window.startAudioCall());
-            bindClick('deleteChatBtn', () => window.deleteCurrentChat());
-            bindClick('unpinMessageBtn', () => window.unpinMessage());
-            bindClick('cancelActionBtn', () => window.cancelActiveAction());
-            bindClick('sendMessageBtn', () => window.sendMessage());
-            bindClick('voiceRecordBtn', () => window.simulateVoiceRecord());
+            bindAction('toggleMobileSidebarBtn', () => window.toggleMobileSidebar());
+            bindAction('toggleDensityBtn', () => window.toggleChatDensity());
+            bindAction('exportChatBtn', () => window.exportCurrentChat());
+            bindAction('startCallBtn', () => window.startAudioCall());
+            bindAction('deleteChatBtn', () => window.deleteCurrentChat());
+            bindAction('unpinMessageBtn', () => window.unpinMessage());
+            bindAction('cancelActionBtn', () => window.cancelActiveAction());
+            bindAction('sendMessageBtn', () => window.sendMessage());
+            bindAction('voiceRecordBtn', () => window.simulateVoiceRecord());
 
-            bindClick('copyCodeBtn', () => window.copyMyCode());
-            bindClick('logoutBtn', () => window.logout());
-            bindClick('backupProfileBtn', () => window.exportAccountData());
-            bindClick('saveSettingsBtn', () => window.saveUserSettings());
-            bindClick('clearGlobalFeedBtn', () => window.clearGlobalFeed());
+            bindAction('copyCodeBtn', () => window.copyMyCode());
+            bindAction('logoutBtn', () => window.logout());
+            bindAction('backupProfileBtn', () => window.exportAccountData());
+            bindAction('saveSettingsBtn', () => window.saveUserSettings());
+            bindAction('clearGlobalFeedBtn', () => window.clearGlobalFeed());
 
-            bindClick('toggleFullscreenBtn', () => window.toggleFullscreen());
-            bindClick('dndBtn', () => window.toggleDndMode());
-            bindClick('togglePrivacyBtn', () => window.togglePrivacyBlur());
+            bindAction('toggleFullscreenBtn', () => window.toggleFullscreen());
+            bindAction('dndBtn', () => window.toggleDndMode());
+            bindAction('togglePrivacyBtn', () => window.togglePrivacyBlur());
 
-            bindClick('endCallBtn', () => window.endAudioCall());
-            bindClick('closeLightboxBtn', () => window.closeLightbox());
-            bindClick('lightboxModal', () => window.closeLightbox());
+            bindAction('endCallBtn', () => window.endAudioCall());
+            bindAction('closeLightboxBtn', () => window.closeLightbox());
+            bindAction('lightboxModal', () => window.closeLightbox());
 
             const msgInput = document.getElementById('messageInput');
             if (msgInput) msgInput.addEventListener('keydown', window.handleKeyDown);
