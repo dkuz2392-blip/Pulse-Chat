@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v6.1 - Enterprise Edition</title>
+    <title>Pulse Workspace v6.1.2 - Enterprise Edition</title>
     <!-- Tailwind CSS с версионированием от кэша -->
-    <script src="https://cdn.tailwindcss.com?v=6.1.1"></script>
+    <script src="https://cdn.tailwindcss.com?v=6.1.2"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -22,7 +22,7 @@
         }
     </script>
     <!-- FontAwesome & Google Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.1.1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.1.2">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -77,7 +77,7 @@
             </div>
 
             <div class="space-y-1">
-                <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace v6.1</h1>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Pulse Workspace v6.1.2</h1>
                 <p class="text-xs text-slate-400">Корпоративная среда • Администрирование</p>
             </div>
 
@@ -110,7 +110,7 @@
                     <input type="password" id="regPassword" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="••••••••">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-slate-300">Секретный ключ (67 - Создатель, 1488 - Админ)</label>
+                    <label class="text-xs font-medium text-slate-300">Секретный ключ администратора</label>
                     <input type="password" id="regAdminKey" class="w-full px-4 py-3 bg-darkBg border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent" placeholder="Ключ доступа">
                 </div>
                 <button type="button" id="regSubmitBtn" class="w-full py-3.5 bg-primaryAccent hover:opacity-90 text-white rounded-2xl text-xs font-semibold cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
@@ -447,7 +447,7 @@
 
     <!-- Автоматический сброс устаревшего кэша при обновлении версии -->
     <script>
-        const APP_VERSION = '6.1.1';
+        const APP_VERSION = '6.1.2';
         if (localStorage.getItem('pulse_app_ver') !== APP_VERSION) {
             localStorage.removeItem('pulse_session');
             localStorage.setItem('pulse_app_ver', APP_VERSION);
@@ -523,7 +523,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1 активирован. Полный комплекс администрирования готов.', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v6.1.2 активирован. Полный комплекс администрирования готов.', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
@@ -1369,17 +1369,20 @@
                 if (newPass) {
                     await updateUserDataField(username, { password: newPass });
                     window.showToast(`Пароль пользователя ${username} успешно изменен`, 'success');
+                    logAdminAction(`Администратор ${window.currentUser.name} сбросил пароль пользователя ${username}.`);
                 }
             } else if (actionId === 22) {
                 const newName = prompt(`Новое имя для ${username}:`);
                 if (newName) {
                     await updateUserDataField(username, { name: newName });
                     window.showToast(`Имя пользователя изменено на ${newName}`, 'success');
+                    logAdminAction(`Администратор ${window.currentUser.name} изменил имя пользователя ${username} на ${newName}.`);
                 }
             } else if (actionId === 26) {
                 if (confirm(`Удалить учетную запись ${username}?`)) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', username.toLowerCase()));
                     window.showToast(`Учетная запись ${username} удалена`, 'success');
+                    logAdminAction(`Администратор ${window.currentUser.name} удалил учетную запись ${username}.`);
                 }
             } else {
                 const descriptions = {
@@ -1401,7 +1404,7 @@
                 };
                 const desc = descriptions[actionId] || `Функция #${actionId} применена к ${username}`;
                 window.showToast(desc, 'success');
-                logAdminAction(desc);
+                logAdminAction(`Администратор ${window.currentUser.name}: ${desc}`);
             }
             loadRealtimeOnlineUsers();
         };
