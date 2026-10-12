@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v6.0 - Full Enterprise GitHub Edition</title>
+    <title>Pulse Workspace v6.0 - Enterprise Pro</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase Classic CDN (Для стабильной работы на GitHub Pages и мобильных) -->
+    <!-- Firebase Classic CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -67,7 +67,7 @@
 
             <div class="space-y-0.5">
                 <h1 class="text-xl font-bold tracking-tight text-white">Pulse Workspace</h1>
-                <p class="text-xs text-slate-400">Мобильная облачная среда</p>
+                <p class="text-xs text-slate-400">Корпоративная облачная среда</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -99,8 +99,8 @@
                     <input type="password" id="regPassword" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="••••••••">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-[11px] font-medium text-slate-300">Секретный ключ (для админа: 1488)</label>
-                    <input type="password" id="regAdminKey" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Ключ доступа">
+                    <label class="text-[11px] font-medium text-slate-300">Секретный ключ (опционально)</label>
+                    <input type="password" id="regAdminKey" class="w-full px-3.5 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition" placeholder="Введите ключ доступа">
                 </div>
                 <button type="button" onclick="handleRegister()" class="w-full py-3 bg-primaryAccent text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-primaryAccent/25">Создать профиль</button>
             </div>
@@ -110,7 +110,6 @@
     <!-- MAIN APP LAYOUT -->
     <div id="mainAppContainer" class="flex-1 flex flex-col h-full overflow-hidden relative hidden">
 
-        <!-- CONTENT AREA CONTAINER -->
         <div class="flex-1 flex flex-col overflow-hidden relative mb-16">
 
             <!-- 1. FEED SECTION -->
@@ -209,9 +208,12 @@
                 <!-- ADMIN PANEL -->
                 <div id="adminPanelBox" class="hidden space-y-3 pb-8">
                     <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-lg">
-                        <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-shield-halved"></i> Панель администратора
-                        </h3>
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
+                                <i class="fa-solid fa-shield-halved"></i> Панель администратора
+                            </h3>
+                            <span class="text-[11px] text-slate-400">Всего юзеров: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
+                        </div>
                         <div class="admin-table-wrapper border border-darkBorder rounded-xl bg-darkBg overflow-visible">
                             <table class="w-full text-left border-collapse text-xs min-w-[400px]">
                                 <thead>
@@ -277,6 +279,7 @@
     </div>
 
     <script>
+        const appId = 'pulse-workspace-v6';
         const firebaseConfig = {
             apiKey: "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE",
             authDomain: "pulse-chat-c7c98.firebaseapp.com",
@@ -325,7 +328,8 @@
             const password = document.getElementById('loginPassword').value;
             if (!username || !password) { showAlert('Заполните поля'); return; }
             try {
-                const docSnap = await db.collection('users').doc(username).get();
+                const docRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('users').doc(username);
+                const docSnap = await docRef.get();
                 if (docSnap.exists && docSnap.data().password === password) {
                     initSession(docSnap.data());
                 } else { showAlert('Неверный логин или пароль'); }
@@ -341,7 +345,8 @@
                 const isCreator = key === window.CREATOR_KEY;
                 const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
                 const newUser = { name: username, code: '#' + username + '_123', password, isCreator, isAdmin };
-                await db.collection('users').doc(username).set(newUser);
+                const docRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('users').doc(username);
+                await docRef.set(newUser);
                 initSession(newUser);
             } catch(e) { showAlert('Ошибка регистрации'); }
         };
@@ -378,12 +383,12 @@
         window.submitPost = async function() {
             const text = document.getElementById('postTextInput').value.trim();
             if (!text) return;
-            await db.collection('posts').add({ author: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('posts').add({ author: window.currentUser.name, text, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
             document.getElementById('postTextInput').value = ''; closeCreatePostModal();
         };
 
         function subscribeToFeed() {
-            db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+            db.collection('artifacts').doc(appId).collection('public').doc('data').collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('feedContainer');
                 if (!container) return;
                 container.innerHTML = '';
@@ -402,12 +407,12 @@
         window.submitStory = async function() {
             const text = document.getElementById('storyTextInput').value.trim();
             if (!text) return;
-            await db.collection('stories').add({ author: window.currentUser.name, text, timestamp: Date.now() });
+            await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('stories').add({ author: window.currentUser.name, text, timestamp: Date.now() });
             document.getElementById('storyTextInput').value = ''; closeCreateStoryModal();
         };
 
         function subscribeToStories() {
-            db.collection('stories').onSnapshot(snapshot => {
+            db.collection('artifacts').doc(appId).collection('public').doc('data').collection('stories').onSnapshot(snapshot => {
                 const tray = document.getElementById('storiesTray');
                 if (!tray) return;
                 let addBtn = tray.firstElementChild.outerHTML;
@@ -501,13 +506,15 @@
 
         window.loadAdminUsers = async function() {
             const tbody = document.getElementById('adminUsersTableBody');
+            const countEl = document.getElementById('adminTotalUsersCount');
             if (!tbody) return;
-            const snapshot = await db.collection('users').get();
+            const snapshot = await db.collection('artifacts').doc(appId).collection('public').doc('data').collection('users').get();
             tbody.innerHTML = '';
+            if (countEl) countEl.innerText = snapshot.size;
             snapshot.forEach(doc => {
                 const u = doc.data();
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="p-3 text-white">${u.name}</td><td class="p-3 text-emerald-400">Активен</td>`;
+                tr.innerHTML = `<td class="p-3 text-white font-medium">${u.name}</td><td class="p-3 text-emerald-400">Активен</td>`;
                 tbody.appendChild(tr);
             });
         };
