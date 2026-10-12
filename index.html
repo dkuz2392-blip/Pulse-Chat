@@ -470,7 +470,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, collection, addDoc, onSnapshot, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pulse-chat-app';
@@ -489,7 +489,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let authenticatedUser = null;
         let unsubscribeMessages = null;
 
         window.CREATOR_KEY = "67";      
@@ -537,7 +536,7 @@
                 avatar: '🤖', 
                 code: '#pulse_ai_bot', 
                 messages: [
-                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v5.9 активирован. Сессия сохраняется при перезагрузке, логи пишутся в базу, доступен просмотр всех сообщений сети.', time: '12:00', timestamp: Date.now() - 10000 }
+                    { id: 1, sender: 'Ассистент', text: 'Pulse Workspace v5.9 активирован. Сессия сохраняется надежно.', time: '12:00', timestamp: Date.now() - 10000 }
                 ] 
             }
         ];
@@ -551,55 +550,23 @@
                 }
             } catch (err) {}
         }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authenticatedUser = user;
-                subscribeToFeed();
-                subscribeToStories();
-                subscribeToPublicMessages();
-                subscribeToPresence();
-                subscribeToAdminLogs();
-                
-                // Проверяем сохраненную сессию сразу при старте
-                const session = localStorage.getItem('pulse_session');
-                if (session && !window.currentUser) {
-                    try {
-                        const parsedUser = JSON.parse(session);
-                        initSession(parsedUser, false);
-                    } catch(e) {
-                        localStorage.removeItem('pulse_session');
-                    }
-                }
-            }
-        });
         initAuth();
 
         const savedTheme = localStorage.getItem('pulse_theme');
         if (savedTheme) window.setTheme(savedTheme);
 
-        async function syncUserSessionState() {
-            if (!window.currentUser) return;
-            try {
-                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentUser.name.toLowerCase());
-                const snap = await getDoc(userDocRef);
-                if (snap.exists()) {
-                    const fresh = snap.data();
-                    window.currentUser.isAdmin = fresh.isAdmin;
-                    window.currentUser.isCreator = fresh.isCreator;
-                    window.currentUser.isBanned = fresh.isBanned;
-                    window.currentUser.isMuted = fresh.isMuted;
-                    localStorage.setItem('pulse_session', JSON.stringify(window.currentUser));
+        // Инициализация сессии при старте приложения
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('pulse_session');
+            if (session) {
+                try {
+                    const user = JSON.parse(session);
+                    initSession(user, false);
+                } catch(e) {
+                    localStorage.removeItem('pulse_session');
                 }
-            } catch(e) {}
-            
-            if (window.currentUser.isBanned) {
-                alert('Ваш аккаунт заблокирован администратором.');
-                logout();
             }
-            const muteNotice = document.getElementById('muteNotice');
-            if (muteNotice) muteNotice.classList.toggle('hidden', !window.currentUser.isMuted);
-        }
+        });
 
         window.switchSection = function(section) {
             const feed = document.getElementById('sectionFeed');
@@ -857,7 +824,6 @@
         function getPairChatCode(a, b) { return [a.toLowerCase(), b.toLowerCase()].sort().join('_'); }
 
         function subscribeToPublicMessages() {
-            if (!authenticatedUser) return;
             if (unsubscribeMessages) unsubscribeMessages();
             unsubscribeMessages = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
@@ -1092,7 +1058,7 @@
         window.endAudioCall = function() { document.getElementById('audioCallModal').classList.add('hidden'); };
 
         function updateMyPresence() {
-            if (!authenticatedUser || !window.currentUser) return;
+            if (!window.currentUser) return;
             setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'presence', window.currentUser.code.replace('#','usr_')), { code: window.currentUser.code, lastSeen: Date.now() }, { merge: true });
         }
         function subscribeToPresence() {
@@ -1169,7 +1135,14 @@
             if (saveToStorage) {
                 localStorage.setItem('pulse_session', JSON.stringify(user));
             }
+            
+            subscribeToFeed();
+            subscribeToStories();
+            subscribeToPublicMessages();
+            subscribeToPresence();
+            subscribeToAdminLogs();
             updateMyPresence();
+
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('settingsUserName').innerText = user.name;
             renderAvatarElement('settingsUserAvatar', user.avatar);
@@ -1260,7 +1233,6 @@
             window.selectChat('pulse_bot'); window.renderChats();
         };
 
-        // РАБОЧИЙ ЖУРНАЛ АУДИТА И ФУНКЦИИ АДМИНА
         async function logAdminAction(text) {
             if (!window.currentUser) return;
             try {
@@ -1293,7 +1265,6 @@
             });
         }
 
-        // МОНИТОРИНГ ВСЕХ СООБЩЕНИЙ СЕТИ ДЛЯ АДМИНОВ
         window.openAllMessagesModal = async function() {
             const modal = document.getElementById('allMessagesModal');
             const container = document.getElementById('allMessagesContainer');
@@ -1526,18 +1497,6 @@
 
         function showAlert(msg) { const a = document.getElementById('authAlert'); a.innerText = msg; a.classList.remove('hidden'); }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const session = localStorage.getItem('pulse_session');
-            if (session) {
-                try {
-                    initSession(JSON.parse(session), false);
-                } catch(e) {
-                    localStorage.removeItem('pulse_session');
-                }
-            }
-        });
     </script>
 </body>
 </html>
-
