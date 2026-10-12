@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v9.5 - Pro Edition</title>
+    <title>Pulse Workspace v9.8 - Pro Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -252,19 +252,23 @@
                             <span class="text-[11px] text-slate-400">Всего: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                         </div>
 
-                        <!-- ИНСТРУМЕНТЫ -->
+                        <!-- РАСШИРЕННЫЕ ИНСТРУМЕНТЫ -->
                         <div class="grid grid-cols-2 gap-2 text-[11px]">
-                            <button type="button" onclick="f1_broadcast()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 font-medium text-left truncate"><i class="fa-solid fa-bullhorn mr-1"></i> Рассылка</button>
-                            <button type="button" onclick="f2_clearFeed()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-rose-400 font-medium text-left truncate"><i class="fa-solid fa-trash mr-1"></i> Сброс ленты</button>
-                            <button type="button" onclick="f3_exportDb()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-indigo-300 font-medium text-left truncate"><i class="fa-solid fa-database mr-1"></i> Дамп БД</button>
-                            <button type="button" onclick="f4_toggleLock()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 font-medium text-left truncate"><i class="fa-solid fa-lock mr-1"></i> Режим ЧП</button>
+                            <button type="button" onclick="f1_broadcast()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-amber-300 font-medium text-left truncate"><i class="fa-solid fa-bullhorn mr-1.5"></i> Рассылка</button>
+                            <button type="button" onclick="f2_clearFeed()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-rose-400 font-medium text-left truncate"><i class="fa-solid fa-trash mr-1.5"></i> Сброс ленты</button>
+                            <button type="button" onclick="f3_exportDb()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-indigo-300 font-medium text-left truncate"><i class="fa-solid fa-database mr-1.5"></i> Дамп БД</button>
+                            <button type="button" onclick="f4_toggleLock()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-amber-300 font-medium text-left truncate"><i class="fa-solid fa-lock mr-1.5"></i> Режим ЧП</button>
 
-                            <button type="button" onclick="f5_clearStories()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-slate-300 text-left truncate"><i class="fa-solid fa-circle-xmark mr-1"></i> Очист. историй</button>
-                            <button type="button" onclick="f6_banUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-rose-400 text-left truncate"><i class="fa-solid fa-user-slash mr-1"></i> Бан юзера</button>
-                            <button type="button" onclick="f7_unbanUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-emerald-400 text-left truncate"><i class="fa-solid fa-user-check mr-1"></i> Разбан юзера</button>
-                            <button type="button" onclick="f8_muteUser()" class="p-2 bg-darkBg border border-darkBorder rounded-xl text-amber-300 text-left truncate"><i class="fa-solid fa-volume-xmark mr-1"></i> Мут чата</button>
+                            <button type="button" onclick="f5_clearStories()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-slate-300 text-left truncate"><i class="fa-solid fa-circle-xmark mr-1.5"></i> Очист. историй</button>
+                            <button type="button" onclick="f9_clearAllChatsMessages()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-rose-400 text-left truncate"><i class="fa-solid fa-comments mr-1.5"></i> Очист. чатов</button>
+                            
+                            <button type="button" onclick="f6_banUser()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-rose-400 text-left truncate"><i class="fa-solid fa-user-slash mr-1.5"></i> Бан юзера</button>
+                            <button type="button" onclick="f7_unbanUser()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-emerald-400 text-left truncate"><i class="fa-solid fa-user-check mr-1.5"></i> Разбан юзера</button>
+                            
+                            <button type="button" onclick="f8_muteUser()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-amber-300 text-left truncate"><i class="fa-solid fa-volume-xmark mr-1.5"></i> Выдать мут</button>
+                            <button type="button" onclick="f10_giveVipQuick()" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl text-emerald-300 text-left truncate"><i class="fa-solid fa-circle-check mr-1.5"></i> Выдать VIP ✅</button>
 
-                            <button type="button" onclick="loadAdminUsers()" class="p-2 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center col-span-2 truncate"><i class="fa-solid fa-rotate mr-1"></i> Обновить пользователей</button>
+                            <button type="button" onclick="loadAdminUsers()" class="p-2.5 bg-primaryAccent border border-primaryAccent text-white font-bold rounded-xl text-center col-span-2 truncate"><i class="fa-solid fa-rotate mr-1.5"></i> Обновить пользователей</button>
                         </div>
 
                         <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ -->
@@ -277,7 +281,7 @@
                         <div class="space-y-1.5 pt-2">
                             <h4 class="font-bold text-[10px] text-slate-400 uppercase tracking-wider">ЖУРНАЛ АУДИТА</h4>
                             <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
-                                <div>[Система] Иерархия ролей (Owner, Admin, VIP, User) активна...</div>
+                                <div>[Система] Расширенная админ-панель активна...</div>
                             </div>
                         </div>
                     </div>
@@ -462,7 +466,7 @@
                     name: username, 
                     code, 
                     password: hashedPassword, 
-                    role, // 'owner' | 'admin' | 'vip' | 'user'
+                    role, 
                     isBanned: false,
                     isMuted: false,
                     status: 'В сети в Pulse'
@@ -895,7 +899,7 @@
             }
         };
 
-        // АДМИН ПАНЕЛЬ И УПРАВЛЕНИЕ РОЛЯМИ
+        // АДМИН ПАНЕЛЬ И РАСШИРЕННЫЕ ФУНКЦИИ
         window.loadAdminUsers = async function() {
             const container = document.getElementById('adminUsersCardsList');
             const countEl = document.getElementById('adminTotalUsersCount');
@@ -942,7 +946,7 @@
                         <button onclick="changeUserRole('${user.id}', 'owner')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-indigo-300 hover:border-primaryAccent">Owner</button>
                         <button onclick="changeUserRole('${user.id}', 'admin')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-amber-300 hover:border-primaryAccent">Admin</button>
                         <button onclick="changeUserRole('${user.id}', 'vip')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-emerald-300 hover:border-primaryAccent">VIP</button>
-                        <button onclick="changeUserRole('${user.id}', 'user')" class="px-2 py-1 bg-darkCard border border-darkBorder rounded-lg text-slate-300 hover:border-primaryAccent">User</button>
+                        <button onclick="changeUserRole('${user.id}', 'user')" class="px-2.5 py-1 bg-darkCard border border-darkBorder rounded-lg text-slate-300 hover:border-primaryAccent">User</button>
                         <button onclick="adminDeleteUser('${user.id}')" class="px-2 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg ml-auto"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
@@ -969,14 +973,48 @@
             container.prepend(div);
         }
 
-        window.f1_broadcast = async () => { const msg = prompt('Текст рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', role: 'owner', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); } };
-        window.f2_clearFeed = async () => { if(confirm('Очистить ленту?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента очищена'); } };
-        window.f3_exportDb = async () => { const snap = await db.collection('users').get(); let u=[]; snap.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_backup.json'; a.click(); logAdminAction('Дамп БД скачан'); };
-        window.f4_toggleLock = () => { logAdminAction('Режим ЧП переключен'); alert('Режим ЧП переключен'); };
-        window.f5_clearStories = async () => { const snap = await db.collection('stories').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Истории очищены'); };
-        window.f6_banUser = async () => { const u=prompt('Ник для бана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: true }); logAdminAction('Забанен: ' + u); loadAdminUsers(); } };
-        window.f7_unbanUser = async () => { const u=prompt('Ник для разбана:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isBanned: false }); logAdminAction('Разбанен: ' + u); loadAdminUsers(); } };
-        window.f8_muteUser = async () => { const u=prompt('Ник для мута:'); if(u){ await db.collection('users').doc(u.toLowerCase()).update({ isMuted: true }); logAdminAction('Выдан мут: ' + u); } };
+        // РАСШИРЕННЫЕ ИНСТРУМЕНТЫ АДМИНИСТРАТОРА
+        window.f1_broadcast = async () => { const msg = prompt('Текст системной рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', role: 'owner', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена в ленту'); alert('Рассылка успешно отправлена!'); } };
+        window.f2_clearFeed = async () => { if(confirm('ВНИМАНИЕ: Очистить всю ленту публикаций?')){ const snap = await db.collection('posts').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Лента публикаций полностью очищена'); alert('Лента очищена!'); } };
+        window.f3_exportDb = async () => { const snap = await db.collection('users').get(); let u=[]; snap.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_users_backup.json'; a.click(); logAdminAction('Создан и скачан дамп базы данных пользователей'); };
+        window.f4_toggleLock = () => { logAdminAction('Режим ЧП переключен администратором'); alert('Режим ЧП задействован!'); };
+        window.f5_clearStories = async () => { if(confirm('Удалить все текущие истории?')){ const snap = await db.collection('stories').get(); snap.forEach(d=>d.ref.delete()); logAdminAction('Все активные истории удалены'); alert('Истории очищены!'); } };
+        window.f6_banUser = async () => { const u=prompt('Введите ник пользователя для БАНа:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: true }); logAdminAction('Забанен пользователь: ' + un); alert(`Пользователь ${un} забанен.`); loadAdminUsers(); } };
+        window.f7_unbanUser = async () => { const u=prompt('Введите ник для РАЗБАНА:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: false }); logAdminAction('Разбанен пользователь: ' + un); alert(`Пользователь ${un} разбанен.`); loadAdminUsers(); } };
+        window.f8_muteUser = async () => { const u=prompt('Введите ник для выдачи мута:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isMuted: true }); logAdminAction('Выдан мут пользователю: ' + un); alert(`Мут выдан игроку ${un}.`); } };
+        
+        window.f9_clearAllChatsMessages = async () => {
+            if(confirm('ВНИМАНИЕ: Очистить все сообщения во всех чатах?')) {
+                try {
+                    const chatsSnap = await db.collection('chats').get();
+                    for(let chatDoc of chatsSnap.docs) {
+                        const messagesSnap = await chatDoc.ref.collection('messages').get();
+                        for(let msgDoc of messagesSnap.docs) {
+                            await msgDoc.ref.delete();
+                        }
+                    }
+                    logAdminAction('Очищены все сообщения во всех чатах системы');
+                    alert('Все сообщения в чатах успешно удалены!');
+                } catch(e) {
+                    alert('Ошибка при очистке чатов');
+                }
+            }
+        };
+
+        window.f10_giveVipQuick = async () => {
+            const u = prompt('Введите ник пользователя для выдачи VIP статуса ✅:');
+            if(u) {
+                const un = u.toLowerCase().trim();
+                try {
+                    await db.collection('users').doc(un).update({ role: 'vip' });
+                    logAdminAction('Выдан VIP статус пользователю: ' + un);
+                    alert(`Пользователь ${un} теперь VIP ✅!`);
+                    loadAdminUsers();
+                } catch(e) {
+                    alert('Пользователь не найден в базе данных');
+                }
+            }
+        };
 
         window.adminDeleteUser = async function(id) {
             if (!confirm('Удалить аккаунт ' + id + '?')) return;
