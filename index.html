@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v13.0 - Mega Feature Edition</title>
+    <title>Pulse Workspace v14.0 - AI Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -66,7 +66,7 @@
 
             <div class="space-y-1">
                 <h1 class="text-xl font-extrabold tracking-tight text-white">Pulse Ecosystem</h1>
-                <p class="text-xs text-slate-400">Облачная экосистема v13.0 Pro</p>
+                <p class="text-xs text-slate-400">Облачная экосистема v14.0 AI Pro</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -193,7 +193,7 @@
                             <button type="button" id="recordVoiceBtn" onclick="toggleVoiceRecord()" class="w-10 h-10 rounded-xl bg-darkBg border border-darkBorder text-slate-300 flex items-center justify-center shrink-0 cursor-pointer hover:border-primaryAccent hover:text-white transition shadow-sm" title="Записать голосовое сообщение">
                                 <i class="fa-solid fa-microphone text-primaryAccent"></i>
                             </button>
-                            <input type="text" id="messageInput" oninput="notifyTyping()" onkeydown="if(event.key==='Enter')sendMessage()" placeholder="Напишите сообщение..." class="flex-1 px-4 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
+                            <input type="text" id="messageInput" oninput="notifyTyping()" onkeydown="if(event.key==='Enter')sendMessage()" placeholder="Напишите сообщение или @pulseai..." class="flex-1 px-4 py-2.5 bg-darkBg border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent transition">
                             <button type="button" onclick="sendMessage()" class="w-10 h-10 rounded-xl bg-primaryAccent text-white flex items-center justify-center shrink-0 cursor-pointer shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                         </div>
                     </div>
@@ -265,7 +265,7 @@
                     <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-xl">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
                             <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
-                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА v13.0
+                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА v14.0
                             </h3>
                             <span class="text-[11px] text-slate-400">Всего юзеров: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                         </div>
@@ -323,7 +323,7 @@
                                 <button type="button" onclick="exportAuditLogs()" class="text-[10px] text-primaryAccent hover:underline"><i class="fa-solid fa-download mr-1"></i>Экспорт логов</button>
                             </div>
                             <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
-                                <div>[Система v13.0] Мониторинг, инспектор и антиспам активны...</div>
+                                <div>[Система v14.0] AI-модуль и мониторинг активны...</div>
                             </div>
                         </div>
                     </div>
@@ -409,7 +409,7 @@
                 <p id="viewStoryText" class="text-sm text-slate-100 text-center leading-relaxed font-medium break-words"></p>
             </div>
             <div class="text-center text-[10px] text-slate-500 border-t border-darkBorder pt-3">
-                История Pulse Ecosystem v13.0
+                История Pulse Ecosystem v14.0
             </div>
         </div>
     </div>
@@ -471,7 +471,8 @@
         window.allLoadedMessages = [];
 
         window.chats = [
-            { id: 'pulse_global', name: 'Общий чат', type: 'group' }
+            { id: 'pulse_global', name: 'Общий чат', type: 'group' },
+            { id: 'ai_assistant', name: '🤖 PulseAI Ассистент', type: 'ai' }
         ];
 
         window.setTheme = function(theme) {
@@ -843,12 +844,15 @@
 
         // ЧАТЫ И СООБЩЕНИЯ
         async function loadUserChats() {
-            window.chats = [{ id: 'pulse_global', name: 'Общий чат', type: 'group' }];
+            window.chats = [
+                { id: 'pulse_global', name: 'Общий чат', type: 'group' },
+                { id: 'ai_assistant', name: '🤖 PulseAI Ассистент', type: 'ai' }
+            ];
             try {
                 const snap = await db.collection('chats').get();
                 snap.forEach(doc => {
                     const data = doc.data();
-                    if (doc.id !== 'pulse_global' && data.members && data.members.includes(window.currentUser.name)) {
+                    if (doc.id !== 'pulse_global' && doc.id !== 'ai_assistant' && data.members && data.members.includes(window.currentUser.name)) {
                         window.chats.push({ id: doc.id, name: data.name || doc.id, type: data.type || 'friend' });
                     }
                 });
@@ -864,11 +868,15 @@
                 const item = document.createElement('div');
                 item.className = 'p-3 rounded-xl cursor-pointer transition flex items-center justify-between bg-darkBg/60 border border-darkBorder hover:border-primaryAccent text-white text-xs font-semibold shadow-sm group';
                 
+                let iconClass = 'fa-users text-primaryAccent';
+                if (c.type === 'friend') iconClass = 'fa-user text-indigo-400';
+                if (c.type === 'ai') iconClass = 'fa-robot text-emerald-400';
+
                 const leftPart = document.createElement('div');
                 leftPart.className = 'flex items-center space-x-2.5 overflow-hidden flex-1';
                 leftPart.innerHTML = `
                     <div class="w-7 h-7 rounded-lg bg-darkCard border border-darkBorder flex items-center justify-center shrink-0">
-                        <i class="fa-solid ${c.type === 'group' ? 'fa-users text-primaryAccent' : 'fa-user text-indigo-400'} text-[10px]"></i>
+                        <i class="fa-solid ${iconClass} text-[10px]"></i>
                     </div>
                     <span class="truncate">${escapeHTML(c.name)}</span>
                 `;
@@ -880,7 +888,7 @@
                 };
                 item.appendChild(leftPart);
 
-                if (c.id !== 'pulse_global') {
+                if (c.id !== 'pulse_global' && c.id !== 'ai_assistant') {
                     const delBtn = document.createElement('button');
                     delBtn.className = 'text-slate-500 hover:text-rose-400 px-1.5 py-1 transition shrink-0';
                     delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
@@ -928,60 +936,64 @@
 
             if (window.activeChatListener) window.activeChatListener();
 
-            window.activeChatListener = db.collection('chats').doc(id).collection('messages')
-                .onSnapshot(snapshot => {
-                    const container = document.getElementById('messagesContainer');
-                    if (!container) return;
-                    container.innerHTML = '';
-                    
-                    let messages = [];
-                    snapshot.forEach(doc => {
-                        messages.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    messages.sort((a, b) => (a.timestamp?.toMillis() || a.timeLocal || 0) - (b.timestamp?.toMillis() || b.timeLocal || 0));
+            let targetCollection = db.collection('chats').doc(id).collection('messages');
+            if (id === 'ai_assistant') {
+                targetCollection = db.collection('users').doc(window.currentUser.name).collection('ai_messages');
+            }
 
-                    messages.forEach(m => {
-                        const isMe = m.sender === window.currentUser?.name;
-                        const div = document.createElement('div');
-                        div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-                        
-                        let imageHtml = m.image ? `<img src="${m.image}" class="mt-2 w-48 h-auto rounded-xl border border-darkBorder shadow">` : '';
-                        let audioHtml = m.audio ? `<audio controls src="${m.audio}" class="mt-2 w-48 h-9"></audio>` : '';
-                        let editedTag = m.edited ? '<span class="text-[8px] opacity-60 ml-1">(изм.)</span>' : '';
-                        
-                        let reactionsHtml = '';
-                        if (m.reactions) {
-                            reactionsHtml = '<div class="flex gap-1 mt-1.5 flex-wrap">';
-                            for (let [user, emo] of Object.entries(m.reactions)) {
-                                reactionsHtml += `<span class="px-1.5 py-0.5 bg-darkBg/80 rounded-md text-[10px] border border-darkBorder">${emo} <span class="opacity-60">${user}</span></span>`;
-                            }
-                            reactionsHtml += '</div>';
-                        }
-
-                        let ownerActions = isMe ? `<div class="flex gap-2 mt-1 text-[9px]"><button onclick="editMessage('${m.id}', '${escapeHTML(m.text||'')}')" class="text-indigo-300 hover:underline">Изм.</button><button onclick="deleteMessage('${m.id}')" class="text-rose-400 hover:underline">Удал.</button></div>` : '';
-
-                        div.innerHTML = `
-                            <div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-xs ${isMe ? 'bg-primaryAccent text-white shadow-md shadow-primaryAccent/20' : 'bg-darkCard text-slate-200 border border-darkBorder'} relative group">
-                                <b class="block text-[10px] opacity-80 mb-0.5">${escapeHTML(m.sender)}</b>
-                                ${escapeHTML(m.text || '')} ${editedTag}
-                                ${imageHtml}
-                                ${audioHtml}
-                                ${reactionsHtml}
-                                ${ownerActions}
-                                <div class="flex gap-1 mt-1 opacity-0 group-hover:opacity-100 transition absolute -bottom-6 ${isMe ? 'right-0' : 'left-0'} bg-darkCard border border-darkBorder rounded-lg p-1 shadow-lg z-10">
-                                    <button onclick="addReaction('${m.id}', '👍')">👍</button>
-                                    <button onclick="addReaction('${m.id}', '❤️')">❤️</button>
-                                    <button onclick="addReaction('${m.id}', '🔥')">🔥</button>
-                                    <button onclick="addReaction('${m.id}', '😂')">😂</button>
-                                </div>
-                                <div class="text-[8px] opacity-60 text-right mt-1">${escapeHTML(m.time||'')}</div>
-                            </div>
-                        `;
-                        container.appendChild(div);
-                    });
-                    container.scrollTop = container.scrollHeight;
+            window.activeChatListener = targetCollection.onSnapshot(snapshot => {
+                const container = document.getElementById('messagesContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                
+                let messages = [];
+                snapshot.forEach(doc => {
+                    messages.push({ id: doc.id, ...doc.data() });
                 });
+                
+                messages.sort((a, b) => (a.timestamp?.toMillis() || a.timeLocal || 0) - (b.timestamp?.toMillis() || b.timeLocal || 0));
+
+                messages.forEach(m => {
+                    const isMe = m.sender === window.currentUser?.name;
+                    const div = document.createElement('div');
+                    div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+                    
+                    let imageHtml = m.image ? `<img src="${m.image}" class="mt-2 w-48 h-auto rounded-xl border border-darkBorder shadow">` : '';
+                    let audioHtml = m.audio ? `<audio controls src="${m.audio}" class="mt-2 w-48 h-9"></audio>` : '';
+                    let editedTag = m.edited ? '<span class="text-[8px] opacity-60 ml-1">(изм.)</span>' : '';
+                    
+                    let reactionsHtml = '';
+                    if (m.reactions) {
+                        reactionsHtml = '<div class="flex gap-1 mt-1.5 flex-wrap">';
+                        for (let [user, emo] of Object.entries(m.reactions)) {
+                            reactionsHtml += `<span class="px-1.5 py-0.5 bg-darkBg/80 rounded-md text-[10px] border border-darkBorder">${emo} <span class="opacity-60">${user}</span></span>`;
+                        }
+                        reactionsHtml += '</div>';
+                    }
+
+                    let ownerActions = isMe ? `<div class="flex gap-2 mt-1 text-[9px]"><button onclick="editMessage('${m.id}', '${escapeHTML(m.text||'')}')" class="text-indigo-300 hover:underline">Изм.</button><button onclick="deleteMessage('${m.id}')" class="text-rose-400 hover:underline">Удал.</button></div>` : '';
+
+                    div.innerHTML = `
+                        <div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-xs ${isMe ? 'bg-primaryAccent text-white shadow-md shadow-primaryAccent/20' : 'bg-darkCard text-slate-200 border border-darkBorder'} relative group">
+                            <b class="block text-[10px] opacity-80 mb-0.5">${escapeHTML(m.sender)}</b>
+                            ${escapeHTML(m.text || '')} ${editedTag}
+                            ${imageHtml}
+                            ${audioHtml}
+                            ${reactionsHtml}
+                            ${ownerActions}
+                            <div class="flex gap-1 mt-1 opacity-0 group-hover:opacity-100 transition absolute -bottom-6 ${isMe ? 'right-0' : 'left-0'} bg-darkCard border border-darkBorder rounded-lg p-1 shadow-lg z-10">
+                                <button onclick="addReaction('${m.id}', '👍')">👍</button>
+                                <button onclick="addReaction('${m.id}', '❤️')">❤️</button>
+                                <button onclick="addReaction('${m.id}', '🔥')">🔥</button>
+                                <button onclick="addReaction('${m.id}', '😂')">😂</button>
+                            </div>
+                            <div class="text-[8px] opacity-60 text-right mt-1">${escapeHTML(m.time||'')}</div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+                container.scrollTop = container.scrollHeight;
+            });
         };
 
         window.previewChatImage = function(input) {
@@ -1002,6 +1014,30 @@
             document.getElementById('imagePreviewContainer').classList.add('hidden');
         };
 
+        // ИИ-ФУНКЦИЯ ДЛЯ ОТВЕТОВ ЧЕРЕЗ GEMINI API
+        async function askPulseAI(promptText) {
+            try {
+                // Публичный защищенный API ключ для демонстрации работы прямо в браузере
+                const apiKey = "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE"; 
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: "Ты — искусственный интеллект PulseAI, умный ассистент внутри облачной экосистемы Pulse Workspace v14.0. Отвечай вежливо, кратко и полезно на русском языке.\n\nПользователь: " + promptText }]
+                        }]
+                    })
+                });
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    return data.candidates[0].content.parts[0].text.trim();
+                }
+                return "Извините, не удалось сформировать ответ.";
+            } catch (err) {
+                return "Ошибка связи с сервером ИИ.";
+            }
+        }
+
         window.sendMessage = async function() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
@@ -1015,7 +1051,32 @@
             const imageToSend = window.currentChatImageBase64;
             input.value = '';
             clearImagePreview();
+
+            // ЕСЛИ ЭТО ЧАТ С ИИ
+            if (window.activeChatId === 'ai_assistant') {
+                const aiCol = db.collection('users').doc(window.currentUser.name).collection('ai_messages');
+                // Сообщение пользователя
+                await aiCol.add({
+                    sender: window.currentUser.name,
+                    text: text,
+                    time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                    timeLocal: Date.now(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Ответ ИИ
+                const aiReply = await askPulseAI(text);
+                await aiCol.add({
+                    sender: '🤖 PulseAI',
+                    text: aiReply,
+                    time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                    timeLocal: Date.now() + 100,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                return;
+            }
             
+            // ОБЫЧНЫЙ ЧАТ / ГРУППА
             const chatRef = db.collection('chats').doc(window.activeChatId);
             const chatDoc = await chatRef.get();
             if (!chatDoc.exists) {
@@ -1034,6 +1095,21 @@
                 timeLocal: Date.now(),
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
+
+            // Проверка на триггер @pulseai или @ai в групповом чате
+            if (text.toLowerCase().includes('@pulseai') || text.toLowerCase().includes('@ai')) {
+                const cleanQuery = text.replace(/@pulseai|@ai/gi, '').trim();
+                const aiReply = await askPulseAI(cleanQuery || "Привет!");
+                setTimeout(async () => {
+                    await chatRef.collection('messages').add({
+                        sender: '🤖 PulseAI',
+                        text: aiReply,
+                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                        timeLocal: Date.now() + 200,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }, 1000);
+            }
         };
 
         // МОДАЛКИ ЛС И ГРУПП
