@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v19.0 - Ultimate Enterprise Master</title>
+    <title>Pulse Workspace v18.0 - Ultimate Master Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -40,35 +40,28 @@
         body.theme-linear { --bg-color: #050508; --card-color: #0f1017; --border-color: #1f1b2e; --accent-color: #7c3aed; }
         body.theme-cyber { --bg-color: #020617; --card-color: #090d19; --border-color: #1e1b4b; --accent-color: #ec4899; }
         body.theme-oled { --bg-color: #000000; --card-color: #050505; --border-color: #171717; --accent-color: #3b82f6; }
-        body.theme-emerald { --bg-color: #022c22; --card-color: #064e3b; --border-color: #047857; --accent-color: #10b981; }
 
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-color); color: #f8fafc; transition: background-color 0.4s ease; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .animate-modal { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .glass-panel { background: rgba(11, 17, 32, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); }
-        .chat-bubble-me { background: linear-gradient(135deg, var(--accent-color), #4f46e5); color: #ffffff; }
-        .chat-bubble-other { background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border-color); color: #f1f5f9; }
     </style>
 </head>
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
 
     <!-- ГЛОБАЛЬНЫЙ ЭКРАН ВЫКЛЮЧЕНИЯ САЙТА СОЗДАТЕЛЕМ (67) -->
-    <div id="maintenanceScreen" class="fixed inset-0 z-[300] bg-darkBg flex items-center justify-center p-6 hidden text-center">
-        <div class="max-w-lg glass-panel p-8 rounded-3xl border border-rose-500/40 space-y-6 shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl"></div>
-            <div class="w-24 h-24 bg-rose-500/20 text-rose-500 rounded-3xl flex items-center justify-center mx-auto text-4xl shadow-inner border border-rose-500/30">
+    <div id="maintenanceScreen" class="fixed inset-0 z-[200] bg-darkBg flex items-center justify-center p-6 hidden text-center">
+        <div class="max-w-md glass-panel p-8 rounded-3xl border border-rose-500/40 space-y-5 shadow-2xl">
+            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-inner border border-rose-500/30">
                 <i class="fa-solid fa-power-off"></i>
             </div>
-            <div class="space-y-2">
-                <h1 class="text-2xl font-extrabold text-white uppercase tracking-wider">Платформа приостановлена</h1>
-                <p class="text-xs text-slate-400 font-medium leading-relaxed">Главный Создатель (67) перевел сервис в режим обслуживания. Обычный доступ заблокирован.</p>
-            </div>
-            <div class="pt-2 space-y-3">
-                <input type="password" id="maintenanceKeyInput" placeholder="Секретный код Создателя (67)..." class="w-full px-5 py-4 bg-black/70 border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent font-medium transition">
-                <button onclick="tryUnlockMaintenance()" class="w-full py-4 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold shadow-xl shadow-primaryAccent/40 hover:opacity-90 transition">Разблокировать доступ (67)</button>
+            <h1 class="text-xl font-extrabold text-white uppercase tracking-wider">Платформа отключена</h1>
+            <p class="text-xs text-slate-400 font-medium leading-relaxed">Создатель (67) временно приостановил работу Pulse Workspace. Доступ сохранен исключительно для администратора.</p>
+            <div class="pt-3 space-y-3">
+                <input type="password" id="maintenanceKeyInput" placeholder="Код доступа Создателя (67)..." class="w-full px-4 py-3.5 bg-black/70 border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent font-medium">
+                <button onclick="tryUnlockMaintenance()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold shadow-xl shadow-primaryAccent/40">Войти как Создатель (67)</button>
             </div>
         </div>
     </div>
@@ -82,16 +75,16 @@
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primaryAccent to-indigo-500 flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-primaryAccent/40">
                     <i class="fa-solid fa-cube"></i>
                 </div>
-                <div class="flex items-center space-x-1 bg-black/40 border border-darkBorder rounded-2xl p-1 text-[10px]">
-                    <button type="button" onclick="setTheme('linear')" class="px-2.5 py-1.5 rounded-xl font-bold text-white bg-primaryAccent transition shadow">Linear</button>
-                    <button type="button" onclick="setTheme('oled')" class="px-2.5 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white transition">OLED</button>
-                    <button type="button" onclick="setTheme('cyber')" class="px-2.5 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white transition">Cyber</button>
+                <div class="flex items-center space-x-1.5 bg-black/40 border border-darkBorder rounded-2xl p-1.5 text-[11px]">
+                    <button type="button" onclick="setTheme('linear')" class="px-3 py-1.5 rounded-xl font-bold text-white bg-primaryAccent transition shadow">Linear</button>
+                    <button type="button" onclick="setTheme('oled')" class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white transition">OLED</button>
+                    <button type="button" onclick="setTheme('cyber')" class="px-3 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white transition">Cyber</button>
                 </div>
             </div>
 
             <div class="space-y-1.5">
                 <h1 class="text-2xl font-extrabold tracking-tight text-white">Pulse Ecosystem</h1>
-                <p class="text-xs text-slate-400 font-medium">Интеллектуальная среда v19.0 Enterprise</p>
+                <p class="text-xs text-slate-400 font-medium">Облачная среда v18.0 Ultimate</p>
             </div>
 
             <div class="flex bg-black/40 p-1.5 rounded-2xl border border-darkBorder">
@@ -110,7 +103,7 @@
                     <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Пароль</label>
                     <input type="password" id="loginPassword" class="w-full px-4 py-3.5 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition font-medium" placeholder="••••••••">
                 </div>
-                <button type="button" onclick="handleLogin()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold transition cursor-pointer shadow-xl shadow-primaryAccent/30 hover:scale-[1.01]">Войти в систему</button>
+                <button type="button" onclick="handleLogin()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold transition cursor-pointer shadow-xl shadow-primaryAccent/30 hover:scale-[1.02]">Войти в систему</button>
             </div>
 
             <div id="registerForm" class="space-y-4 hidden">
@@ -122,11 +115,8 @@
                     <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Пароль</label>
                     <input type="password" id="regPassword" class="w-full px-4 py-3.5 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition font-medium" placeholder="••••••••">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Секретный ключ (67 для Создателя)</label>
-                    <input type="password" id="regAdminKey" class="w-full px-4 py-3.5 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition font-medium" placeholder="Ключ доступа">
-                </div>
-                <button type="button" onclick="handleRegister()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold transition cursor-pointer shadow-xl shadow-primaryAccent/30 hover:scale-[1.01]">Создать аккаунт</button>
+                <!-- Секретный поле ввода ключа удалено, роль 67 назначается автоматически по нику -->
+                <button type="button" onclick="handleRegister()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold transition cursor-pointer shadow-xl shadow-primaryAccent/30 hover:scale-[1.02]">Создать профиль</button>
             </div>
         </div>
     </div>
@@ -186,7 +176,7 @@
                     <div id="chatList" class="flex-1 overflow-y-auto p-3 space-y-2"></div>
                 </div>
 
-                <!-- Главная панель чата -->
+                <!-- Панель диалога -->
                 <div id="chatPane" class="flex-1 flex flex-col h-full bg-darkBg overflow-hidden relative z-10 w-full">
                     <div class="h-16 border-b border-darkBorder px-6 flex items-center justify-between glass-panel shrink-0 shadow-md">
                         <div class="flex items-center space-x-3 overflow-hidden">
@@ -194,13 +184,13 @@
                             <div class="overflow-hidden">
                                 <div class="flex items-center gap-2">
                                     <h3 id="chatTitle" class="font-extrabold text-sm text-white truncate">Чат</h3>
-                                    <span class="px-2 py-0.5 rounded-full bg-primaryAccent/20 text-primaryAccent text-[9px] font-black tracking-widest uppercase border border-primaryAccent/30">MASTER PRO</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-primaryAccent/20 text-primaryAccent text-[9px] font-black tracking-widest uppercase border border-primaryAccent/30">MASTER AI</span>
                                 </div>
-                                <p id="chatStatus" class="text-[10px] text-emerald-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Соединение стабильно</p>
+                                <p id="chatStatus" class="text-[10px] text-emerald-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Сеть на связи</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <input type="text" id="messageSearchInput" oninput="filterMessages(this.value)" placeholder="Поиск в сообщениях..." class="px-3.5 py-2 bg-black/50 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent hidden md:block font-medium">
+                            <input type="text" id="messageSearchInput" oninput="filterMessages(this.value)" placeholder="Поиск в чате..." class="px-3.5 py-2 bg-black/50 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-primaryAccent hidden md:block font-medium">
                         </div>
                     </div>
 
@@ -211,7 +201,7 @@
                     <div class="p-4 border-t border-darkBorder glass-panel shrink-0 space-y-3 w-full">
                         <div id="imagePreviewContainer" class="hidden flex items-center gap-3 bg-black/60 p-2.5 rounded-2xl border border-darkBorder">
                             <img id="imagePreviewThumb" class="w-12 h-12 object-cover rounded-xl border border-darkBorder">
-                            <span class="text-xs text-slate-300 truncate flex-1 font-bold">Прикрепленный файл</span>
+                            <span class="text-xs text-slate-300 truncate flex-1 font-bold">Прикрепленное изображение</span>
                             <button onclick="clearImagePreview()" class="text-rose-400 w-8 h-8 rounded-xl hover:bg-rose-500/10 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="flex items-center space-x-3 w-full">
@@ -264,7 +254,7 @@
                     <div class="flex items-center justify-between pt-3 border-t border-darkBorder">
                         <div>
                             <span class="text-xs font-bold text-white block">Звуковые уведомления</span>
-                            <span class="text-[10px] text-slate-400 font-medium">Воспроизводить звук новых сообщений</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Звук при новых сообщениях</span>
                         </div>
                         <input type="checkbox" id="soundToggle" onchange="toggleSoundSetting(this)" class="w-5 h-5 accent-primaryAccent rounded-lg cursor-pointer">
                     </div>
@@ -272,7 +262,7 @@
                     <div class="flex items-center justify-between pt-3 border-t border-darkBorder">
                         <div>
                             <span class="text-xs font-bold text-white block">Очистить локальный кэш</span>
-                            <span class="text-[10px] text-slate-400 font-medium">Сбросить временные настройки</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Сбросить временные данные</span>
                         </div>
                         <button type="button" onclick="clearUserCache()" class="px-4 py-2 bg-black/50 border border-darkBorder text-slate-300 rounded-2xl text-xs font-bold hover:border-primaryAccent transition">Очистить</button>
                     </div>
@@ -281,22 +271,21 @@
                 <!-- ТЕМА ОФОРМЛЕНИЯ -->
                 <div class="glass-panel border border-darkBorder rounded-3xl p-5 space-y-3.5 shadow-xl">
                     <h3 class="font-extrabold text-xs text-white uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-palette text-primaryAccent"></i> ТЕМА ОФОРМЛЕНИЯ</h3>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button type="button" onclick="setTheme('linear')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-[11px] text-slate-200 hover:border-primaryAccent transition font-bold shadow">Linear</button>
-                        <button type="button" onclick="setTheme('oled')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-[11px] text-slate-200 hover:border-primaryAccent transition font-bold shadow">OLED</button>
-                        <button type="button" onclick="setTheme('cyber')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-[11px] text-slate-200 hover:border-primaryAccent transition font-bold shadow">Cyber</button>
-                        <button type="button" onclick="setTheme('emerald')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-[11px] text-slate-200 hover:border-primaryAccent transition font-bold shadow">Emerald</button>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" onclick="setTheme('linear')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-slate-200 hover:border-primaryAccent transition font-bold shadow">Linear</button>
+                        <button type="button" onclick="setTheme('oled')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-slate-200 hover:border-primaryAccent transition font-bold shadow">OLED</button>
+                        <button type="button" onclick="setTheme('cyber')" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-slate-200 hover:border-primaryAccent transition font-bold shadow">Cyber</button>
                     </div>
                 </div>
 
-                <!-- ПАНЕЛЬ АДМИНИСТРАТОРА -->
+                <!-- ADMIN PANEL -->
                 <div id="adminPanelBox" class="hidden space-y-4 pb-12">
                     <div class="glass-panel border border-darkBorder rounded-3xl p-5 space-y-4 shadow-2xl">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
                             <h3 class="font-extrabold text-xs text-amber-400 uppercase flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА v19.0
+                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА v18.0
                             </h3>
-                            <span class="text-[11px] text-slate-400 font-bold">Всего пользователей: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
+                            <span class="text-[11px] text-slate-400 font-bold">Всего юзеров: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                         </div>
 
                         <!-- ДАШБОРД АНАЛИТИКИ -->
@@ -319,36 +308,36 @@
                             <input type="text" id="adminUserSearchInput" oninput="filterAdminUsers(this.value)" placeholder="Поиск пользователя по нику..." class="w-full px-4 py-2.5 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
                         </div>
 
-                        <!-- ЭКСКЛЮЗИВНАЯ ПАНЕЛЬ СОЗДАТЕЛЯ (КЛЮЧ 67) -->
-                        <div id="creatorOnlyBox" class="hidden space-y-3 p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl">
+                        <!-- ЭКСКЛЮЗИВНАЯ ПАНЕЛЬ СОЗДАТЕЛЯ (67) -->
+                        <div id="creatorOnlyBox" class="hidden space-y-2.5 p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl">
                             <h4 class="font-extrabold text-xs text-rose-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-crown"></i> Панель Главного Создателя (Код 67)</h4>
-                            <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Полная блокировка всей платформы для пользователей. Для владельцев ключа 67 сайт продолжит функционировать.</p>
-                            <div class="grid grid-cols-2 gap-2 text-[11px]">
-                                <button type="button" onclick="creatorShutdownSite()" class="p-3 bg-rose-500/20 border border-rose-500/40 rounded-2xl text-rose-300 font-bold text-left truncate shadow cursor-pointer hover:bg-rose-500/30 transition"><i class="fa-solid fa-power-off mr-2"></i> Выкл. весь сайт</button>
-                                <button type="button" onclick="creatorStartupSite()" class="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-emerald-300 font-bold text-left truncate shadow cursor-pointer hover:bg-emerald-500/30 transition"><i class="fa-solid fa-play mr-2"></i> Запуск сайта</button>
+                            <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Полное отключение сайта для всех пользователей. Для вас (Создатель 67) сайт остается полностью рабочим.</p>
+                            <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                                <button type="button" onclick="creatorShutdownSite()" class="p-3 bg-rose-500/20 border border-rose-500/40 rounded-2xl text-rose-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-power-off mr-2"></i> Выкл. весь сайт</button>
+                                <button type="button" onclick="creatorStartupSite()" class="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-emerald-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-play mr-2"></i> Запуск сайта</button>
                             </div>
                         </div>
 
-                        <!-- ПОЛНЫЙ НАБОР ИНСТРУМЕНТОВ АДМИНИСТРИРОВАНИЯ -->
+                        <!-- ИНСТРУМЕНТЫ АДМИНИСТРИРОВАНИЯ -->
                         <div class="grid grid-cols-2 gap-2 text-[11px]">
-                            <button type="button" onclick="f1_broadcast()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer hover:border-amber-400/50 transition"><i class="fa-solid fa-bullhorn mr-2"></i> Рассылка</button>
-                            <button type="button" onclick="f2_clearFeed()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-rose-400 font-bold text-left truncate shadow cursor-pointer hover:border-rose-400/50 transition"><i class="fa-solid fa-trash mr-2"></i> Сброс ленты</button>
-                            <button type="button" onclick="f3_exportDb()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-indigo-300 font-bold text-left truncate shadow cursor-pointer hover:border-indigo-400/50 transition"><i class="fa-solid fa-database mr-2"></i> Дамп БД</button>
-                            <button type="button" onclick="f11_autoCleanOldData()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer hover:border-amber-400/50 transition"><i class="fa-solid fa-broom mr-2"></i> Очистка кэша</button>
+                            <button type="button" onclick="f1_broadcast()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-bullhorn mr-2"></i> Рассылка</button>
+                            <button type="button" onclick="f2_clearFeed()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-rose-400 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-trash mr-2"></i> Сброс ленты</button>
+                            <button type="button" onclick="f3_exportDb()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-indigo-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-database mr-2"></i> Дамп БД</button>
+                            <button type="button" onclick="f11_autoCleanOldData()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-broom mr-2"></i> Очистка кэша</button>
 
-                            <button type="button" onclick="f5_clearStories()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-slate-300 font-bold text-left truncate shadow cursor-pointer hover:border-slate-400/50 transition"><i class="fa-solid fa-circle-xmark mr-2"></i> Очист. историй</button>
-                            <button type="button" onclick="f9_clearAllChatsMessages()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-rose-400 font-bold text-left truncate shadow cursor-pointer hover:border-rose-400/50 transition"><i class="fa-solid fa-comments mr-2"></i> Очист. чатов</button>
+                            <button type="button" onclick="f5_clearStories()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-slate-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-circle-xmark mr-2"></i> Очист. историй</button>
+                            <button type="button" onclick="f9_clearAllChatsMessages()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-rose-400 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-comments mr-2"></i> Очист. чатов</button>
                             
-                            <button type="button" onclick="f6_banUser()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-rose-400 font-bold text-left truncate shadow cursor-pointer hover:border-rose-400/50 transition"><i class="fa-solid fa-user-slash mr-2"></i> Бан юзера</button>
-                            <button type="button" onclick="f7_unbanUser()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-emerald-400 font-bold text-left truncate shadow cursor-pointer hover:border-emerald-400/50 transition"><i class="fa-solid fa-user-check mr-2"></i> Разбан юзера</button>
+                            <button type="button" onclick="f6_banUser()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-rose-400 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-user-slash mr-2"></i> Бан юзера</button>
+                            <button type="button" onclick="f7_unbanUser()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-emerald-400 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-user-check mr-2"></i> Разбан юзера</button>
                             
-                            <button type="button" onclick="f8_muteUser()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer hover:border-amber-400/50 transition"><i class="fa-solid fa-volume-xmark mr-2"></i> Мут</button>
-                            <button type="button" onclick="f10_giveVipQuick()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-emerald-300 font-bold text-left truncate shadow cursor-pointer hover:border-emerald-400/50 transition"><i class="fa-solid fa-circle-check mr-2"></i> VIP ✅</button>
+                            <button type="button" onclick="f8_muteUser()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-volume-xmark mr-2"></i> Мут</button>
+                            <button type="button" onclick="f10_giveVipQuick()" class="p-3 bg-black/50 border border-darkBorder rounded-2xl text-emerald-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-circle-check mr-2"></i> VIP ✅</button>
 
                             <button type="button" onclick="adminToggleGlobalLock()" class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-lock mr-2"></i> Блок общего чата</button>
                             <button type="button" onclick="adminResetAllPasswords()" class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-key mr-2"></i> Сброс паролей</button>
 
-                            <button type="button" onclick="loadAdminUsers()" class="p-3 bg-primaryAccent border border-primaryAccent text-white font-black rounded-2xl text-center col-span-2 truncate shadow-lg cursor-pointer hover:opacity-90 transition"><i class="fa-solid fa-rotate mr-2"></i> Обновить аналитику</button>
+                            <button type="button" onclick="loadAdminUsers()" class="p-3 bg-primaryAccent border border-primaryAccent text-white font-black rounded-2xl text-center col-span-2 truncate shadow-lg cursor-pointer"><i class="fa-solid fa-rotate mr-2"></i> Обновить аналитику</button>
                         </div>
 
                         <!-- СПИСОК ПОЛЬЗОВАТЕЛЕЙ И ДОСЬЕ -->
@@ -364,7 +353,7 @@
                                 <button type="button" onclick="exportAuditLogs()" class="text-[10px] text-primaryAccent hover:underline font-bold cursor-pointer"><i class="fa-solid fa-download mr-1"></i>Экспорт логов</button>
                             </div>
                             <div id="adminLogsContainer" class="p-3 bg-black/60 border border-darkBorder rounded-2xl h-28 overflow-y-auto space-y-1.5 font-mono text-[10px] text-slate-400 shadow-inner">
-                                <div>[Система v19.0] Логирование операций запущено...</div>
+                                <div>[Система v18.0] Безопасность и мониторинг активны...</div>
                             </div>
                         </div>
                     </div>
@@ -373,7 +362,7 @@
 
         </div>
 
-        <!-- NAVIGATION BAR -->
+        <!-- BOTTOM NAVIGATION BAR -->
         <div class="absolute bottom-0 inset-x-0 h-20 glass-panel border-t border-darkBorder flex items-center justify-around px-4 z-40 shadow-2xl backdrop-blur-2xl">
             <button type="button" onclick="switchSection('feed')" id="navBtnFeed" class="flex-1 flex flex-col items-center justify-center py-2 text-primaryAccent transition cursor-pointer font-bold"><i class="fa-solid fa-compass text-lg mb-1"></i><span class="text-[10px] tracking-wide">Лента</span></button>
             <button type="button" onclick="switchSection('messages')" id="navBtnMessages" class="flex-1 flex flex-col items-center justify-center py-2 text-slate-400 hover:text-slate-200 transition cursor-pointer font-bold"><i class="fa-solid fa-comments text-lg mb-1"></i><span class="text-[10px] tracking-wide">Сообщения</span></button>
@@ -388,7 +377,7 @@
                 <h3 class="font-extrabold text-xs text-white uppercase tracking-wider">Новый ЛС чат</h3>
                 <button type="button" onclick="closeAddFriendModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="friendUsernameInput" placeholder="Никнейм собеседника..." class="w-full px-4 py-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
+            <input type="text" id="friendUsernameInput" placeholder="Введите никнейм собеседника..." class="w-full px-4 py-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
             <button type="button" onclick="submitAddFriend()" class="w-full py-3.5 bg-primaryAccent text-white rounded-2xl text-xs font-bold shadow-lg shadow-primaryAccent/30 hover:opacity-90 transition">Открыть чат</button>
         </div>
     </div>
@@ -450,7 +439,7 @@
                 <p id="viewStoryText" class="text-sm text-slate-100 text-center leading-relaxed font-semibold break-words"></p>
             </div>
             <div class="text-center text-[10px] text-slate-500 border-t border-darkBorder pt-3 font-bold">
-                Pulse Ecosystem v19.0
+                Pulse Ecosystem v18.0
             </div>
         </div>
     </div>
@@ -459,8 +448,8 @@
         <div class="w-full max-w-lg glass-panel border border-darkBorder rounded-3xl shadow-2xl p-6 flex flex-col h-[80vh] space-y-4 animate-modal relative">
             <div class="flex items-center justify-between border-b border-darkBorder pb-3">
                 <div>
-                    <h3 id="inspectorTitle" class="font-extrabold text-sm text-amber-400">Инспектор чатов пользователя</h3>
-                    <p class="text-[10px] text-slate-400 font-medium">Просмотр переписок и сообщений</p>
+                    <h3 id="inspectorTitle" class="font-extrabold text-sm text-amber-400">Инспектор чатов юзера</h3>
+                    <p class="text-[10px] text-slate-400 font-medium">Просмотр всех диалогов и сообщений</p>
                 </div>
                 <button type="button" onclick="closeAdminChatInspector()" class="text-slate-400 hover:text-white transition w-9 h-9 flex items-center justify-center rounded-2xl bg-black/50 border border-darkBorder"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -535,7 +524,7 @@
             if(soundCheckbox) soundCheckbox.checked = soundPref;
         });
 
-        // ПРОВЕРКА ГЛОБАЛЬНОЙ БЛОКИРОВКИ САЙТА СОЗДАТЕЛЕМ (67)
+        // ПРОВЕРКА СТАТУСА САЙТА (ВЫКЛЮЧЕН ЛИ СОЗДАТЕЛЕМ 67)
         async function checkGlobalSiteStatus() {
             try {
                 const doc = await db.collection('system').doc('config').get();
@@ -551,22 +540,22 @@
             } catch(e) {}
         }
 
-        // КНОПКИ ДЛЯ СОЗДАТЕЛЯ (67): ОТКЛЮЧЕНИЕ / ВКЛЮЧЕНИЕ ПЛАТФОРМЫ
+        // ФУНКЦИИ СОЗДАТЕЛЯ (67): ВЫКЛЮЧЕНИЕ / ВКЛЮЧЕНИЕ ВСЕГО САЙТА
         window.creatorShutdownSite = async function() {
-            if(!confirm('ВНИМАНИЕ: Отключить доступ к сайту для всех пользователей? (Создатель 67 сохранит доступ)')) return;
+            if(!confirm('ВНИМАНИЕ: Выключить сайт для всех пользователей? (Создатель 67 сохранит полный доступ)')) return;
             try {
                 await db.collection('system').doc('config').set({ isShutdown: true, shutdownBy: '67', time: Date.now() });
-                logAdminAction('Создатель (67) отключил работу платформы');
-                alert('Сайт отключен для обычных пользователей!');
+                logAdminAction('Создатель (67) отключил работу платформы для всех');
+                alert('Сайт успешно выключен для всех, кроме вас!');
             } catch(e) { alert('Ошибка'); }
         };
 
         window.creatorStartupSite = async function() {
-            if(!confirm('Запустить сайт обратно для всех пользователей?')) return;
+            if(!confirm('Включить сайт обратно для всех пользователей?')) return;
             try {
                 await db.collection('system').doc('config').set({ isShutdown: false, startupBy: '67', time: Date.now() });
-                logAdminAction('Создатель (67) возобновил работу сайта');
-                alert('Сайт запущен!');
+                logAdminAction('Создатель (67) запустил сайт');
+                alert('Сайт успешно запущен!');
                 document.getElementById('maintenanceScreen').classList.add('hidden');
             } catch(e) { alert('Ошибка'); }
         };
@@ -575,9 +564,9 @@
             const val = document.getElementById('maintenanceKeyInput').value.trim();
             if (val === window.CREATOR_KEY || val === "67") {
                 document.getElementById('maintenanceScreen').classList.add('hidden');
-                alert('Доступ Создателя подтвержден! Войдите в аккаунт.');
+                alert('Доступ Создателя подтвержден! Войдите под ником 67.');
             } else {
-                alert('Неверный код доступа!');
+                alert('Неверный ключ Создателя!');
             }
         };
 
@@ -591,7 +580,7 @@
         window.handleLogin = async function() {
             const username = document.getElementById('loginUsername').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
-            if (!username || !password) { showAlert('Заполните все поля'); return; }
+            if (!username || !password) { showAlert('Заполните поля'); return; }
             
             try {
                 const hashedPassword = await hashPassword(password);
@@ -602,25 +591,24 @@
                 
                 if (docSnap.exists) {
                     const data = docSnap.data();
-                    if (data.isBanned) { showAlert('Ваш профиль заблокирован'); return; }
+                    if (data.isBanned) { showAlert('Ваш аккаунт забанен'); return; }
                     
                     if (data.password === hashedPassword || data.password === password) {
                         initSession(data);
                     } else { showAlert('Неверный логин или пароль'); }
                 } else { showAlert('Пользователь не найден'); }
-            } catch(e) { showAlert('Ошибка подключения'); }
+            } catch(e) { showAlert('Ошибка сети'); }
         };
 
         window.handleRegister = async function() {
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
-            const key = document.getElementById('regAdminKey').value.trim();
             if (!username || !password) { showAlert('Заполните обязательные поля'); return; }
             
             try {
-                const isCreator = key === window.CREATOR_KEY || username === '67';
-                const isAdmin = key === window.MASTER_ADMIN_KEY || isCreator;
-                const role = isCreator ? 'owner' : (isAdmin ? 'admin' : 'user');
+                // Автоматическое определение роли создателя, если ник 67
+                const isCreator = username === '67';
+                const role = isCreator ? 'owner' : 'user';
                 const code = '#' + username + '_' + Math.floor(1000 + Math.random() * 9000);
                 const hashedPassword = await hashPassword(password);
                 
@@ -631,7 +619,7 @@
                     role, 
                     isBanned: false,
                     isMuted: false,
-                    status: 'В сети в Pulse Enterprise',
+                    status: 'В сети в Pulse Master',
                     createdAt: Date.now()
                 };
                 
@@ -676,7 +664,7 @@
         }
 
         window.confirmLogout = function() {
-            if (confirm('Выйти из системы?')) {
+            if (confirm('Выйти из профиля?')) {
                 localStorage.removeItem('pulse_session');
                 location.reload();
             }
@@ -701,8 +689,8 @@
                 let updated = {...window.currentUser, status: newStatus};
                 window.currentUser = Object.freeze(updated);
                 localStorage.setItem('pulse_session', JSON.stringify(updated));
-                alert('Статус обновлен!');
-            } catch(e) { alert('Ошибка сохранения'); }
+                alert('Статус сохранен!');
+            } catch(e) { alert('Ошибка'); }
         };
 
         window.saveNewPassword = async function() {
@@ -711,13 +699,13 @@
             try {
                 const hashed = await hashPassword(pass);
                 await db.collection('users').doc(window.currentUser.name).update({ password: hashed });
-                alert('Пароль обновлен!');
+                alert('Пароль изменен!');
                 document.getElementById('newUserPassword').value = '';
             } catch(e) { alert('Ошибка'); }
         };
 
         window.toggleSoundSetting = function(el) { localStorage.setItem('pulse_sound', el.checked); };
-        window.clearUserCache = function() { localStorage.clear(); alert('Локальный кэш очищен.'); location.reload(); };
+        window.clearUserCache = function() { localStorage.clear(); alert('Кэш очищен.'); location.reload(); };
 
         window.filterChats = function(query) {
             const q = query.toLowerCase();
@@ -737,9 +725,9 @@
 
         window.notifyTyping = function() {
             const st = document.getElementById('chatStatus');
-            st.innerHTML = `<span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span> ${window.currentUser.name} печатает...`;
+            st.innerHTML = `<span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span> ${window.currentUser.name} пишет...`;
             setTimeout(() => {
-                st.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Соединение стабильно`;
+                st.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Сеть на связи`;
             }, 2000);
         };
 
@@ -967,7 +955,7 @@
 
                 if (c.id !== 'pulse_global' && c.id !== 'ai_assistant') {
                     const delBtn = document.createElement('button');
-                    delBtn.className = 'text-slate-500 hover:text-rose-400 px-2 py-1 transition shrink-0 cursor-pointer';
+                    delBtn.className = 'text-slate-500 hover:text-rose-400 px-2 py-1 transition shrink-0';
                     delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
                     delBtn.onclick = (e) => { e.stopPropagation(); deleteChat(c.id); };
                     item.appendChild(delBtn);
@@ -1016,11 +1004,10 @@
                 messages.forEach(m => {
                     const isMe = m.sender === window.currentUser?.name;
                     const div = document.createElement('div');
-                    // Полноценное отображение ширины сообщений
                     div.className = `flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`;
                     
-                    let imageHtml = m.image ? `<img src="${m.image}" class="mt-2.5 w-60 h-auto rounded-2xl border border-darkBorder shadow">` : '';
-                    let audioHtml = m.audio ? `<audio controls src="${m.audio}" class="mt-2.5 w-52 h-9"></audio>` : '';
+                    let imageHtml = m.image ? `<img src="${m.image}" class="mt-2.5 w-52 h-auto rounded-2xl border border-darkBorder shadow">` : '';
+                    let audioHtml = m.audio ? `<audio controls src="${m.audio}" class="mt-2.5 w-48 h-9"></audio>` : '';
                     let editedTag = m.edited ? '<span class="text-[9px] opacity-60 ml-1">(изм.)</span>' : '';
                     
                     let reactionsHtml = '';
@@ -1032,24 +1019,24 @@
                         reactionsHtml += '</div>';
                     }
 
-                    // Четкие кнопки Изм. и Удал.
                     let ownerActions = isMe ? `<div class="flex items-center gap-3 mt-2 pt-1.5 border-t border-white/10 text-[10px] font-bold"><button onclick="editMessage('${m.id}', '${escapeHTML(m.text||'')}')" class="text-indigo-300 hover:text-white transition cursor-pointer">Изм.</button><button onclick="deleteMessage('${m.id}')" class="text-rose-400 hover:text-rose-300 transition cursor-pointer">Удал.</button></div>` : '';
 
+                    // Убраны обводка и фон (удалены классы стилизации контейнера сообщения, оставлен чистый текст и отступы)
                     div.innerHTML = `
-                        <div class="max-w-[85%] md:max-w-[70%] px-4.5 py-3 rounded-2xl text-xs ${isMe ? 'bg-gradient-to-r from-primaryAccent to-indigo-600 text-white shadow-lg shadow-primaryAccent/30' : 'glass-panel text-slate-200'} relative group break-words">
-                            <b class="block text-[10px] opacity-90 mb-1 font-extrabold">${escapeHTML(m.sender)}</b>
+                        <div class="max-w-[85%] md:max-w-[70%] px-2 py-1.5 text-xs text-slate-200 relative group break-words">
+                            <b class="block text-[10px] text-primaryAccent mb-0.5 font-extrabold">${escapeHTML(m.sender)}</b>
                             <div class="leading-relaxed font-medium">${escapeHTML(m.text || '')} ${editedTag}</div>
                             ${imageHtml}
                             ${audioHtml}
                             ${reactionsHtml}
                             ${ownerActions}
                             <div class="flex gap-1.5 mt-1 opacity-0 group-hover:opacity-100 transition absolute -top-8 ${isMe ? 'right-0' : 'left-0'} glass-panel border border-darkBorder rounded-xl p-1 shadow-2xl z-10">
-                                <button onclick="addReaction('${m.id}', '👍')" class="cursor-pointer hover:scale-110 transition">👍</button>
-                                <button onclick="addReaction('${m.id}', '❤️')" class="cursor-pointer hover:scale-110 transition">❤️</button>
-                                <button onclick="addReaction('${m.id}', '🔥')" class="cursor-pointer hover:scale-110 transition">🔥</button>
-                                <button onclick="addReaction('${m.id}', '😂')" class="cursor-pointer hover:scale-110 transition">😂</button>
+                                <button onclick="addReaction('${m.id}', '👍')" class="cursor-pointer">👍</button>
+                                <button onclick="addReaction('${m.id}', '❤️')" class="cursor-pointer">❤️</button>
+                                <button onclick="addReaction('${m.id}', '🔥')" class="cursor-pointer">🔥</button>
+                                <button onclick="addReaction('${m.id}', '😂')" class="cursor-pointer">😂</button>
                             </div>
-                            <div class="text-[9px] opacity-70 text-right mt-1.5 font-bold">${escapeHTML(m.time||'')}</div>
+                            <div class="text-[9px] opacity-70 text-right mt-1 font-bold">${escapeHTML(m.time||'')}</div>
                         </div>
                     `;
                     container.appendChild(div);
@@ -1083,7 +1070,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
-                            { role: 'system', content: 'Ты — ИИ-ассистент PulseAI Master Enterprise. Отвечай кратко, профессионально и на русском языке.' },
+                            { role: 'system', content: 'Ты — ИИ-ассистент PulseAI Master. Отвечай кратко, экспертно, вежливо и на русском языке.' },
                             { role: 'user', content: promptText }
                         ],
                         model: 'openai' 
@@ -1091,9 +1078,9 @@
                 });
                 const replyText = await response.text();
                 if (replyText && replyText.trim()) return replyText.trim();
-                return "ИИ не смог ответит на запрос.";
+                return "ИИ не ответил.";
             } catch (err) {
-                return "Ошибка подключения к ядру ИИ.";
+                return "Ошибка связи с ИИ.";
             }
         }
 
@@ -1102,7 +1089,7 @@
             const text = input.value.trim();
             if (!text && !window.currentChatImageBase64) return;
             
-            if (window.currentUser.isMuted) { alert('Вы замучены администрацией.'); return; }
+            if (window.currentUser.isMuted) { alert('Вы замучены администратором.'); return; }
 
             const imageToSend = window.currentChatImageBase64;
             input.value = '';
@@ -1171,7 +1158,7 @@
             if (!rawInput) return;
             let targetName = rawInput.toLowerCase().replace(/^#/, '').split('_')[0];
 
-            if (targetName === window.currentUser.name) { alert('Нельзя написать самому себе'); return; }
+            if (targetName === window.currentUser.name) { alert('Нельзя создать чат с собой'); return; }
 
             try {
                 let userDoc = await db.collection('users').doc(targetName).get();
@@ -1192,7 +1179,7 @@
                 window.activeChatId = chatId;
                 window.selectChat(chatId);
                 if(window.innerWidth < 768) document.getElementById('sidebarChats').classList.add('-translate-x-full');
-            } catch (error) { alert('Ошибка создания чата'); }
+            } catch (error) { alert('Ошибка'); }
         };
 
         window.openCreateGroupModal = () => document.getElementById('createGroupModal').classList.remove('hidden');
@@ -1228,7 +1215,7 @@
             const msgCountEl = document.getElementById('statMessagesCount');
             if (!container) return;
 
-            container.innerHTML = '<div class="p-3 text-slate-400 text-xs font-bold">Загрузка аналитических данных...</div>';
+            container.innerHTML = '<div class="p-3 text-slate-400 text-xs font-bold">Загрузка аналитики...</div>';
 
             try {
                 const [usersSnap, postsSnap, storiesSnap, chatsSnap] = await Promise.all([
@@ -1283,7 +1270,7 @@
                     `;
                     container.appendChild(card);
                 });
-            } catch (e) { container.innerHTML = '<div class="p-3 text-rose-400 text-xs">Ошибка загрузки аналитики</div>'; }
+            } catch (e) { container.innerHTML = '<div class="p-3 text-rose-400 text-xs">Ошибка аналитики</div>'; }
         }
 
         window.filterAdminUsers = function(query) {
@@ -1296,7 +1283,7 @@
         window.inspectUserChats = async function(username) {
             document.getElementById('inspectorTitle').innerText = `Чаты пользователя: ${username}`;
             const container = document.getElementById('inspectorContent');
-            container.innerHTML = '<div class="p-4 text-center text-slate-400 text-xs font-bold">Загрузка данных...</div>';
+            container.innerHTML = '<div class="p-4 text-center text-slate-400 text-xs font-bold">Загрузка...</div>';
             document.getElementById('adminChatInspectorModal').classList.remove('hidden');
 
             try {
@@ -1327,8 +1314,8 @@
                         });
                     }
                 }
-                if (found === 0) container.innerHTML = '<div class="p-4 text-center text-slate-400 text-xs font-bold">Нет активных диалогов.</div>';
-            } catch(e) { container.innerHTML = '<div class="p-4 text-center text-rose-400 text-xs font-bold">Ошибка взаимодействия</div>'; }
+                if (found === 0) container.innerHTML = '<div class="p-4 text-center text-slate-400 text-xs font-bold">Нет активных чатов.</div>';
+            } catch(e) { container.innerHTML = '<div class="p-4 text-center text-rose-400 text-xs font-bold">Ошибка</div>'; }
         };
 
         window.closeAdminChatInspector = () => document.getElementById('adminChatInspectorModal').classList.add('hidden');
@@ -1358,37 +1345,37 @@
             logAdminAction('Логи выгружены');
         };
 
-        window.f1_broadcast = async () => { const msg = prompt('Текст рассылки:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', role: 'owner', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); alert('Готово!'); } };
-        window.f2_clearFeed = async () => { if(confirm('Очистить всю ленту постов?')){ const s = await db.collection('posts').get(); s.forEach(d=>d.ref.delete()); logAdminAction('Лента очищена'); loadAdminAnalytics(); alert('Готово!'); } };
-        window.f3_exportDb = async () => { const s = await db.collection('users').get(); let u=[]; s.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_users.json'; a.click(); logAdminAction('Дамп БД сохранен'); };
-        window.f5_clearStories = async () => { if(confirm('Очистить все истории?')){ const s = await db.collection('stories').get(); s.forEach(d=>d.ref.delete()); logAdminAction('Истории очищены'); loadAdminAnalytics(); alert('Готово!'); } };
-        window.f6_banUser = async () => { const u=prompt('Никнейм для блокировки:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: true }); logAdminAction('Бан: ' + un); loadAdminAnalytics(); alert('Забанен'); } };
-        window.f7_unbanUser = async () => { const u=prompt('Никнейм для разблокировки:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: false }); logAdminAction('Разбан: ' + un); loadAdminAnalytics(); alert('Разбанен'); } };
-        window.f8_muteUser = async () => { const u=prompt('Никнейм для мута:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isMuted: true }); logAdminAction('Мут: ' + un); alert('Мут активирован'); } };
-        window.f9_clearAllChatsMessages = async () => { if(confirm('Очистить историю всех чатов?')){ const chats = await db.collection('chats').get(); for(let c of chats.docs){ const msgs = await c.ref.collection('messages').get(); msgs.forEach(m=>m.ref.delete()); } logAdminAction('Сообщения очищены'); alert('Готово!'); } };
-        window.f10_giveVipQuick = async () => { const u=prompt('Никнейм для VIP ✅:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ role: 'vip' }); logAdminAction('VIP статус выдан: ' + un); loadAdminAnalytics(); alert('VIP выдан!'); } };
-        window.f11_autoCleanOldData = async () => { const s = await db.collection('stories').get(); let c=0; s.forEach(d=>{ if(Date.now()-d.data().timestamp>86400000){ d.ref.delete(); c++; } }); logAdminAction(`Автоочистка старых историй: ${c}`); alert(`Очищено историй: ${c}`); loadAdminAnalytics(); };
-        window.adminDeleteUser = async function(id) { if(!confirm('Удалить пользователя ' + id + '?')) return; await db.collection('users').doc(id).delete(); logAdminAction('Удален профиль: ' + id); loadAdminAnalytics(); };
+        window.f1_broadcast = async () => { const msg = prompt('Рассылка:'); if(msg){ await db.collection('posts').add({ author: 'СИСТЕМА [ADMIN]', role: 'owner', text: msg, time: new Date().toLocaleTimeString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); logAdminAction('Рассылка отправлена'); alert('Готово!'); } };
+        window.f2_clearFeed = async () => { if(confirm('Очистить ленту?')){ const s = await db.collection('posts').get(); s.forEach(d=>d.ref.delete()); logAdminAction('Лента очищена'); loadAdminAnalytics(); alert('Готово!'); } };
+        window.f3_exportDb = async () => { const s = await db.collection('users').get(); let u=[]; s.forEach(d=>u.push(d.data())); const b = new Blob([JSON.stringify(u,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='db_users.json'; a.click(); logAdminAction('Дамп БД скачан'); };
+        window.f5_clearStories = async () => { if(confirm('Очистить истории?')){ const s = await db.collection('stories').get(); s.forEach(d=>d.ref.delete()); logAdminAction('Истории очищены'); loadAdminAnalytics(); alert('Готово!'); } };
+        window.f6_banUser = async () => { const u=prompt('Ник для БАНа:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: true }); logAdminAction('Бан: ' + un); loadAdminAnalytics(); alert('Забанен'); } };
+        window.f7_unbanUser = async () => { const u=prompt('Ник для РАЗБАНа:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isBanned: false }); logAdminAction('Разбан: ' + un); loadAdminAnalytics(); alert('Разбанен'); } };
+        window.f8_muteUser = async () => { const u=prompt('Ник для мута:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ isMuted: true }); logAdminAction('Мут: ' + un); alert('Мут выдан'); } };
+        window.f9_clearAllChatsMessages = async () => { if(confirm('Очистить все чаты?')){ const chats = await db.collection('chats').get(); for(let c of chats.docs){ const msgs = await c.ref.collection('messages').get(); msgs.forEach(m=>m.ref.delete()); } logAdminAction('Все чаты очищены'); alert('Готово!'); } };
+        window.f10_giveVipQuick = async () => { const u=prompt('Ник для VIP ✅:'); if(u){ const un = u.toLowerCase().trim(); await db.collection('users').doc(un).update({ role: 'vip' }); logAdminAction('VIP выдан: ' + un); loadAdminAnalytics(); alert('VIP выдан!'); } };
+        window.f11_autoCleanOldData = async () => { const s = await db.collection('stories').get(); let c=0; s.forEach(d=>{ if(Date.now()-d.data().timestamp>86400000){ d.ref.delete(); c++; } }); logAdminAction(`Удалено старых историй: ${c}`); alert(`Очищено: ${c}`); loadAdminAnalytics(); };
+        window.adminDeleteUser = async function(id) { if(!confirm('Удалить ' + id + '?')) return; await db.collection('users').doc(id).delete(); logAdminAction('Удален: ' + id); loadAdminAnalytics(); };
 
         window.adminToggleGlobalLock = async function() {
-            if(confirm('Заблокировать отправку сообщений в общем чате?')) {
+            if(confirm('Переключить режим блокировки общего чата?')) {
                 await db.collection('system').doc('config').set({ globalChatLocked: true }, { merge: true });
-                logAdminAction('Режим "Только чтение" в общем чате');
+                logAdminAction('Общий чат заблокирован');
                 alert('Общий чат заблокирован');
             }
         };
 
         window.adminResetAllPasswords = async function() {
-            if(confirm('Сбросить пароли всех зарегистрированных пользователей на 123456?')) {
+            if(confirm('Сбросить пароли всех пользователей на 123456?')) {
                 const defaultHash = await hashPassword('123456');
                 const usersSnap = await db.collection('users').get();
                 usersSnap.forEach(async doc => { await doc.ref.update({ password: defaultHash }); });
-                logAdminAction('Пароли сброшены');
-                alert('Все пароли успешно сброшены на 123456');
+                logAdminAction('Массовый сброс паролей');
+                alert('Пароли сброшены на 123456');
             }
         };
 
-        window.copyMyCode = () => { navigator.clipboard.writeText(window.currentUser.code); alert('Персональный ID скопирован!'); };
+        window.copyMyCode = () => { navigator.clipboard.writeText(window.currentUser.code); alert('ID скопирован!'); };
         function showAlert(msg) { const a = document.getElementById('authAlert'); a.innerText = msg; a.classList.remove('hidden'); }
     </script>
 </body>
