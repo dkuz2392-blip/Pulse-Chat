@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v19.1 - Fixed Multi-Account & Role Edition</title>
+    <title>Pulse Workspace v19.1 - Multi-Account & Registration Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -517,15 +517,24 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ/РЕГИСТРАЦИИ АККАУНТА -->
     <div id="addAccountModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="w-full max-w-sm glass-panel border border-darkBorder rounded-3xl shadow-2xl p-6 space-y-4 animate-modal">
             <div class="flex justify-between items-center border-b border-darkBorder pb-3">
-                <h3 class="font-extrabold text-xs text-white uppercase tracking-wider">Добавить аккаунт</h3>
+                <h3 class="font-extrabold text-xs text-white uppercase tracking-wider">Управление аккаунтами</h3>
                 <button type="button" onclick="closeAddAccountModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <input type="text" id="addAccUsername" placeholder="Никнейм аккаунта..." class="w-full px-4 py-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
+
+            <!-- Вкладки: Вход / Регистрация -->
+            <div class="flex bg-black/40 p-1 rounded-2xl border border-darkBorder">
+                <button type="button" id="addAccTabLogin" onclick="switchAddAccTab('login')" class="flex-1 py-2 text-xs font-bold rounded-xl bg-primaryAccent text-white shadow transition">Вход</button>
+                <button type="button" id="addAccTabRegister" onclick="switchAddAccTab('register')" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition">Регистрация</button>
+            </div>
+
+            <input type="text" id="addAccUsername" placeholder="Никнейм..." class="w-full px-4 py-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
             <input type="password" id="addAccPassword" placeholder="Пароль..." class="w-full px-4 py-3 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
-            <button type="button" onclick="submitAddAccount()" class="w-full py-3.5 bg-primaryAccent text-white rounded-2xl text-xs font-bold shadow-lg">Войти и сохранить</button>
+
+            <button type="button" id="addAccSubmitBtn" onclick="submitAddAccount()" class="w-full py-3.5 bg-primaryAccent text-white rounded-2xl text-xs font-bold shadow-lg">Войти и сохранить</button>
         </div>
     </div>
 
@@ -612,6 +621,7 @@
         window.mediaRecorder = null;
         window.audioChunks = [];
         window.isRecording = false;
+        window.addAccMode = 'login';
 
         window.chats = [
             { id: 'pulse_global', name: 'Общий чат', type: 'group' },
@@ -638,7 +648,6 @@
             if(soundCheckbox) soundCheckbox.checked = soundPref;
         });
 
-        // ПРОВЕРКА СТАТУСА САЙТА
         async function checkGlobalSiteStatus() {
             try {
                 const doc = await db.collection('system').doc('config').get();
@@ -654,7 +663,6 @@
             } catch(e) {}
         }
 
-        // ФУНКЦИИ СОЗДАТЕЛЯ
         window.creatorShutdownSite = async function() {
             if(!confirm('ВНИМАНИЕ: Выключить сайт для всех пользователей? (Создатель сохранит полный доступ)')) return;
             try {
@@ -775,46 +783,91 @@
         window.openAddAccountModal = () => document.getElementById('addAccountModal').classList.remove('hidden');
         window.closeAddAccountModal = () => document.getElementById('addAccountModal').classList.add('hidden');
 
-        // ИСПРАВЛЕННАЯ ФУНКЦИЯ ДОБАВЛЕНИЯ АККАУНТА
+        window.switchAddAccTab = function(tab) {
+            window.addAccMode = tab;
+            const loginBtn = document.getElementById('addAccTabLogin');
+            const regBtn = document.getElementById('addAccTabRegister');
+            const submitBtn = document.getElementById('addAccSubmitBtn');
+
+            if (tab === 'login') {
+                loginBtn.className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-primaryAccent text-white shadow transition';
+                regBtn.className = 'flex-1 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition';
+                submitBtn.innerText = 'Войти и сохранить';
+            } else {
+                regBtn.className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-primaryAccent text-white shadow transition';
+                loginBtn.className = 'flex-1 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition';
+                submitBtn.innerText = 'Создать и войти';
+            }
+        };
+
         window.submitAddAccount = async function() {
-            const username = document.getElementById('addAccUsername').value.trim().toLowerCase();
+            const username = document.getElementById('addAccUsername').value.trim().toLowerCase().replace(/^#/, '');
             const password = document.getElementById('addAccPassword').value;
             if (!username || !password) { alert('Заполните все поля'); return; }
-            
+
             try {
                 const hashedPassword = await hashPassword(password);
-                
-                let docSnap = await db.collection('users').doc(username).get();
-                if (!docSnap.exists) {
-                    docSnap = await db.collection('pulse-chat-app')
-                                .doc('pulse-chat-app')
-                                .collection('публичный')
-                                .doc(username)
-                                .get();
-                }
 
-                if (docSnap.exists) {
-                    const data = docSnap.data();
-                    if (data.isBanned) { 
-                        alert('Этот аккаунт забанен!'); 
-                        return; 
+                if (window.addAccMode === 'login') {
+                    let docSnap = await db.collection('users').doc(username).get();
+                    if (!docSnap.exists) {
+                        docSnap = await db.collection('pulse-chat-app')
+                                    .doc('pulse-chat-app')
+                                    .collection('публичный')
+                                    .doc(username)
+                                    .get();
                     }
-                    
-                    if (data.password === hashedPassword || data.password === password) {
-                        saveAccountToMultiSession(data);
-                        closeAddAccountModal();
-                        document.getElementById('addAccUsername').value = '';
-                        document.getElementById('addAccPassword').value = '';
-                        renderAccountsList();
-                        alert('Аккаунт успешно добавлен!');
-                    } else { 
-                        alert('Неверный логин или пароль'); 
+
+                    if (docSnap.exists) {
+                        const data = docSnap.data();
+                        if (data.isBanned) { alert('Этот аккаунт забанен!'); return; }
+
+                        if (data.password === hashedPassword || data.password === password) {
+                            saveAccountToMultiSession(data);
+                            closeAddAccountModal();
+                            document.getElementById('addAccUsername').value = '';
+                            document.getElementById('addAccPassword').value = '';
+                            renderAccountsList();
+                            alert('Аккаунт успешно добавлен!');
+                        } else {
+                            alert('Неверный логин или пароль');
+                        }
+                    } else {
+                        alert('Пользователь не найден');
                     }
-                } else { 
-                    alert('Пользователь не найден'); 
+                } else {
+                    let docSnap = await db.collection('users').doc(username).get();
+                    if (docSnap.exists) {
+                        alert('Пользователь с таким ником уже существует!');
+                        return;
+                    }
+
+                    const isCreator = username === '67';
+                    const role = isCreator ? 'owner' : 'user';
+                    const code = '#' + username + '_' + Math.floor(1000 + Math.random() * 9000);
+
+                    const newUser = {
+                        name: username,
+                        code,
+                        password: hashedPassword,
+                        role,
+                        avatar: null,
+                        isBanned: false,
+                        isMuted: false,
+                        status: 'В сети в Pulse Master',
+                        createdAt: Date.now()
+                    };
+
+                    await db.collection('users').doc(username).set(newUser);
+                    saveAccountToMultiSession(newUser);
+                    closeAddAccountModal();
+                    document.getElementById('addAccUsername').value = '';
+                    document.getElementById('addAccPassword').value = '';
+                    renderAccountsList();
+                    alert('Новый аккаунт успешно создан и добавлен!');
                 }
-            } catch(e) { 
-                alert('Ошибка сети или доступа'); 
+            } catch (e) {
+                alert('Ошибка при обработке запроса');
             }
         };
 
@@ -842,7 +895,6 @@
             });
         }
 
-        // ЗАГРУЗКА АВАТАРКИ ДЛЯ ВСЕХ
         window.uploadMyAvatar = function(input) {
             if(input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -1050,7 +1102,6 @@
             }
         };
 
-        // СОЗДАНИЕ ПОСТОВ И КАНАЛОВ С ЛАЙКАМИ, ДИЗЛАЙКАМИ И КОММЕНТАРИЯМИ
         window.openCreatePostModal = () => document.getElementById('createPostModal').classList.remove('hidden');
         window.closeCreatePostModal = () => { document.getElementById('createPostModal').classList.add('hidden'); clearPostImagePreview(); };
         
@@ -1160,7 +1211,6 @@
                 if (!container) return;
                 container.innerHTML = '';
                 snapshot.forEach(doc => {
-                    const p = doc.id;
                     const post = doc.data();
                     
                     let views = post.views || [];
