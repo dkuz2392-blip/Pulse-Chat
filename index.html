@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v19.1 - Multi-Account & Registration Edition</title>
+    <title>Pulse Workspace v19.1 - Synced Roles Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -752,7 +752,7 @@
             } catch(e) { showAlert('Ошибка регистрации'); }
         };
 
-        // МЕНЕДЖЕР МУЛЬТИАККАУНТОВ
+        // МЕНЕДЖЕР МУЛЬТИАККАУНТОВ С СИНХРОНИЗАЦИЕЙ СЕРВЕРА
         function getSavedAccounts() {
             try { return JSON.parse(localStorage.getItem('pulse_accounts') || '[]'); } catch(e) { return []; }
         }
@@ -764,11 +764,19 @@
             localStorage.setItem('pulse_accounts', JSON.stringify(accounts));
         }
 
-        window.switchToAccount = function(username) {
+        window.switchToAccount = async function(username) {
             let accounts = getSavedAccounts();
             let target = accounts.find(a => a.name === username);
             if (target) {
+                try {
+                    const docSnap = await db.collection('users').doc(username).get();
+                    if (docSnap.exists) {
+                        target = docSnap.data();
+                    }
+                } catch(e) {}
+                
                 localStorage.setItem('pulse_session', JSON.stringify(target));
+                saveAccountToMultiSession(target);
                 location.reload();
             }
         };
@@ -914,7 +922,14 @@
             }
         };
 
-        function initSession(user) {
+        async function initSession(user) {
+            try {
+                const docSnap = await db.collection('users').doc(user.name).get();
+                if (docSnap.exists) {
+                    user = docSnap.data();
+                }
+            } catch(e) {}
+
             window.currentUser = Object.freeze(user);
             localStorage.setItem('pulse_session', JSON.stringify(user));
             saveAccountToMultiSession(user);
