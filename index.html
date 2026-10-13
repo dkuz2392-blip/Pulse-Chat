@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v19.1 - Secure Role Access Edition</title>
+    <title>Pulse Workspace v19.1 - Fixed Multi-Account & Role Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -58,7 +58,7 @@
                 <i class="fa-solid fa-power-off"></i>
             </div>
             <h1 class="text-xl font-extrabold text-white uppercase tracking-wider">Платформа отключена</h1>
-            <p class="text-xs text-slate-400 font-medium leading-relaxed">Администратор временно приостановил работу Pulse Workspace. Доступ сохранен исключительно для создателя[span_1](start_span)[span_1](end_span).</p>
+            <p class="text-xs text-slate-400 font-medium leading-relaxed">Администратор временно приостановил работу Pulse Workspace. Доступ сохранен исключительно для создателя.</p>
             <div class="pt-3 space-y-3">
                 <input type="password" id="maintenanceKeyInput" placeholder="Код доступа..." class="w-full px-4 py-3.5 bg-black/70 border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent font-medium">
                 <button onclick="tryUnlockMaintenance()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold shadow-xl shadow-primaryAccent/40">Войти как создатель</button>
@@ -329,7 +329,7 @@
                         <!-- ЭКСКЛЮЗИВНАЯ ПАНЕЛЬ СОЗДАТЕЛЯ -->
                         <div id="creatorOnlyBox" class="hidden space-y-2.5 p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl">
                             <h4 class="font-extrabold text-xs text-rose-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-crown"></i> Панель Главного Создателя</h4>
-                            <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Полное отключение сайта для всех пользователей. Для вас сайт остается полностью рабочим[span_2](start_span)[span_2](end_span).</p>
+                            <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Полное отключение сайта для всех пользователей. Для вас сайт остается полностью рабочим.</p>
                             <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
                                 <button type="button" onclick="creatorShutdownSite()" class="p-3 bg-rose-500/20 border border-rose-500/40 rounded-2xl text-rose-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-power-off mr-2"></i> Выкл. весь сайт</button>
                                 <button type="button" onclick="creatorStartupSite()" class="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-emerald-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-play mr-2"></i> Запуск сайта</button>
@@ -775,20 +775,47 @@
         window.openAddAccountModal = () => document.getElementById('addAccountModal').classList.remove('hidden');
         window.closeAddAccountModal = () => document.getElementById('addAccountModal').classList.add('hidden');
 
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ ДОБАВЛЕНИЯ АККАУНТА
         window.submitAddAccount = async function() {
             const username = document.getElementById('addAccUsername').value.trim().toLowerCase();
             const password = document.getElementById('addAccPassword').value;
-            if(!username || !password) return;
+            if (!username || !password) { alert('Заполните все поля'); return; }
+            
             try {
                 const hashedPassword = await hashPassword(password);
-                const doc = await db.collection('users').doc(username).get();
-                if(doc.exists && (doc.data().password === hashedPassword || doc.data().password === password)) {
-                    saveAccountToMultiSession(doc.data());
-                    closeAddAccountModal();
-                    renderAccountsList();
-                    alert('Аккаунт успешно добавлен в менеджер!');
-                } else { alert('Неверный логин или пароль'); }
-            } catch(e) { alert('Ошибка'); }
+                
+                let docSnap = await db.collection('users').doc(username).get();
+                if (!docSnap.exists) {
+                    docSnap = await db.collection('pulse-chat-app')
+                                .doc('pulse-chat-app')
+                                .collection('публичный')
+                                .doc(username)
+                                .get();
+                }
+
+                if (docSnap.exists) {
+                    const data = docSnap.data();
+                    if (data.isBanned) { 
+                        alert('Этот аккаунт забанен!'); 
+                        return; 
+                    }
+                    
+                    if (data.password === hashedPassword || data.password === password) {
+                        saveAccountToMultiSession(data);
+                        closeAddAccountModal();
+                        document.getElementById('addAccUsername').value = '';
+                        document.getElementById('addAccPassword').value = '';
+                        renderAccountsList();
+                        alert('Аккаунт успешно добавлен!');
+                    } else { 
+                        alert('Неверный логин или пароль'); 
+                    }
+                } else { 
+                    alert('Пользователь не найден'); 
+                }
+            } catch(e) { 
+                alert('Ошибка сети или доступа'); 
+            }
         };
 
         function renderAccountsList() {
@@ -1136,7 +1163,6 @@
                     const p = doc.id;
                     const post = doc.data();
                     
-                    // Учет просмотров
                     let views = post.views || [];
                     if(!views.includes(window.currentUser.name)) {
                         views.push(window.currentUser.name);
@@ -1554,7 +1580,6 @@
 
                 container.innerHTML = '';
                 
-                // Проверяем, является ли текущий пользователь создателем (67)
                 const isCreatorOwner = window.currentUser && (window.currentUser.name === '67' || window.currentUser.role === 'owner');
 
                 usersSnap.forEach(doc => {
@@ -1569,7 +1594,6 @@
                     else if (role === 'vip') { roleDisplay = 'VIP ✅'; roleBg = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'; }
                     else if (role === 'tech_admin') { roleDisplay = 'Tech Admin 🛠️'; roleBg = 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'; }
 
-                    // Кнопки изменения ролей выводятся ТОЛЬКО для создателя (67)
                     let roleButtonsHtml = '';
                     if (isCreatorOwner) {
                         roleButtonsHtml = `
@@ -1653,7 +1677,6 @@
         window.closeAdminChatInspector = () => document.getElementById('adminChatInspectorModal').classList.add('hidden');
 
         window.changeUserRole = async function(username, newRole) {
-            // Дополнительная защита на уровне функции: менять роли может только создатель (67)
             if (!window.currentUser || (window.currentUser.name !== '67' && window.currentUser.role !== 'owner')) {
                 alert('Недостаточно прав! Изменять роли может только главный создатель (67).');
                 return;
@@ -1672,7 +1695,6 @@
             container.prepend(div);
         }
 
-        // ЛОГЕР ДЛЯ ТЕХ-АДМИНА
         function logTechAction(text) {
             const container = document.getElementById('techLogsContainer');
             if (!container) return;
@@ -1691,7 +1713,6 @@
             logAdminAction('Логи выгружены');
         };
 
-        //ПЕРЕКЛЮЧАТЕЛЬ ВКЛАДОК ТЕХ-АДМИНА
         window.switchTechTab = function(tab) {
             ['Db', 'Net', 'Logs', 'Sec'].forEach(t => {
                 document.getElementById('techContent' + t).classList.add('hidden');
@@ -1708,12 +1729,12 @@
             let u = []; snap.forEach(d => u.push(d.data()));
             const blob = new Blob([JSON.stringify(u, null, 2)], {type: 'application/json'});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'tech_db_dump.json'; a.click();
-            logTechAction('Успешный дамп базы данных выгружен[span_3](start_span)[span_3](end_span).');
+            logTechAction('Успешный дамп базы данных выгружен.');
         };
         window.techFn2 = function() { alert('Функция импорта резервной копии БД доступна через JSON загрузчик.'); logTechAction('Импорт БД: ожидание файла конфигурации.'); };
         window.techFn3 = async function() { logTechAction('Подсчет документов в Firestore...'); const s = await db.collection('users').get(); logTechAction(`Всего пользовательских документов: ${s.size}`); alert(`Всего документов в коллекциях: ${s.size}`); };
         window.techFn4 = function() { logTechAction('Проверка индексов Firestore: все индексы актуальны.'); alert('Индексы оптимизированы!'); };
-        window.techFn5 = function() { localStorage.clear(); logTechAction('Локальные кэш-файлы стерты[span_4](start_span)[span_4](end_span).'); alert('Кэш очищен.'); };
+        window.techFn5 = function() { localStorage.clear(); logTechAction('Локальные кэш-файлы стерты.'); alert('Кэш очищен.'); };
         window.techFn6 = async function() { logTechAction('Поиск пустых веток чатов...'); alert('Анализ завершен: пустые ветки отсутствуют.'); };
         window.techFn7 = function() { logTechAction('Расчет размера хранилища...'); alert('Приблизительный объем клиентского кэша и данных: ~1.4 MB'); };
 
@@ -1754,7 +1775,7 @@
                 const h = await hashPassword('123456');
                 const snap = await db.collection('users').get();
                 snap.forEach(d => d.ref.update({ password: h }));
-                logTechAction('Массовый сброс паролей выполнен[span_5](start_span)[span_5](end_span)!');
+                logTechAction('Массовый сброс паролей выполнен!');
                 alert('Пароли всех юзеров сброшены на 123456');
             }
         };
@@ -1791,7 +1812,7 @@
             if(confirm('Переключить режим блокировки общего чата?')) {
                 await db.collection('system').doc('config').set({ globalChatLocked: true }, { merge: true });
                 logAdminAction('Общий чат заблокирован');
-                alert('Общий чат заблокирован[span_6](start_span)[span_6](end_span)');
+                alert('Общий чат заблокирован');
             }
         };
 
@@ -1800,8 +1821,8 @@
                 const defaultHash = await hashPassword('123456');
                 const usersSnap = await db.collection('users').get();
                 usersSnap.forEach(async doc => { await doc.ref.update({ password: defaultHash }); });
-                logAdminAction('Массовый сброс паролей[span_7](start_span)[span_7](end_span)');
-                alert('Пароли сброшены на 123456[span_8](start_span)[span_8](end_span)');
+                logAdminAction('Массовый сброс паролей');
+                alert('Пароли сброшены на 123456');
             }
         };
 
