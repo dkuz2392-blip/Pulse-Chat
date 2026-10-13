@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v14.0 - AI Edition</title>
+    <title>Pulse Workspace v14.2 - DeepSeek AI Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -66,7 +66,7 @@
 
             <div class="space-y-1">
                 <h1 class="text-xl font-extrabold tracking-tight text-white">Pulse Ecosystem</h1>
-                <p class="text-xs text-slate-400">Облачная экосистема v14.0 AI Pro</p>
+                <p class="text-xs text-slate-400">Облачная экосистема v14.2 DeepSeek AI</p>
             </div>
 
             <div class="flex bg-darkBg p-1 rounded-xl border border-darkBorder">
@@ -265,7 +265,7 @@
                     <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 space-y-4 shadow-xl">
                         <div class="flex items-center justify-between border-b border-darkBorder pb-3">
                             <h3 class="font-bold text-xs text-amber-400 uppercase flex items-center gap-1.5">
-                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА v14.0
+                                <i class="fa-solid fa-shield-halved"></i> ПАНЕЛЬ АДМИНИСТРАТОРА v14.2
                             </h3>
                             <span class="text-[11px] text-slate-400">Всего юзеров: <strong id="adminTotalUsersCount" class="text-white">0</strong></span>
                         </div>
@@ -323,7 +323,7 @@
                                 <button type="button" onclick="exportAuditLogs()" class="text-[10px] text-primaryAccent hover:underline"><i class="fa-solid fa-download mr-1"></i>Экспорт логов</button>
                             </div>
                             <div id="adminLogsContainer" class="p-2.5 bg-darkBg border border-darkBorder rounded-xl h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-slate-400">
-                                <div>[Система v14.0] AI-модуль и мониторинг активны...</div>
+                                <div>[Система v14.2] DeepSeek AI модуль и мониторинг активны...</div>
                             </div>
                         </div>
                     </div>
@@ -409,7 +409,7 @@
                 <p id="viewStoryText" class="text-sm text-slate-100 text-center leading-relaxed font-medium break-words"></p>
             </div>
             <div class="text-center text-[10px] text-slate-500 border-t border-darkBorder pt-3">
-                История Pulse Ecosystem v14.0
+                История Pulse Ecosystem v14.2
             </div>
         </div>
     </div>
@@ -472,7 +472,7 @@
 
         window.chats = [
             { id: 'pulse_global', name: 'Общий чат', type: 'group' },
-            { id: 'ai_assistant', name: '🤖 PulseAI Ассистент', type: 'ai' }
+            { id: 'ai_assistant', name: '🤖 PulseAI (DeepSeek)', type: 'ai' }
         ];
 
         window.setTheme = function(theme) {
@@ -709,19 +709,32 @@
         // РЕДАКТИРОВАНИЕ И УДАЛЕНИЕ СООБЩЕНИЙ
         window.deleteMessage = async function(msgId) {
             if(!confirm('Удалить сообщение?')) return;
-            await db.collection('chats').doc(window.activeChatId).collection('messages').doc(msgId).delete();
+            if (window.activeChatId === 'ai_assistant') {
+                await db.collection('users').doc(window.currentUser.name).collection('ai_messages').doc(msgId).delete();
+            } else {
+                await db.collection('chats').doc(window.activeChatId).collection('messages').doc(msgId).delete();
+            }
         };
 
         window.editMessage = async function(msgId, oldText) {
             const newText = prompt('Редактировать сообщение:', oldText);
             if(newText !== null && newText.trim() !== '') {
-                await db.collection('chats').doc(window.activeChatId).collection('messages').doc(msgId).update({ text: newText.trim(), edited: true });
+                if (window.activeChatId === 'ai_assistant') {
+                    await db.collection('users').doc(window.currentUser.name).collection('ai_messages').doc(msgId).update({ text: newText.trim(), edited: true });
+                } else {
+                    await db.collection('chats').doc(window.activeChatId).collection('messages').doc(msgId).update({ text: newText.trim(), edited: true });
+                }
             }
         };
 
         // РЕАКЦИИ НА СООБЩЕНИЯ
         window.addReaction = async function(msgId, emoji) {
-            const msgRef = db.collection('chats').doc(window.activeChatId).collection('messages').doc(msgId);
+            let msgRef;
+            if (window.activeChatId === 'ai_assistant') {
+                msgRef = db.collection('users').doc(window.currentUser.name).collection('ai_messages').doc(msgId);
+            } else {
+                msgRef = db.collection('chats').doc(window.activeChatId).collection('messages').doc(msgId);
+            }
             const doc = await msgRef.get();
             if(doc.exists) {
                 let reactions = doc.data().reactions || {};
@@ -846,7 +859,7 @@
         async function loadUserChats() {
             window.chats = [
                 { id: 'pulse_global', name: 'Общий чат', type: 'group' },
-                { id: 'ai_assistant', name: '🤖 PulseAI Ассистент', type: 'ai' }
+                { id: 'ai_assistant', name: '🤖 PulseAI (DeepSeek)', type: 'ai' }
             ];
             try {
                 const snap = await db.collection('chats').get();
@@ -870,7 +883,7 @@
                 
                 let iconClass = 'fa-users text-primaryAccent';
                 if (c.type === 'friend') iconClass = 'fa-user text-indigo-400';
-                if (c.type === 'ai') iconClass = 'fa-robot text-emerald-400';
+                if (c.type === 'ai') iconClass = 'fa-brain text-emerald-400';
 
                 const leftPart = document.createElement('div');
                 leftPart.className = 'flex items-center space-x-2.5 overflow-hidden flex-1';
@@ -1014,27 +1027,33 @@
             document.getElementById('imagePreviewContainer').classList.add('hidden');
         };
 
-        // ИИ-ФУНКЦИЯ ДЛЯ ОТВЕТОВ ЧЕРЕЗ GEMINI API
+        // ИНТЕГРАЦИЯ DEEPSEEK AI (Работает стабильно из РФ без VPN)
         async function askPulseAI(promptText) {
             try {
-                // Публичный защищенный API ключ для демонстрации работы прямо в браузере
-                const apiKey = "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE"; 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch('https://text.pollinations.ai/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: "Ты — искусственный интеллект PulseAI, умный ассистент внутри облачной экосистемы Pulse Workspace v14.0. Отвечай вежливо, кратко и полезно на русском языке.\n\nПользователь: " + promptText }]
-                        }]
+                        messages: [
+                            { 
+                                role: 'system', 
+                                content: 'Ты — виртуальный ассистент PulseAI на базе модели DeepSeek, встроенный в мессенджер Pulse Workspace. Отвечай кратко, вежливо, по делу и исключительно на русском языке.' 
+                            },
+                            { role: 'user', content: promptText }
+                        ],
+                        model: 'deepseek'
                     })
                 });
-                const data = await response.json();
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    return data.candidates[0].content.parts[0].text.trim();
+
+                const replyText = await response.text();
+                
+                if (replyText && replyText.trim()) {
+                    return replyText.trim();
                 }
-                return "Извините, не удалось сформировать ответ.";
+                return "Не удалось сформировать ответ от DeepSeek AI.";
             } catch (err) {
-                return "Ошибка связи с сервером ИИ.";
+                console.error("Ошибка DeepSeek API:", err);
+                return "Ошибка сети при обращении к DeepSeek AI.";
             }
         }
 
@@ -1052,10 +1071,9 @@
             input.value = '';
             clearImagePreview();
 
-            // ЕСЛИ ЭТО ЧАТ С ИИ
+            // ЕСЛИ ЭТО ЧАТ С ИИ DEEPSEEK
             if (window.activeChatId === 'ai_assistant') {
                 const aiCol = db.collection('users').doc(window.currentUser.name).collection('ai_messages');
-                // Сообщение пользователя
                 await aiCol.add({
                     sender: window.currentUser.name,
                     text: text,
@@ -1064,10 +1082,9 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Ответ ИИ
                 const aiReply = await askPulseAI(text);
                 await aiCol.add({
-                    sender: '🤖 PulseAI',
+                    sender: '🤖 DeepSeek AI',
                     text: aiReply,
                     time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                     timeLocal: Date.now() + 100,
@@ -1102,7 +1119,7 @@
                 const aiReply = await askPulseAI(cleanQuery || "Привет!");
                 setTimeout(async () => {
                     await chatRef.collection('messages').add({
-                        sender: '🤖 PulseAI',
+                        sender: '🤖 DeepSeek AI',
                         text: aiReply,
                         time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                         timeLocal: Date.now() + 200,
