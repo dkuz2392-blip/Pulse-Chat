@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse Workspace v19.1 - Synced Roles Edition</title>
+    <title>Pulse Workspace v19.1 - Strict Roles Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -958,10 +958,10 @@
             renderAccountsList();
 
             const hasAdminRights = user.role === 'owner' || user.role === 'admin' || user.isAdmin || user.isCreator || user.name === '67';
-            const isTechAdmin = user.role === 'tech_admin' || user.role === 'dev';
+            const isTechAdmin = user.role === 'tech_admin';
 
-            document.getElementById('adminPanelBox').classList.toggle('hidden', !hasAdminRights || isTechAdmin);
-            document.getElementById('techAdminPanelBox').classList.toggle('hidden', !isTechAdmin && !hasAdminRights);
+            document.getElementById('adminPanelBox').classList.toggle('hidden', !hasAdminRights);
+            document.getElementById('techAdminPanelBox').classList.toggle('hidden', !isTechAdmin);
             
             const isCreatorUser = user.name === '67' || user.role === 'owner';
             document.getElementById('creatorOnlyBox').classList.toggle('hidden', !isCreatorUser);
@@ -973,7 +973,7 @@
             window.selectChat(window.activeChatId);
             subscribeToFeed();
             subscribeToStories();
-            if (hasAdminRights && !isTechAdmin) loadAdminAnalytics();
+            if (hasAdminRights) loadAdminAnalytics();
         }
 
         window.confirmLogout = function() {
