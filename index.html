@@ -51,17 +51,17 @@
 </head>
 <body class="h-full flex flex-col select-none theme-linear overflow-hidden">
 
-    <!-- ГЛОБАЛЬНЫЙ ЭКРАН ВЫКЛЮЧЕНИЯ САЙТА СОЗДАТЕЛЕМ (67) -->
+    <!-- ГЛОБАЛЬНЫЙ ЭКРАН ВЫКЛЮЧЕНИЯ САЙТА -->
     <div id="maintenanceScreen" class="fixed inset-0 z-[200] bg-darkBg flex items-center justify-center p-6 hidden text-center">
         <div class="max-w-md glass-panel p-8 rounded-3xl border border-rose-500/40 space-y-5 shadow-2xl">
             <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-inner border border-rose-500/30">
                 <i class="fa-solid fa-power-off"></i>
             </div>
             <h1 class="text-xl font-extrabold text-white uppercase tracking-wider">Платформа отключена</h1>
-            <p class="text-xs text-slate-400 font-medium leading-relaxed">Создатель (67) временно приостановил работу Pulse Workspace. Доступ сохранен исключительно для администратора.</p>
+            <p class="text-xs text-slate-400 font-medium leading-relaxed">Администратор временно приостановил работу Pulse Workspace. Доступ сохранен исключительно для создателя[span_1](start_span)[span_1](end_span).</p>
             <div class="pt-3 space-y-3">
-                <input type="password" id="maintenanceKeyInput" placeholder="Код доступа Создателя (67)..." class="w-full px-4 py-3.5 bg-black/70 border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent font-medium">
-                <button onclick="tryUnlockMaintenance()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold shadow-xl shadow-primaryAccent/40">Войти как Создатель (67)</button>
+                <input type="password" id="maintenanceKeyInput" placeholder="Код доступа..." class="w-full px-4 py-3.5 bg-black/70 border border-darkBorder rounded-2xl text-xs text-white text-center focus:outline-none focus:border-primaryAccent font-medium">
+                <button onclick="tryUnlockMaintenance()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold shadow-xl shadow-primaryAccent/40">Войти как создатель</button>
             </div>
         </div>
     </div>
@@ -115,7 +115,6 @@
                     <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Пароль</label>
                     <input type="password" id="regPassword" class="w-full px-4 py-3.5 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent transition font-medium" placeholder="••••••••">
                 </div>
-                <!-- Секретный поле ввода ключа удалено, роль 67 назначается автоматически по нику -->
                 <button type="button" onclick="handleRegister()" class="w-full py-3.5 bg-gradient-to-r from-primaryAccent to-indigo-600 text-white rounded-2xl text-xs font-bold transition cursor-pointer shadow-xl shadow-primaryAccent/30 hover:scale-[1.02]">Создать профиль</button>
             </div>
         </div>
@@ -308,10 +307,10 @@
                             <input type="text" id="adminUserSearchInput" oninput="filterAdminUsers(this.value)" placeholder="Поиск пользователя по нику..." class="w-full px-4 py-2.5 bg-black/50 border border-darkBorder rounded-2xl text-xs text-white focus:outline-none focus:border-primaryAccent font-medium">
                         </div>
 
-                        <!-- ЭКСКЛЮЗИВНАЯ ПАНЕЛЬ СОЗДАТЕЛЯ (67) -->
+                        <!-- ЭКСКЛЮЗИВНАЯ ПАНЕЛЬ СОЗДАТЕЛЯ -->
                         <div id="creatorOnlyBox" class="hidden space-y-2.5 p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl">
-                            <h4 class="font-extrabold text-xs text-rose-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-crown"></i> Панель Главного Создателя (Код 67)</h4>
-                            <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Полное отключение сайта для всех пользователей. Для вас (Создатель 67) сайт остается полностью рабочим.</p>
+                            <h4 class="font-extrabold text-xs text-rose-400 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-crown"></i> Панель Главного Создателя</h4>
+                            <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Полное отключение сайта для всех пользователей. Для вас сайт остается полностью рабочим.</p>
                             <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
                                 <button type="button" onclick="creatorShutdownSite()" class="p-3 bg-rose-500/20 border border-rose-500/40 rounded-2xl text-rose-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-power-off mr-2"></i> Выкл. весь сайт</button>
                                 <button type="button" onclick="creatorStartupSite()" class="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-emerald-300 font-bold text-left truncate shadow cursor-pointer"><i class="fa-solid fa-play mr-2"></i> Запуск сайта</button>
@@ -524,7 +523,7 @@
             if(soundCheckbox) soundCheckbox.checked = soundPref;
         });
 
-        // ПРОВЕРКА СТАТУСА САЙТА (ВЫКЛЮЧЕН ЛИ СОЗДАТЕЛЕМ 67)
+        // ПРОВЕРКА СТАТУСА САЙТА
         async function checkGlobalSiteStatus() {
             try {
                 const doc = await db.collection('system').doc('config').get();
@@ -540,12 +539,12 @@
             } catch(e) {}
         }
 
-        // ФУНКЦИИ СОЗДАТЕЛЯ (67): ВЫКЛЮЧЕНИЕ / ВКЛЮЧЕНИЕ ВСЕГО САЙТА
+        // ФУНКЦИИ СОЗДАТЕЛЯ
         window.creatorShutdownSite = async function() {
-            if(!confirm('ВНИМАНИЕ: Выключить сайт для всех пользователей? (Создатель 67 сохранит полный доступ)')) return;
+            if(!confirm('ВНИМАНИЕ: Выключить сайт для всех пользователей? (Создатель сохранит полный доступ)')) return;
             try {
                 await db.collection('system').doc('config').set({ isShutdown: true, shutdownBy: '67', time: Date.now() });
-                logAdminAction('Создатель (67) отключил работу платформы для всех');
+                logAdminAction('Создатель отключил работу платформы для всех');
                 alert('Сайт успешно выключен для всех, кроме вас!');
             } catch(e) { alert('Ошибка'); }
         };
@@ -554,7 +553,7 @@
             if(!confirm('Включить сайт обратно для всех пользователей?')) return;
             try {
                 await db.collection('system').doc('config').set({ isShutdown: false, startupBy: '67', time: Date.now() });
-                logAdminAction('Создатель (67) запустил сайт');
+                logAdminAction('Создатель запустил сайт');
                 alert('Сайт успешно запущен!');
                 document.getElementById('maintenanceScreen').classList.add('hidden');
             } catch(e) { alert('Ошибка'); }
@@ -564,9 +563,9 @@
             const val = document.getElementById('maintenanceKeyInput').value.trim();
             if (val === window.CREATOR_KEY || val === "67") {
                 document.getElementById('maintenanceScreen').classList.add('hidden');
-                alert('Доступ Создателя подтвержден! Войдите под ником 67.');
+                alert('Доступ создателя подтвержден! Войдите под ником 67.');
             } else {
-                alert('Неверный ключ Создателя!');
+                alert('Неверный ключ доступа!');
             }
         };
 
@@ -606,7 +605,6 @@
             if (!username || !password) { showAlert('Заполните обязательные поля'); return; }
             
             try {
-                // Автоматическое определение роли создателя, если ник 67
                 const isCreator = username === '67';
                 const role = isCreator ? 'owner' : 'user';
                 const code = '#' + username + '_' + Math.floor(1000 + Math.random() * 9000);
@@ -1021,7 +1019,6 @@
 
                     let ownerActions = isMe ? `<div class="flex items-center gap-3 mt-2 pt-1.5 border-t border-white/10 text-[10px] font-bold"><button onclick="editMessage('${m.id}', '${escapeHTML(m.text||'')}')" class="text-indigo-300 hover:text-white transition cursor-pointer">Изм.</button><button onclick="deleteMessage('${m.id}')" class="text-rose-400 hover:text-rose-300 transition cursor-pointer">Удал.</button></div>` : '';
 
-                    // Убраны обводка и фон (удалены классы стилизации контейнера сообщения, оставлен чистый текст и отступы)
                     div.innerHTML = `
                         <div class="max-w-[85%] md:max-w-[70%] px-2 py-1.5 text-xs text-slate-200 relative group break-words">
                             <b class="block text-[10px] text-primaryAccent mb-0.5 font-extrabold">${escapeHTML(m.sender)}</b>
