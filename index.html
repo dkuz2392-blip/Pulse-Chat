@@ -198,16 +198,15 @@ nav button i{font-style:normal;font-size:20px}nav button.on{color:var(--tx);font
 <div id="toast"></div>
 
 <script>
-/* ================= КОНФИГУРАЦИЯ FIREBASE =================
-   ВСТАВЬТЕ СЮДА СВОЙ КОНФИГ из консоли Firebase
-   (Project settings → Your apps → Web app → firebaseConfig) */
+/* ================= КОНФИГУРАЦИЯ FIREBASE ================= */
 const firebaseConfig = {
-  apiKey: "ВСТАВЬТЕ_API_KEY",
-  authDomain: "ВАШ_ПРОЕКТ.firebaseapp.com",
-  projectId: "ВАШ_ПРОЕКТ",
-  storageBucket: "ВАШ_ПРОЕКТ.appspot.com",
-  messagingSenderId: "ВСТАВЬТЕ",
-  appId: "ВСТАВЬТЕ"
+  apiKey: "AIzaSyB1LB4QtDcDJtjElu7Uqy0f3cql66NMgAE",
+  authDomain: "pulse-chat-c7c98.firebaseapp.com",
+  projectId: "pulse-chat-c7c98",
+  storageBucket: "pulse-chat-c7c98.firebasestorage.app",
+  messagingSenderId: "308291242163",
+  appId: "1:308291242163:web:9c018705779f241c1208c6",
+  measurementId: "G-R6S8WB7FKD"
 };
 /* Опционально: свой загрузчик медиа. По умолчанию файлы хранятся
    как data-URL прямо в Firestore (лимит 1 МБ на документ).
@@ -343,7 +342,7 @@ function logout(){try{if(typeof V!=='undefined'&&V)vLeave()}catch(e){}Object.key
 $('out').onclick=()=>sure('Выйти из профиля?',logout);$('mtout').onclick=logout;
 
 /* ---------- запуск ---------- */
-const applyCfg=()=>{$('banner').hidden=!cfg.banner;$('banner').textContent='📢 '+(cfg.banner||'');$('mt').hidden=!(cfg.isShutdown&&me&&!isOwner(me));$('lock').textContent=cfg.globalChatLocked?'Разблок. общий чат':'Блок общого чата'};
+const applyCfg=()=>{$('banner').hidden=!cfg.banner;$('banner').textContent='📢 '+(cfg.banner||'');$('mt').hidden=!(cfg.isShutdown&&me&&!isOwner(me));$('lock').textContent=cfg.globalChatLocked?'Разблок. общий чат':'Блок общего чата'};
 function start(name){
  saveAccs([...accs().filter(a=>a.s!==SL),{s:SL,n:name}]);
  const beat=()=>db.collection('users').doc(name).update({lastSeen:Date.now()}).catch(()=>{});beat();clearInterval(start.hb);start.hb=setInterval(beat,45000);
@@ -676,3 +675,4 @@ if(fbErr){$('aerr').textContent='Firebase не загрузился: прове�
 else auth.onAuthStateChanged(u=>{if(u)ready(u);else{$('auth').hidden=false;$('back0').hidden=!accs().some(a=>a.s!==SL)}});
 </script>
 </body></html>
+
