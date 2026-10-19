@@ -674,5 +674,286 @@ $('diag').hidden=true;
 if(fbErr){$('aerr').textContent='Firebase не загрузился: проверьте интернет и firebaseConfig.'}
 else auth.onAuthStateChanged(u=>{if(u)ready(u);else{$('auth').hidden=false;$('back0').hidden=!accs().some(a=>a.s!==SL)}});
 </script>
-</body></html>
 
+<!-- ============ ОБНОВЛЕНИЯ (встроены) ============ -->
+<script>
+/* ===== Pulse update: стабильность ===== */
+
+/* 1. Картинки всегда влезают в лимит Firestore (1 МБ на документ) */
+compress=function(f,max){return new Promise((res,rej)=>{
+ if(!f.type.startsWith('image/'))return rej(Error('Это не изображение'));
+ const r=new FileReader();
+ r.onload=()=>{const im=new Image();
+  im.onload=()=>{let k=Math.min(1,max/Math.max(im.width,im.height,1)),q=.82;
+   const c=document.createElement('canvas');
+   const go=()=>{c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+    c.toBlob(b=>{
+     if(!b)return rej(Error('Ошибка обработки'));
+     if(b.size>600*1024&&(q>.4||k>.3)){if(q>.5)q-=.1;else k*=.8;return go()}
+     res(b)},'image/jpeg',q)};
+   go()};
+  im.onerror=()=>rej(Error('Не удалось прочитать картинку'));im.src=r.result};
+ r.onerror=()=>rej(Error('Ошибка чтения файла'));r.readAsDataURL(f)})};
+
+/* 2. Лента не прыгает наверх при каждом лайке/просмотре */
+const _renderFeed=renderFeed;
+renderFeed=function(){const b=$('feed'),y=b.scrollTop;_renderFeed();b.scrollTop=y};
+
+/* 3. Меню действий сообщения не закрывается при обновлении чата */
+const _renderMsgs=renderMsgs;
+renderMsgs=function(ms,col){
+ const box=$('msgs'),old=[...box.querySelectorAll('.bub')],n=old.length,
+  open=old.map((b,i)=>b.classList.contains('open')?n-i:0).filter(Boolean);
+ _renderMsgs(ms,col);
+ if(open.length){const nb=[...box.querySelectorAll('.bub')];open.forEach(k=>{const b=nb[nb.length-k];if(b)b.classList.add('open')})}};
+
+/* 4. ИИ: если основной запрос не прошёл, пробуем запасной */
+askAI=async function(q){
+ q=String(q).slice(0,2000);
+ const tryPost=async()=>{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
+  try{const r=await fetch('https://text.pollinations.ai/',{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({messages:[{role:'system',content:'Ты — ИИ-ассистент PulseAI. Отвечай кратко, вежливо и на русском.'},{role:'user',content:q}],model:'openai'})});
+   if(!r.ok)throw 0;const t=(await r.text()).trim();if(!t)throw 0;return t}finally{clearTimeout(to)}};
+ const tryGet=async()=>{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
+  try{const r=await fetch('https://text.pollinations.ai/'+encodeURIComponent('Отвечай кратко по-русски. '+q.slice(0,800))+'?model=openai',{signal:ctl.signal});
+   if(!r.ok)throw 0;const t=(await r.text()).trim();if(!t)throw 0;return t}finally{clearTimeout(to)}};
+ try{return await tryPost()}catch(e){}
+ try{return await tryGet()}catch(e){return 'ИИ сейчас недоступен, попробуйте чуть позже.'}};
+
+/* 5. Журнал ошибок в techlogs (правила уже разрешают) + статус сети */
+let _lastLog=0;
+function logErr(type,msg){
+ if(!me||!db||Date.now()-_lastLog<10000)return;_lastLog=Date.now();
+ db.collection('techlogs').add({t:Date.now(),name:me.name,type:type,msg:String(msg).slice(0,300),where:String(location.pathname).slice(0,100),ua:navigator.userAgent.slice(0,200)}).catch(()=>{})}
+addEventListener('error',e=>logErr('error',e&&e.message));
+addEventListener('unhandledrejection',e=>logErr('promise',(e.reason&&e.reason.message)||e.reason));
+addEventListener('offline',()=>toast('Нет интернета'));
+addEventListener('online',()=>toast('Снова в сети'));
+
+/* 6. Вернулись во вкладку: сразу отметить «в сети» и прочитанное */
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden&&me)db.collection('users').doc(me.name).update({lastSeen:Date.now()}).catch(()=>{})});
+</script>
+<script>
+/* ===== Pulse update 2: новые функции ===== */
+(function(){
+const css=document.createElement('style');
+css.textContent=`
+body[data-t=sun]{--bg:#140a08;--bd:rgba(251,146,60,.2);--cd:rgba(38,20,14,.62);--cd2:rgba(56,30,20,.72);--ac:#f97316;--ac2:#ef4444;--grad:linear-gradient(135deg,#f97316,#ef4444)}
+.bdg{position:absolute;top:3px;left:56%;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--grad);color:#fff;font:700 10px/17px system-ui;font-style:normal;text-align:center}
+#emo{position:fixed;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:200;max-width:420px;display:grid;grid-template-columns:repeat(8,1fr);gap:2px;padding:10px;background:var(--cd);border:1px solid var(--bd);border-radius:18px;backdrop-filter:blur(22px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+#emo button{border:0;background:none;font-size:22px;padding:6px 0}
+#sdown{position:fixed;right:16px;bottom:calc(140px + env(safe-area-inset-bottom));z-index:150;width:42px;height:42px;padding:0;border-radius:50%;font-size:18px}
+#iv{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+#iv img{max-width:100%;max-height:100%;object-fit:contain}`;
+document.head.append(css);
+
+/* 1. Эмодзи-панель */
+const EM='😀😂🥹😍😎🤔😭😡👍👎👏🙏💪🔥❤️💔🎉✨💯👀😴🤝🙌😅😉🥳🤯😱🫡💀☕🍕🎮🚀'.match(/\p{Extended_Pictographic}(\uFE0F|\u200D\p{Extended_Pictographic})*/gu);
+const emo=h('div',{id:'emo',hidden:''},EM.map(e=>h('button',{text:e,onclick:()=>{const i=$('mi');i.value+=e;i.focus()}})));
+document.body.append(emo);
+const eb=h('button',{class:'ib',text:'😊',onclick:ev=>{ev.stopPropagation();emo.hidden=!emo.hidden}});
+$('mic').before(eb);
+document.addEventListener('click',e=>{if(!emo.hidden&&!e.target.closest('#emo'))emo.hidden=true});
+
+/* 2. Черновики для каждого чата */
+const drafts={};
+const _oc=openChat;
+openChat=function(id,name){
+ if(chatId)drafts[chatId]=$('mi').value;
+ _oc(id,name);
+ $('mi').value=drafts[id]||'';emo.hidden=true;watchBadge();
+};
+
+/* 3. Бейдж непрочитанных + счётчик в заголовке вкладки */
+let unread=0;
+function badge(){
+ const b=$('n-chat');let s=b.querySelector('.bdg');
+ if(!s){s=h('em',{class:'bdg'});b.append(s)}
+ s.textContent=unread>9?'9+':unread;s.hidden=!unread;
+ document.title=(unread?'('+unread+') ':'')+'Pulse ⚡';
+}
+function watchBadge(){
+ let first=true;
+ sub('badge',colRef().orderBy('timestamp','desc').limit(1).onSnapshot(s=>{
+  if(first){first=false;return}
+  s.docChanges().forEach(c=>{
+   if(c.type!=='added'||c.doc.metadata.hasPendingWrites||c.doc.data().sender===me.name)return;
+   const looking=!document.hidden&&!$('s-chat').hidden&&!$('s-chat').classList.contains('list');
+   if(!looking){unread++;badge()}
+  })},()=>{}));
+}
+$('n-chat').addEventListener('click',()=>{unread=0;badge()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('s-chat').hidden){unread=0;badge()}});
+
+/* 4. Кнопка «вниз» в чате */
+const sd=h('button',{id:'sdown',text:'⬇',hidden:'',onclick:()=>{const m=$('msgs');m.scrollTo({top:m.scrollHeight,behavior:'smooth'})}});
+document.body.append(sd);
+$('msgs').addEventListener('scroll',()=>{const m=$('msgs');sd.hidden=m.scrollHeight-m.scrollTop-m.clientHeight<300});
+['feed','chat','set'].forEach(k=>$('n-'+k).addEventListener('click',()=>{sd.hidden=true}));
+
+/* 5. Кнопка «копировать» в меню сообщения */
+const _rm2=renderMsgs;
+renderMsgs=function(ms,col){
+ _rm2(ms,col);
+ $('msgs').querySelectorAll('.bub').forEach(b=>{
+  const a=b.querySelector('.act'),t=b.querySelector(':scope>div:not([class])');
+  if(!a||!t||a.querySelector('.cp'))return;
+  a.append(h('button',{class:'cp',text:'📋',onclick:ev=>{ev.stopPropagation();
+   if(navigator.clipboard)navigator.clipboard.writeText(t.textContent).then(()=>toast('Скопировано'),()=>toast('Не удалось'))}}));
+ });
+};
+
+/* 6. Просмотр фото на весь экран */
+document.addEventListener('click',e=>{
+ const im=e.target.closest&&e.target.closest('.mi,.pimg');if(!im)return;
+ e.stopPropagation();
+ const v=h('div',{id:'iv',onclick:()=>v.remove()},h('img',{src:im.src,alt:''}));
+ document.body.append(v);
+},true);
+
+/* 7. Поиск по ленте */
+const fq=h('input',{placeholder:'🔍 Поиск по ленте'});
+$('tray').before(h('div',{style:'padding:0 14px 8px'},fq));
+fq.oninput=()=>{tagF=fq.value.trim().toLowerCase();tabsUI();renderFeed()};
+$('ftag').addEventListener('click',()=>{fq.value=''});
+
+/* 8. Сколько людей в сети */
+const onc=h('span',{class:'mu',style:'font-weight:400;font-size:12px'});
+$('s-feed').querySelector('h2').append(' ',onc);
+function countOnline(){
+ if(!me)return;
+ db.collection('users').where('lastSeen','>',Date.now()-120000).get()
+  .then(s=>{onc.textContent='· '+s.size+' в сети'}).catch(()=>{});
+}
+setInterval(countOnline,60000);setTimeout(countOnline,4000);
+
+/* 9. Новая тема Sunset */
+const tb=h('button',{'data-th':'sun',text:'Sunset',onclick:()=>setTheme('sun')});
+document.querySelector('[data-th=cyber]').after(tb);
+
+/* 10. Esc закрывает окна */
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Escape')return;
+ if(!$('md').hidden)closeModal();
+ const v=$('iv');if(v)v.remove();
+ emo.hidden=true;
+});
+})();
+</script>
+<script>
+/* ===== Pulse update 3: админ, тех, пользователь ===== */
+(function(){
+const FL=()=>cfg.flags||{};
+const cfgRef=()=>db.collection('system').doc('config');
+const isTech=u=>u&&(u.role==='tech'||u.role==='owner');
+const err=()=>toast('Ошибка: проверьте правила');
+
+/* ---------- слежение за конфигом: перезагрузка, флаги ---------- */
+const w=setInterval(()=>{if(!me)return;clearInterval(w);
+ sub('cfg2',cfgRef().onSnapshot(s=>{cfg=s.data()||{};
+  const rl=cfg.reloadAt,k='pulse_rl';
+  if(rl){const old=store.getItem(k);store.setItem(k,rl);if(old!==null&&+old!==rl)location.reload()}
+  techUI()},()=>{}))},500);
+
+/* ---------- кик по kickAt ---------- */
+const _rme=renderMe;
+renderMe=function(){_rme();
+ if(me.kickAt){const k='pulse_kick_'+SL,old=store.getItem(k);store.setItem(k,me.kickAt);if(old!==null&&+old!==me.kickAt){toast('Вас отключил технический администратор');setTimeout(logout,800)}}
+ techUI()};
+
+/* ---------- медленный режим и фильтр слов ---------- */
+let lastSend=0;
+canSend=function(){
+ if(me.isMuted){toast('Вы в муте');return false}
+ const g=chatId==='pulse_global';
+ if(g&&cfg.globalChatLocked&&!isAdmin(me)){toast('Общий чат заблокирован');return false}
+ if(!isAdmin(me)){
+  const sm=+cfg.slowMode||0,left=sm*1000-(Date.now()-lastSend);
+  if(g&&sm&&left>0){toast('Медленный режим: ещё '+Math.ceil(left/1000)+' с');return false}
+  const t=$('mi').value.toLowerCase();
+  if((cfg.badWords||[]).some(x=>x&&t.includes(x))){toast('В сообщении запрещённое слово');return false}}
+ lastSend=Date.now();return true};
+
+/* ---------- флаги: выключатели голоса и ИИ ---------- */
+const _vj=vJoin;
+vJoin=function(r){if(FL().voiceOff)return toast('Голос временно отключён');return _vj(r)};
+const _ai=askAI;
+askAI=function(q){if(FL().aiOff)return Promise.resolve('ИИ временно отключён администрацией.');return _ai(q)};
+
+/* ---------- админ: новые кнопки ---------- */
+const bs=(t,f,c)=>h('button',{text:t,class:c||'',onclick:f});
+const row=$('bc').parentNode;
+row.append(
+ bs('Медл. режим',()=>modal('Медленный режим общего чата (секунды, 0 — выкл)',[{ph:'Секунды',v:String(cfg.slowMode||0)}],async([v])=>{
+  const n=Math.max(0,Math.min(600,parseInt(v)||0));await cfgRef().set({slowMode:n},{merge:true});toast('Готово')},'Сохранить')),
+ bs('Стоп-слова',()=>modal('Запрещённые слова через запятую (пусто — выкл)',[{type:'area',ph:'слово1, слово2',v:(cfg.badWords||[]).join(', ')}],async([v])=>{
+  const a=[...new Set(v.toLowerCase().split(',').map(x=>x.trim()).filter(Boolean))].slice(0,50);
+  await cfgRef().set({badWords:a},{merge:true});toast('Сохранено: '+a.length)},'Сохранить')),
+ bs('Экспорт юзеров',()=>{const t='ник,роль,статус,бан,мут,предупр.\n'+users.map(u=>[u.name,u.role||'user',(u.status||'').replace(/[,\n]/g,' '),!!u.isBanned,!!u.isMuted,u.warns||0].join(',')).join('\n');
+  navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('CSV скопирован'),()=>toast('Не удалось')):toast('Буфер недоступен')}),
+ bs('Топ постов',()=>db.collection('posts').get().then(s=>{
+  const a=s.docs.map(d=>d.data()).sort((x,y)=>((y.likes||[]).length+(y.views||[]).length)-((x.likes||[]).length+(x.views||[]).length)).slice(0,10);
+  info('Топ постов',...a.map(p=>h('div',{class:'card'},h('b',{text:p.author||''}),h('div',{text:(p.text||'[фото]').slice(0,120)}),h('div',{class:'mu',text:'👍 '+(p.likes||[]).length+' · 👁 '+(p.views||[]).length}))))}).catch(err)));
+
+/* ---------- админ: кнопки в карточках пользователей ---------- */
+const _ru=renderUsers;
+renderUsers=function(){_ru();
+ [...$('ulist').children].forEach(c=>{
+  const b=c.querySelector('b'),r=c.querySelector('.row.wrap');if(!b||!r)return;
+  const n=b.textContent.split(' ')[0],u=users.find(x=>x.name===n)||{},uref=db.collection('users').doc(n);
+  r.append(
+   bs('⚠ '+(u.warns||0),()=>{const k=(u.warns||0)+1;
+    uref.update(k>=3?{warns:k,isMuted:true}:{warns:k}).then(()=>{toast(k>=3?'3 предупреждения — мут':'Предупреждение '+k);refreshAdmin()}).catch(err)}),
+   u.warns?bs('Сброс ⚠',()=>uref.update({warns:0}).then(refreshAdmin).catch(err)):null,
+   bs('🧹',()=>sure('Удалить все сообщения '+n+' в общем чате?',async()=>{
+    try{await wipe(db.collection('chats').doc('pulse_global').collection('messages').where('sender','==',n));toast('Готово')}catch(e){err()}})),
+   isOwner(me)&&u.role!=='tech'?bs('tech',()=>sure('Роль '+n+' → tech?',()=>uref.update({role:'tech'}).then(refreshAdmin).catch(err))):null)})};
+
+/* ---------- тех-панель ---------- */
+const tc=h('div',{class:'card',hidden:''},
+ h('b',{text:'Технический администратор'}),
+ h('div',{class:'row wrap',style:'margin:10px 0'},
+  bs('Логи ошибок',async()=>{try{const s=await db.collection('techlogs').orderBy('t','desc').limit(40).get();
+   info('Логи ('+s.size+')',...(s.empty?[h('div',{class:'mu',text:'Пусто'})]:s.docs.map(d=>{const v=d.data();
+    return h('div',{class:'card'},h('b',{text:v.name+' · '+v.type}),h('div',{class:'mu',text:new Date(v.t).toLocaleString()}),h('div',{text:v.msg}),h('div',{class:'mu',text:v.ua}))})))}catch(e){err()}}),
+  bs('Очист. логи',()=>sure('Очистить журнал ошибок?',async()=>{try{await wipe(db.collection('techlogs'));toast('Очищено')}catch(e){err()}}),'dng'),
+  bs('Пинг',async()=>{const t=performance.now();try{await cfgRef().get({source:'server'});toast('Firestore: '+Math.round(performance.now()-t)+' мс')}catch(e){toast('Нет связи')}}),
+  bs('Сброс голоса',async()=>{try{let n=0;for(const r of['voice_1','voice_2']){const s=await db.collection('voice').doc(r).collection('peers').get();
+   for(const d of s.docs)if(Date.now()-(d.data().t||0)>60000){await d.ref.delete();n++}}toast('Удалено зависших: '+n)}catch(e){err()}}),
+  bs('Обновить всем',()=>sure('Перезагрузить приложение у всех онлайн?',()=>cfgRef().set({reloadAt:Date.now()},{merge:true}).then(()=>toast('Команда отправлена')).catch(err))),
+  bs('Кикнуть',()=>modal('Отключить пользователя от сессии',[{ph:'Ник'}],async([v])=>{v=norm(v);if(!v)throw Error('Введите ник');
+   if(!(await exists(v)))throw Error('Не найден');await db.collection('users').doc(v).update({kickAt:Date.now()});toast('Отправлено')},'Кикнуть'))),
+ h('div',{class:'row'},
+  h('button',{id:'fvo',onclick:()=>cfgRef().set({flags:{voiceOff:!FL().voiceOff}},{merge:true}).catch(err)}),
+  h('button',{id:'fai',onclick:()=>cfgRef().set({flags:{aiOff:!FL().aiOff}},{merge:true}).catch(err)})));
+$('adm').after(tc);
+function techUI(){if(!me)return;tc.hidden=!isTech(me);
+ $('fvo').textContent=FL().voiceOff?'Голос: ВЫКЛ':'Голос: вкл';$('fai').textContent=FL().aiOff?'ИИ: ВЫКЛ':'ИИ: вкл'}
+
+/* ---------- пользователь: упоминания, ссылки ---------- */
+const _rm3=renderMsgs;
+renderMsgs=function(ms,col){_rm3(ms,col);
+ $('msgs').querySelectorAll('.bub').forEach(b=>{
+  const t=b.querySelector(':scope>div:not([class])');if(!t||t.dataset.l)return;t.dataset.l=1;
+  const s=t.textContent;
+  if(!b.classList.contains('me')&&me&&s.toLowerCase().includes('@'+me.name))b.style.boxShadow='0 0 0 2px var(--ac)';
+  if(/https?:\/\//.test(s)){const o=[];s.split(/(https?:\/\/[^\s<>"']+)/).forEach(x=>{
+   if(/^https?:\/\//.test(x))o.push(h('a',{href:x,target:'_blank',rel:'noopener noreferrer',text:x,style:'color:inherit;text-decoration:underline',onclick:e=>e.stopPropagation()}));else if(x)o.push(x)});
+   t.replaceChildren(...o)}})};
+
+/* ---------- пользователь: размер шрифта, копия чата ---------- */
+const fs=n=>{document.body.style.fontSize=n+'px';store.setItem('pulse_fs',n)};
+fs(+store.getItem('pulse_fs')||15);
+$('cc').before(h('div',{class:'row',style:'margin-top:8px'},
+ h('button',{text:'A−',onclick:()=>fs(Math.max(12,(+store.getItem('pulse_fs')||15)-1))}),
+ h('button',{text:'A',onclick:()=>fs(15)}),
+ h('button',{text:'A+',onclick:()=>fs(Math.min(20,(+store.getItem('pulse_fs')||15)+1))})));
+$('msgq').before(h('button',{class:'sp',text:'⧉',title:'Копировать чат',onclick:()=>{
+ const t=[...$('msgs').querySelectorAll('.bub')].map(b=>{const s=b.querySelector(':scope>b'),x=b.querySelector(':scope>div:not([class])');
+  return (b.classList.contains('me')?me.name:(s?s.textContent:''))+': '+(x?x.textContent:'')}).join('\n');
+ if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast('Чат скопирован'),()=>toast('Не удалось'))}}));
+})();
+</script>
+</body></html>
