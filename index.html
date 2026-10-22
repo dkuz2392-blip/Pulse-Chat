@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="UTF-8">
+<meta name="yandex-verification" content="b8d4198632902de3">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a0c16">
@@ -592,7 +593,7 @@ function report(type,target,text,author){modal('Пожаловаться',[{ph:'
 $('rep').onclick=async()=>{try{const s=await db.collection('reports').orderBy('time','desc').limit(30).get();
  info('Жалобы ('+s.size+')',...(s.empty?[h('div',{class:'mu',text:'Жалоб нет'})]:s.docs.map(d=>{const r=d.data();return h('div',{class:'card'},h('b',{text:r.type+': '+r.author}),h('div',{class:'mu',text:'от '+r.by+' · '+r.reason}),h('div',{text:r.text}),
   h('div',{class:'row',style:'margin-top:8px'},
-   r.type!=='user'?h('button',{class:'dng',text:'Удалить контент',onclick:async()=>{try{if(r.type==='post')await db.collection('posts').doc(r.target).delete();else{const c=r.target.split('/')[0],m=r.target.split('/')[1];await db.collection('chats').doc(c).collection('messages').doc(m).delete()}await d.ref.delete();closeModal();toast('Удалено')}catch(e){toast('Ошибка')}}}):null,
+   r.type!=='user'?h('button',{class:'dng',text:'Удалить контент',onclick:async()=>{try{if(r.type==='post')await db.collection('posts').doc(r.target).delete();else{const c=r.target.split('/')[0],m=r.target.split('/')[1];await db.collection('chats').doc(c).collection('messages').doc(m).delete()}await d.ref.delete();closeModal();toast('Удалено')}catch(e){toast('Ошибка')}})}:null,
    h('button',{text:'Закрыть',onclick:async()=>{await d.ref.delete();closeModal();toast('Закрыто')}})))})))}catch(e){toast('Ошибка загрузки')}};
 const POLICY=['Оператор: Кузнецов Дмитрий Алексеевич, tazik3559@gmail.com.','Мы собираем: почту, ник, пароль (хранится в зашифрованном виде у Google Firebase), аватар, статус, сообщения, фото, голосовые, посты, время последнего посещения.','Зачем: чтобы вы могли входить, общаться и вести ленту. Данные не продаются и не передаются рекламодателям.','Где хранятся: в сервисах Google Firebase. Администраторы могут видеть переписки и контент при рассмотрении жалоб. Текст сообщений для ИИ-помощника (@pulseai и чат PulseAI) отправляется во внешний сервис pollinations.ai.','Ваши права: вы можете изменить данные в настройках и удалить аккаунт кнопкой «Удалить аккаунт». Сообщения и посты после удаления могут остаться без привязки к профилю.','Регистрируясь, вы даёте согласие на обработку этих данных. Вопросы и запросы: tazik3559@gmail.com.'];
 const policy=()=>info('Политика конфиденциальности',...POLICY.map(t=>h('p',{class:'mu',style:'font-size:13px;margin:6px 0',text:t})));
@@ -782,8 +783,7 @@ function watchBadge(){
    if(c.type!=='added'||c.doc.metadata.hasPendingWrites||c.doc.data().sender===me.name)return;
    const looking=!document.hidden&&!$('s-chat').hidden&&!$('s-chat').classList.contains('list');
    if(!looking){unread++;badge()}
-  })},()=>{}));
-}
+  })},()=>{}))}
 $('n-chat').addEventListener('click',()=>{unread=0;badge()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('s-chat').hidden){unread=0;badge()}});
 
